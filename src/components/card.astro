@@ -1,0 +1,49 @@
+---
+export interface Props {
+	title: string;
+	image: string;
+	author: string;
+	date: string;
+	description: string;
+	link: string;
+}
+
+const { title, image, author, date, description, link } = Astro.props;
+---
+
+<div class="border rounded-lg overflow-hidden">
+	<div class="relative h-52">
+		<img src={image} alt={title} class="w-full h-full" />
+	</div>
+	<div class="p-4">
+		<div class="flex gap-2 text-purple-600">
+			<p class="font-medium">{author}</p> &bull;
+			<p class="font-medium">{date}</p>
+		</div>
+		<div class="my-3">
+			<a href={link} class="font-bold text-xl mb-4 hover:underline underline-offset-2">{title}</a>
+		</div>
+		<p class="text-slate-600">{description}</p>
+		<div class="tags mt-4 flex gap-2">
+			<a href="#" class="px-4 py-1 rounded-2xl text-purple-600 bg-purple-100">Product</a>
+			<a href="#" class="px-4 py-1 rounded-2xl text-green-600 bg-green-100">Management</a>
+			<a href="#" class="px-4 py-1 rounded-2xl text-blue-600 bg-blue-100">Design</a>
+		</div>
+	</div>
+</div>
+<!-- 
+<div class="border rounded-lg overflow-hidden">
+	<div class="relative h-52">
+		<img src={image} alt={title} class="w-full h-full" />
+		<div class="absolute bottom-0 bg-white/50 backdrop-blur-md w-full p-4">
+			<div class="">
+				<p class="text-white font-semibold">{author}</p>
+				<p class="text-white">{date}</p>
+			</div>
+		</div>
+	</div>
+	<div class="p-4">
+		<a href={link} class="font-bold text-xl mb-4 hover:underline underline-offset-2">{title}</a>
+		<p class="text-slate-600">{description}</p>
+	</div>
+</div> -->
