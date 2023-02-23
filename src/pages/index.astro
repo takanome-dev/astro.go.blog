@@ -1,16 +1,30 @@
 ---
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import Layout from '@/layouts/layout.astro';
 import Card from '@/components/card.astro';
 ---
 <Layout title="Welcome to Astro.">
 	<main class="mx-28">
-		<div class="my-20">
+		<!-- <div class="my-20">
 			<span class="text-purple-700 font-semibold">Ressources</span>
 			<h1 class="text-4xl mt-4 mb-6 font-bold">Untitled Blog</h1>
 			<p class="text-xl">Tools and strategies for building a better web.</p>
 			<div class="border">
 				<input type="text">
 				<button>Submit</button>
+			</div>
+		</div> -->
+		<div class="my-10 py-10 border border-red-500 flex justify-center flex-col items-center max-w-2xl mx-auto">
+			<span class="text-purple-600 font-medium">Our blog</span>
+			<h1 class="text-4xl mt-4 mb-6 font-bold">Stories and interviews</h1>
+			<p class="text-center text-slate-600">Subscribe to learn about new product features, the latest in technologies, solutions, and updates</p>
+			<div class="border border-blue-500 flex flex-col">
+				<div class="flex gap-4">
+					<Input client:load />
+					<Button client:load>Submit</Button>
+				</div>
+				<small>We care about your data in our <span>privacy policy</span></small>
 			</div>
 		</div>
 
