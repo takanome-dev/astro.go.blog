@@ -1,8 +1,10 @@
 ---
+import { Icon } from "astro-icon";
 import { Input, InputProps } from "@/components/ui/input";
 import { Button, ButtonProps } from "@/components/ui/button";
 import Layout from "@/layouts/layout.astro";
 import Card from "@/components/card.astro";
+import FreeTrial from "@/components/free-trial.astro";
 
 const buttonProps: ButtonProps = {
   className:
@@ -12,6 +14,11 @@ const buttonProps: ButtonProps = {
 const inputProps: InputProps = {
   placeholder: "Enter your email",
   className: "w-80",
+};
+
+const secondBtnProps: ButtonProps = {
+  variant: "outline",
+  className: "w-48 justify-between",
 };
 ---
 
@@ -41,12 +48,23 @@ const inputProps: InputProps = {
 
     <div>
       <div class="search flex items-center justify-between">
-        <div class="border border-red-400">
-          <Input />
+        <div class="relative">
+          <Icon
+            name="tabler:search"
+            class="w-6 h-6 absolute left-2 top-1/2 -translate-y-1/2 text-gray-400"
+          />
+          <Input {...{className: 'pl-10', placeholder: 'Search'}} />
         </div>
-        <Button {{variant: 'ghost'}} client:load>
-          Icon Newest first
-          <span>arrow</span>
+        <Button {...secondBtnProps} client:load>
+          <span class="flex gap-2 items-center">
+            <Icon name="tabler:search" class="w-4 h-4 text-gray-400" /> Newest first
+          </span>
+          <span>
+            <Icon
+              name="tabler:chevron-down"
+              class="w-4 h-4 text-gray-400"
+            /></span
+          >
         </Button>
       </div>
       <div class="blog-cards my-8 grid grid-cols-3 gap-8">
@@ -63,6 +81,9 @@ const inputProps: InputProps = {
           ))
         }
       </div>
+    </div>
+    <div class="mt-52 relative">
+      <FreeTrial className="absolute top-0 -mt-24 w-full" />
     </div>
   </main>
 </Layout>

@@ -1,12 +1,28 @@
+---
+import { Icon } from "astro-icon";
+import { Button } from "./ui/button";
+---
+
 <header class="w-full bg-white/50 backdrop-blur-md shadow">
   <div class="container flex justify-between items-center h-14 mx-auto">
-    <h1 class="text-2xl font-bold">My Blog</h1>
-    <nav>
-      <ul class="flex gap-8">
-        <li class="text-xl"><a href="/">Home</a></li>
-        <li class="text-xl"><a href="/blog">Blog</a></li>
-        <li class="text-xl"><a href="/about">About</a></li>
-      </ul>
-    </nav>
+    <div class="flex-1 flex items-center">
+      <h1 class="text-2xl font-medium">
+        <span class="font-bold text-3xl">U</span>ntitled UI
+      </h1>
+      <nav class="ml-10">
+        <ul class="flex gap-8">
+          <li class="text-lg text-gray-600"><a href="/">Home</a></li>
+          <li class="text-lg text-gray-600"><a href="/blog">Blog</a></li>
+          <li class="text-lg text-gray-600"><a href="/about">About</a></li>
+        </ul>
+      </nav>
+    </div>
+    <div>
+      <!-- <Button {...{variant: 'link', className:'font-medium'}}>Log in</Button>
+      <Button {...{className:'font-semibold'}}>Sign up</Button> -->
+      <Button {...{className:'font-semibold'}}>
+        Write a post <Icon name="tabler:arrow-right" class="w-4 h-4 ml-2" />
+      </Button>
+    </div>
   </div>
 </header>
