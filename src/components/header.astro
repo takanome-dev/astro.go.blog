@@ -1,14 +1,13 @@
 ---
 import { Icon } from "astro-icon";
+import Logo from "./logo.astro";
 import { Button } from "./ui/button";
 ---
 
 <header class="w-full bg-white/50 backdrop-blur-md shadow">
   <div class="container flex justify-between items-center h-14 mx-auto">
     <div class="flex-1 flex items-center">
-      <h1 class="text-2xl font-medium">
-        <span class="font-bold text-3xl">U</span>ntitled UI
-      </h1>
+      <Logo />
       <nav class="ml-10">
         <ul class="flex gap-8">
           <li class="text-lg text-gray-600"><a href="/">Home</a></li>
@@ -20,9 +19,13 @@ import { Button } from "./ui/button";
     <div>
       <!-- <Button {...{variant: 'link', className:'font-medium'}}>Log in</Button>
       <Button {...{className:'font-semibold'}}>Sign up</Button> -->
-      <Button {...{className:'font-semibold'}}>
-        Write a post <Icon name="tabler:arrow-right" class="w-4 h-4 ml-2" />
-      </Button>
+      <a href="/post/new">
+        <Button
+          {...{className:'font-semibold shadow-lg shadow-primary-500/50 hover:shadow-primary-500/60'}}
+        >
+          Write a post <Icon name="tabler:arrow-right" class="w-4 h-4 ml-2" />
+        </Button>
+      </a>
     </div>
   </div>
 </header>

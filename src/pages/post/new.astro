@@ -1,0 +1,31 @@
+---
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import NewPostLayout from "@/layouts/new-post-layout.astro";
+---
+
+<NewPostLayout title="Create a Post">
+  <form action="/api/posts" method="POST" class="my-10">
+    <div class="">
+      <Label htmlFor="title" {...{className: 'text-gray-400 mb-8'}}>
+        Title
+      </Label>
+      <Input
+        type="text"
+        name="title"
+        placeholder="Your post title..."
+        id="title"
+        {...{className:'border-gray-100 focus:ring-gray-200'}}
+      />
+    </div>
+    <div class="my-8">
+      <Label htmlFor="content" {...{className: 'text-gray-400'}}>Content</Label>
+      <Textarea
+        id="content"
+        placeholder="Write your post here..."
+        {...{className: 'mt-1 border-gray-100 min-h-[300px] focus:ring-gray-200'}}
+      />
+    </div>
+  </form>
+</NewPostLayout>

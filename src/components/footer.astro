@@ -1,4 +1,5 @@
 ---
+import Logo from "./logo.astro";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
 ---
@@ -7,8 +8,8 @@ import { Input } from "./ui/input";
   <div class="container mx-auto px-20 pt-56 pb-32">
     <div class="flex justify-between">
       <div class="self-end">
-        <p class="text-white text-2xl mb-4">Untitled UI</p>
-        <div class="flex gap-4">
+        <Logo color="text-white" />
+        <div class="flex gap-4 mt-4">
           <a href="#" class="text-white">Overview</a>
           <a href="#" class="text-white">features</a>
           <a href="#" class="text-white">Pricing</a>
