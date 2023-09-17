@@ -1,0 +1,57 @@
+---
+import { Icon } from "astro-icon";
+import { Button } from "@/components/ui/button";
+import BaseLayout from "./base-layout.astro";
+import Logo from "@/components/logo.astro";
+
+export interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<BaseLayout title={title}>
+  <header class="w-full bg-white/50 backdrop-blur-md shadow">
+    <div class="container flex justify-between items-center h-14 mx-auto">
+      <!-- <div class="flex-1 flex items-center"> -->
+      <Logo />
+      <nav class="">
+        <ul class="flex gap-8">
+          <li class="text-gray-500">
+            <a href="/" class="flex items-center">
+              <Icon name="tabler:home" class="w-4 h-4 mr-2" /> Dashboard</a
+            >
+          </li>
+          <li class="text-gray-500">
+            <a href="/blog" class="flex items-center"
+              ><Icon name="tabler:file-text" class="w-4 h-4 mr-2" />Drafts</a
+            >
+          </li>
+          <li class="text-gray-500">
+            <a href="/about" class="flex items-center">
+              <Icon
+                name="tabler:message-circle-2"
+                class="w-4 h-4 mr-2"
+              />Comments</a
+            >
+          </li>
+        </ul>
+      </nav>
+      <!-- </div> -->
+      <div class="flex items-center gap-4">
+        <Button {...{className:'font-normal', variant: 'outline'}}>
+          <Icon name="tabler:device-floppy" class="w-4 h-4 mr-2" /> Save as draft
+        </Button>
+        <Button
+          {...{className:'font-semibold shadow-md shadow-primary-500/50 hover:shadow-primary-500/60'}}
+        >
+          Publish <Icon name="tabler:send" class="w-4 h-4 ml-2" />
+        </Button>
+      </div>
+    </div>
+  </header>
+  <main class="mx-36">
+    <slot />
+  </main>
+</BaseLayout>

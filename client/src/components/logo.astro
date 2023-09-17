@@ -1,0 +1,18 @@
+---
+import { cn } from "@/lib/utils/merge-classes";
+import { Icon } from "astro-icon";
+
+interface Props {
+  color?: string;
+}
+
+const { color = "" } = Astro.props;
+---
+
+<a href="/" class="font-medium flex items-center">
+  <Icon name="tabler:box" class="w-8 h-8 mr-1 text-primary-600" />
+  <p class="flex">
+    <span class="font-bold text-2xl text-primary-600">U</span>
+    <span class={cn("text-gray-600 text-lg self-end", color)}>ntitled UI</span>
+  </p>
+</a>

@@ -1,0 +1,23 @@
+---
+import Layout from '../layouts/layout.astro';
+import Card from '../components/Card.astro';
+const allPosts = await Astro.glob('./posts/*.md');
+---
+
+<Layout title="Blog Page">
+	<main>
+		<h1>Welcome to <span class="text-gradient">Astro</span></h1>
+		<p class="instructions">
+			To get started, open the directory <code>src/pages</code> in your project.<br />
+			<strong>Code Challenge:</strong> Tweak the "Welcome to Astro" message above.
+		</p>
+
+    <ul>
+    {allPosts.map((post) => (
+      <li>
+        <a href={post.url}>{post.frontmatter.title}</a>
+      </li>
+    ))}
+  </ul>
+	</main>
+</Layout>
