@@ -8,6 +8,7 @@ import (
 	"net/http"
 )
 
+type Response struct {Data any `json:"data"`}
 type Error struct {Error string `json:"error"`} // no need for omitempty here; we'll never send an empty error.
 
 // ReadJSON reads a JSON object from an io.ReadCloser,
@@ -23,7 +24,7 @@ func ReadJSON[T any](r io.ReadCloser) (T, error) {
 // setting the Content-Type header to application/json
 func WriteJSON(w http.ResponseWriter, v any) error {
 	w.Header().Set("Content-Type", "application.json")
-	return json.NewEncoder(w).Encode(v)
+	return json.NewEncoder(w).Encode(Response{v})
 }
 
 // WriteError logs an error, then writes it as a JSON object 
