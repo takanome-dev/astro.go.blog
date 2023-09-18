@@ -3,6 +3,8 @@ package controllers
 import (
 	"net/http"
 
+	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/takanome-dev/blog-with-astro-golang/internal/database"
 	"github.com/takanome-dev/blog-with-astro-golang/pkg/config"
 	"github.com/takanome-dev/blog-with-astro-golang/pkg/utils"
@@ -24,7 +26,23 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, users)
 }
 
-func GetUserById(w http.ResponseWriter, r *http.Request) {}
+func GetUserById(w http.ResponseWriter, r *http.Request) {
+	idStr := mux.Vars(r)["id"]
+	id, err := uuid.Parse(idStr)
+	
+	if err != nil {
+		utils.WriteError(w, err, 400)
+		return
+	}
+
+	user, err := db.GetUserByID(r.Context(), id)
+	if err != nil {
+		utils.WriteError(w, err, 400)
+		return
+	}
+
+	utils.WriteJSON(w, user)
+}
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
 	body, err := utils.ReadJSON[database.CreateUserParams](r.Body)
