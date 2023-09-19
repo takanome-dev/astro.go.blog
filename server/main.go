@@ -13,18 +13,11 @@ import (
 func main() {
 	godotenv.Load()
 	r := mux.NewRouter()
-	// r.Use(mux.CORSMethodMiddleware(r))
+	r.Use(mux.CORSMethodMiddleware(r))
 	
 	routes.UsersRoute(r)
 	port := os.Getenv("PORT")
-
-	if port == "" {
-		log.Fatal("PORT is not defined")
-	}
-	
-	log.Println("----------------------------- 🚀 --------------------------------")
-	log.Printf("server listening at localhost %v", port)
-	log.Println("----------------------------- 🚀 --------------------------------")
+	log.Printf("🚀 server listening at localhost %v 🚀\n", port)
 
 	err := http.ListenAndServe(":" + port, r)
 	if err != nil {
