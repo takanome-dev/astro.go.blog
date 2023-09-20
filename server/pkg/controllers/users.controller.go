@@ -23,7 +23,7 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, users)
+	utils.WriteJSON(w, utils.MarshalUsersResponse(users))
 }
 
 func GetUserById(w http.ResponseWriter, r *http.Request) {
@@ -41,7 +41,7 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, user)
+	utils.WriteJSON(w, utils.MarshalUserResponse(user))
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -51,13 +51,18 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	user, err := db.CreateUser(r.Context(), body)
+	user, err := db.CreateUser(r.Context(), database.CreateUserParams{
+		ID: uuid.New(),
+		Username: body.Username,
+		Email: body.Email,
+		Password: body.Password,
+	})
 	if err != nil {
 		utils.WriteError(w, err, 500)
 		return
 	}
 
-	utils.WriteJSON(w, user)
+	utils.WriteJSON(w, utils.MarshalUserResponse(user))
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {}
