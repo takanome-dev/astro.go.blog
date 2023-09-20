@@ -37,7 +37,7 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 
 	user, err := db.GetUserByID(r.Context(), id)
 	if err != nil {
-		utils.WriteError(w, err, 400)
+		utils.WriteError(w, err, 404)
 		return
 	}
 
