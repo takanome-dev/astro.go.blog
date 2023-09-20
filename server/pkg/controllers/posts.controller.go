@@ -1,7 +1,7 @@
 package controllers
 
 import (
-	"log"
+	"database/sql"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -10,14 +10,12 @@ import (
 	"github.com/takanome-dev/blog-with-astro-golang/pkg/utils"
 )
 
-// type CreatePostParams struct {
-// 	ID          uuid.UUID  `json:"id"`
-// 	Title       string     `json:"title"`
-// 	Body        string     `json:"body"`
-// 	UserID      uuid.UUID  `json:"user_id"`
-// 	IsPublished bool       `json:"is_published"`
-// 	IsDraft     bool       `json:"is_draft"`
-// }
+type UpdatePostParams struct {
+	Title       *string `json:"title"`
+	Body        *string `json:"body"`
+	IsPublished *bool   `json:"is_published"`
+	IsDraft     *bool   `json:"is_draft"`
+}
 
 func GetAllPosts(w http.ResponseWriter, r *http.Request) {
 	posts, err := db.GetAllPosts(r.Context())
@@ -30,7 +28,7 @@ func GetAllPosts(w http.ResponseWriter, r *http.Request) {
 	// TODO: the results is an empty array if there is no posts
 	// TODO: but for some reason null is returned
 
-	utils.WriteJSON(w, utils.MarshalPostsResponse(posts))
+	utils.WriteJSON(w, posts)
 }
 
 func GetPostByID(w http.ResponseWriter, r *http.Request) {
@@ -47,7 +45,7 @@ func GetPostByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, utils.MarshalPostResponse(post))
+	utils.WriteJSON(w, post)
 }
 
 func CreatePost(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +68,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	utils.WriteJSON(w, utils.MarshalPostResponse(post))
+	utils.WriteJSON(w, post)
 }
 
 func UpdatePost(w http.ResponseWriter, r *http.Request) {
@@ -81,24 +79,62 @@ func UpdatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Request post ID: %v\n", id)
-	log.Printf("Unmarshal request body: %v\n", r.Body)
-
-	body, err := utils.ReadJSON[database.UpdatePostParams](r.Body)
+	body, err := utils.ReadJSON[UpdatePostParams](r.Body)
 	if err != nil {
 		utils.WriteError(w, err, 400)
 		return
 	}
 
-	log.Printf("Marshal request body: %v\n", body)
+	foundPost, err := db.GetPostByID(r.Context(), id)
+    if err != nil {
+        utils.WriteError(w, err, 404)
+        return
+    }
 
-	post, err := db.UpdatePost(r.Context(), body)
+    var title sql.NullString
+    if body.Title != nil {
+        title.String = *body.Title
+        title.Valid = true
+    } else {
+        title = sql.NullString{String: foundPost.Title, Valid: true}
+    }
+
+    var postBody sql.NullString
+    if body.Body != nil {
+        postBody.String = *body.Body
+        postBody.Valid = true
+    } else {
+        postBody = sql.NullString{String: foundPost.Body, Valid: true}
+    }
+
+    var published sql.NullBool
+    if body.IsPublished != nil {
+			published.Bool = *body.IsPublished
+			published.Valid= true
+    } else {
+			published = sql.NullBool{Bool: foundPost.IsPublished, Valid: true}
+		}
+
+		var draft sql.NullBool
+    if body.IsDraft != nil {
+			draft.Bool = *body.IsDraft
+			draft.Valid = true
+    } else {
+			draft = sql.NullBool{Bool: foundPost.IsDraft, Valid: true}
+		}
+
+
+	post, err := db.UpdatePost(r.Context(), database.UpdatePostParams{
+		ID: id,
+		Title: title,
+		Body: postBody,
+		IsPublished: published,
+		IsDraft: draft,
+	})
 	if err != nil {
-			utils.WriteError(w, err, 500)
-			return
+		utils.WriteError(w, err, 500)
+		return
 	}
-
-	log.Printf("Updated post: %v\n", post)
 
 	utils.WriteJSON(w, post)
 }

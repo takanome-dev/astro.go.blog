@@ -12,23 +12,23 @@ import (
 )
 
 type Post struct {
-	ID          uuid.UUID
-	Title       string
-	Body        string
-	UserID      uuid.UUID
-	IsPublished bool
-	IsDraft     bool
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	DeletedAt   sql.NullTime
+	ID          uuid.UUID    `json:"id"`
+	Title       string       `json:"title"`
+	Body        string       `json:"body"`
+	UserID      uuid.UUID    `json:"user_id"`
+	IsPublished bool         `json:"is_published"`
+	IsDraft     bool         `json:"is_draft"`
+	CreatedAt   time.Time    `json:"created_at"`
+	UpdatedAt   time.Time    `json:"updated_at"`
+	DeletedAt   sql.NullTime `json:"deleted_at"`
 }
 
 type User struct {
-	ID        uuid.UUID
-	Username  string
-	Email     string
-	Password  string
-	CreatedAt time.Time
-	UpdatedAt time.Time
-	DeletedAt sql.NullTime
+	ID        uuid.UUID    `json:"id"`
+	Username  string       `json:"username"`
+	Email     string       `json:"email"`
+	Password  string       `json:"password"`
+	CreatedAt time.Time    `json:"created_at"`
+	UpdatedAt time.Time    `json:"updated_at"`
+	DeletedAt sql.NullTime `json:"deleted_at"`
 }

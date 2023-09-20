@@ -17,12 +17,12 @@ INSERT INTO posts (id, title, body, user_id, is_published, is_draft) VALUES ($1,
 `
 
 type CreatePostParams struct {
-	ID          uuid.UUID
-	Title       string
-	Body        string
-	UserID      uuid.UUID
-	IsPublished bool
-	IsDraft     bool
+	ID          uuid.UUID `json:"id"`
+	Title       string    `json:"title"`
+	Body        string    `json:"body"`
+	UserID      uuid.UUID `json:"user_id"`
+	IsPublished bool      `json:"is_published"`
+	IsDraft     bool      `json:"is_draft"`
 }
 
 func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
@@ -124,15 +124,16 @@ SET
   is_published = COALESCE($3, is_published),
   is_draft = COALESCE($4, is_draft)
 WHERE 
-  id = sql.arg('id')
+  id = $5
 RETURNING id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at
 `
 
 type UpdatePostParams struct {
-	Title       sql.NullString
-	Body        sql.NullString
-	IsPublished sql.NullBool
-	IsDraft     sql.NullBool
+	Title       sql.NullString `json:"title"`
+	Body        sql.NullString `json:"body"`
+	IsPublished sql.NullBool   `json:"is_published"`
+	IsDraft     sql.NullBool   `json:"is_draft"`
+	ID          uuid.UUID      `json:"id"`
 }
 
 func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error) {
@@ -141,6 +142,7 @@ func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, e
 		arg.Body,
 		arg.IsPublished,
 		arg.IsDraft,
+		arg.ID,
 	)
 	var i Post
 	err := row.Scan(

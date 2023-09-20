@@ -15,7 +15,7 @@ SET
   is_published = COALESCE(sqlc.narg('is_published'), is_published),
   is_draft = COALESCE(sqlc.narg('is_draft'), is_draft)
 WHERE 
-  id = sql.arg('id')
+  id = sqlc.arg('id')
 RETURNING *;
 
 -- name: DeletePost :exec

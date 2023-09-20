@@ -23,7 +23,7 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, utils.MarshalUsersResponse(users))
+	utils.WriteJSON(w, users)
 }
 
 func GetUserById(w http.ResponseWriter, r *http.Request) {
@@ -41,7 +41,7 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, utils.MarshalUserResponse(user))
+	utils.WriteJSON(w, user)
 }
 
 func CreateUser(w http.ResponseWriter, r *http.Request) {
@@ -62,7 +62,7 @@ func CreateUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, utils.MarshalUserResponse(user))
+	utils.WriteJSON(w, user)
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {}
