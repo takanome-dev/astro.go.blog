@@ -26,7 +26,7 @@ func init() {
 	if err != nil {
 		log.Fatal("Can't connect to database:", err)
 	}
-	defer conn.Close()
+	// defer conn.Close()
 
 	ctx, cancel := context.WithTimeout(context.Background(), 500*time.Millisecond)
 	defer cancel()

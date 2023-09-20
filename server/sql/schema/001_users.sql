@@ -1,12 +1,12 @@
 -- +goose Up
-CREATE TABLE users (
-    id UUID PRIMARY KEY,
-    name TEXT NOT NULL,
-    email TEXT NOT NULL UNIQUE,
-    password TEXT NOT NULL,
+CREATE TABLE IF NOT EXISTS users (
+    id UUID PRIMARY KEY NOT NULL,
+    username TEXT NOT NULL UNIQUE DEFAULT '',
+    email TEXT NOT NULL UNIQUE DEFAULT '',
+    password TEXT NOT NULL DEFAULT '',
     created_at TIMESTAMP NOT NULL DEFAULT NOW(),
     updated_at TIMESTAMP NOT NULL DEFAULT NOW(),
-    deleted_at TIMESTAMP
+    deleted_at TIMESTAMP DEFAULT NULL
 );
 
 -- +goose Down

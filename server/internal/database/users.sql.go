@@ -12,12 +12,12 @@ import (
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, name, email, password) VALUES ($1, $2, $3, $4) RETURNING id, name, email, password, created_at, updated_at, deleted_at
+INSERT INTO users (id, username, email, password) VALUES ($1, $2, $3, $4) RETURNING id, username, email, password, created_at, updated_at, deleted_at
 `
 
 type CreateUserParams struct {
 	ID       uuid.UUID
-	Name     string
+	Username string
 	Email    string
 	Password string
 }
@@ -25,14 +25,14 @@ type CreateUserParams struct {
 func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, error) {
 	row := q.db.QueryRowContext(ctx, createUser,
 		arg.ID,
-		arg.Name,
+		arg.Username,
 		arg.Email,
 		arg.Password,
 	)
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.Name,
+		&i.Username,
 		&i.Email,
 		&i.Password,
 		&i.CreatedAt,
@@ -43,7 +43,7 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 }
 
 const getAllUsers = `-- name: GetAllUsers :many
-SELECT id, name, email, password, created_at, updated_at, deleted_at FROM users
+SELECT id, username, email, password, created_at, updated_at, deleted_at FROM users
 `
 
 func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
@@ -57,7 +57,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 		var i User
 		if err := rows.Scan(
 			&i.ID,
-			&i.Name,
+			&i.Username,
 			&i.Email,
 			&i.Password,
 			&i.CreatedAt,
@@ -78,7 +78,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, name, email, password, created_at, updated_at, deleted_at FROM users WHERE id = $1
+SELECT id, username, email, password, created_at, updated_at, deleted_at FROM users WHERE id = $1
 `
 
 func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
@@ -86,7 +86,7 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
 	var i User
 	err := row.Scan(
 		&i.ID,
-		&i.Name,
+		&i.Username,
 		&i.Email,
 		&i.Password,
 		&i.CreatedAt,

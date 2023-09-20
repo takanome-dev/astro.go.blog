@@ -16,6 +16,7 @@ func main() {
 	r.Use(mux.CORSMethodMiddleware(r))
 	
 	routes.UsersRoute(r)
+	routes.PostsRoutes(r)
 	port := os.Getenv("PORT")
 	log.Printf("🚀 server listening at localhost %v 🚀\n", port)
 
