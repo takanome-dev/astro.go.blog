@@ -20,6 +20,11 @@ func ReadJSON[T any](r io.ReadCloser) (T, error) {
 	return v, errors.Join(err, r.Close()) // close the reader and return any error
 }
 
+func DecodeJSON(r io.ReadCloser, v interface{}) error {
+	defer r.Close()
+	return json.NewDecoder(r).Decode(v)
+}
+
 // WriteJSON writes a json object to a http.ResponseWriter, 
 // setting the Content-Type header to application/json
 func WriteJSON(w http.ResponseWriter, v any) error {

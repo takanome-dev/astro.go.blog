@@ -12,3 +12,6 @@ github.com/joho/godotenv
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
+# gopkg.in/guregu/null.v4 v4.0.0
+## explicit
+gopkg.in/guregu/null.v4

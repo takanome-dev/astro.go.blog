@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -16,12 +17,12 @@ INSERT INTO posts (id, title, body, user_id, is_published, is_draft) VALUES ($1,
 `
 
 type CreatePostParams struct {
-	ID          uuid.UUID
-	Title       string
-	Body        string
-	UserID      uuid.UUID
-	IsPublished bool
-	IsDraft     bool
+	ID          uuid.UUID `json:"id"`
+	Title       string    `json:"title"`
+	Body        string    `json:"body"`
+	UserID      uuid.UUID `json:"user_id"`
+	IsPublished bool      `json:"is_published"`
+	IsDraft     bool      `json:"is_draft"`
 }
 
 func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, error) {
@@ -46,6 +47,15 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		&i.DeletedAt,
 	)
 	return i, err
+}
+
+const deletePost = `-- name: DeletePost :exec
+DELETE FROM posts WHERE id = $1
+`
+
+func (q *Queries) DeletePost(ctx context.Context, id uuid.UUID) error {
+	_, err := q.db.ExecContext(ctx, deletePost, id)
+	return err
 }
 
 const getAllPosts = `-- name: GetAllPosts :many
@@ -91,6 +101,49 @@ SELECT id, title, body, user_id, is_published, is_draft, created_at, updated_at,
 
 func (q *Queries) GetPostByID(ctx context.Context, id uuid.UUID) (Post, error) {
 	row := q.db.QueryRowContext(ctx, getPostByID, id)
+	var i Post
+	err := row.Scan(
+		&i.ID,
+		&i.Title,
+		&i.Body,
+		&i.UserID,
+		&i.IsPublished,
+		&i.IsDraft,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+	)
+	return i, err
+}
+
+const updatePost = `-- name: UpdatePost :one
+UPDATE posts 
+SET
+  title = COALESCE($1, title),
+  body = COALESCE($2, body),
+  is_published = COALESCE($3, is_published),
+  is_draft = COALESCE($4, is_draft)
+WHERE 
+  id = $5
+RETURNING id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at
+`
+
+type UpdatePostParams struct {
+	Title       sql.NullString `json:"title"`
+	Body        sql.NullString `json:"body"`
+	IsPublished sql.NullBool   `json:"is_published"`
+	IsDraft     sql.NullBool   `json:"is_draft"`
+	ID          uuid.UUID      `json:"id"`
+}
+
+func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, error) {
+	row := q.db.QueryRowContext(ctx, updatePost,
+		arg.Title,
+		arg.Body,
+		arg.IsPublished,
+		arg.IsDraft,
+		arg.ID,
+	)
 	var i Post
 	err := row.Scan(
 		&i.ID,

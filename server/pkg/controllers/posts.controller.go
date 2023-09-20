@@ -1,21 +1,21 @@
 package controllers
 
 import (
-	"log"
+	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
+	"github.com/gorilla/mux"
 	"github.com/takanome-dev/blog-with-astro-golang/internal/database"
 	"github.com/takanome-dev/blog-with-astro-golang/pkg/utils"
 )
 
-type CreatePostParams struct {
-	ID          uuid.UUID `json:"id"`
-	Title       string `json:"title"`
-	Body        string `json:"body"`
-	UserID      uuid.UUID `json:"user_id"`
-	IsPublished bool `json:"is_published"`
-	IsDraft     bool `json:"is_draft"`
+type UpdatePostParams struct {
+	Title       *string `json:"title"`
+	Body        *string `json:"body"`
+	IsPublished *bool   `json:"is_published"`
+	IsDraft     *bool   `json:"is_draft"`
 }
 
 func GetAllPosts(w http.ResponseWriter, r *http.Request) {
@@ -25,15 +25,32 @@ func GetAllPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("posts retrieved from db: %v", posts)
+	// log.Printf("posts retrieved from db: %v", posts)
+	// TODO: the results is an empty array if there is no posts
+	// TODO: but for some reason null is returned
 
-	utils.WriteJSON(w, utils.MarshalPostsResponse(posts))
+	utils.WriteJSON(w, posts)
 }
 
-func GetPostByID(w http.ResponseWriter, r *http.Request) {}
+func GetPostByID(w http.ResponseWriter, r *http.Request) {
+	idStr := mux.Vars(r)["id"]
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		utils.WriteError(w, err, 400)
+		return
+	}
+
+	post, err := db.GetPostByID(r.Context(), id)
+	if err != nil {
+		utils.WriteError(w, err, 404)
+		return
+	}
+
+	utils.WriteJSON(w, post)
+}
 
 func CreatePost(w http.ResponseWriter, r *http.Request) {
-	body, err := utils.ReadJSON[CreatePostParams](r.Body)
+	body, err := utils.ReadJSON[database.CreatePostParams](r.Body)
 	if err != nil {
 		utils.WriteError(w, err, 400)
 		return
@@ -52,8 +69,90 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	utils.WriteJSON(w, utils.MarshalPostResponse(post))
+	utils.WriteJSON(w, post)
 }
 
-func UpdatePost(w http.ResponseWriter, r *http.Request) {}
-func DeletePost(w http.ResponseWriter, r *http.Request) {}
+func UpdatePost(w http.ResponseWriter, r *http.Request) {
+	idStr := mux.Vars(r)["id"]
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		utils.WriteError(w, err, 400)
+		return
+	}
+
+	body, err := utils.ReadJSON[UpdatePostParams](r.Body)
+	if err != nil {
+		utils.WriteError(w, err, 400)
+		return
+	}
+
+	foundPost, err := db.GetPostByID(r.Context(), id)
+    if err != nil {
+        utils.WriteError(w, err, 404)
+        return
+    }
+
+    var title sql.NullString
+    if body.Title != nil {
+        title.String = *body.Title
+        title.Valid = true
+    } else {
+        title = sql.NullString{String: foundPost.Title, Valid: true}
+    }
+
+    var postBody sql.NullString
+    if body.Body != nil {
+        postBody.String = *body.Body
+        postBody.Valid = true
+    } else {
+        postBody = sql.NullString{String: foundPost.Body, Valid: true}
+    }
+
+    var published sql.NullBool
+    if body.IsPublished != nil {
+			published.Bool = *body.IsPublished
+			published.Valid= true
+    } else {
+			published = sql.NullBool{Bool: foundPost.IsPublished, Valid: true}
+		}
+
+		var draft sql.NullBool
+    if body.IsDraft != nil {
+			draft.Bool = *body.IsDraft
+			draft.Valid = true
+    } else {
+			draft = sql.NullBool{Bool: foundPost.IsDraft, Valid: true}
+		}
+
+
+	post, err := db.UpdatePost(r.Context(), database.UpdatePostParams{
+		ID: id,
+		Title: title,
+		Body: postBody,
+		IsPublished: published,
+		IsDraft: draft,
+	})
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
+
+	utils.WriteJSON(w, post)
+}
+
+func DeletePost(w http.ResponseWriter, r *http.Request) {
+	idStr := mux.Vars(r)["id"]
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		utils.WriteError(w, err, 400)
+		return
+	}
+
+	err = db.DeletePost(r.Context(), id)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
+
+	utils.WriteJSON(w, fmt.Sprintf("Post with id %s has been deleted!", id))
+}
