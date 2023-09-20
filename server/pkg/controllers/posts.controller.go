@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"database/sql"
+	"fmt"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -139,4 +140,19 @@ func UpdatePost(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, post)
 }
 
-func DeletePost(w http.ResponseWriter, r *http.Request) {}
+func DeletePost(w http.ResponseWriter, r *http.Request) {
+	idStr := mux.Vars(r)["id"]
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		utils.WriteError(w, err, 400)
+		return
+	}
+
+	err = db.DeletePost(r.Context(), id)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
+
+	utils.WriteJSON(w, fmt.Sprintf("Post with id %s has been deleted!", id))
+}
