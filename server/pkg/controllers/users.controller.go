@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"context"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -44,25 +45,13 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, user)
 }
 
-func CreateUser(w http.ResponseWriter, r *http.Request) {
-	body, err := utils.ReadJSON[database.CreateUserParams](r.Body)
-	if err != nil {
-		utils.WriteError(w, err, 400)
-		return
-	}
-
-	user, err := db.CreateUser(r.Context(), database.CreateUserParams{
+func CreateUser(ctx context.Context, user *AuthParams) (database.User, error) {
+	return db.CreateUser(ctx, database.CreateUserParams{
 		ID: uuid.New(),
-		Username: body.Username,
-		Email: body.Email,
-		Password: body.Password,
+		Username: user.Username,
+		Email: user.Email,
+		Password: user.Password,
 	})
-	if err != nil {
-		utils.WriteError(w, err, 500)
-		return
-	}
-
-	utils.WriteJSON(w, user)
 }
 
 func UpdateUser(w http.ResponseWriter, r *http.Request) {}
