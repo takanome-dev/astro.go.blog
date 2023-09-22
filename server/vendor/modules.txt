@@ -1,3 +1,6 @@
+# github.com/golang-jwt/jwt/v5 v5.0.0
+## explicit; go 1.18
+github.com/golang-jwt/jwt/v5
 # github.com/google/uuid v1.3.1
 ## explicit
 github.com/google/uuid
@@ -12,6 +15,7 @@ github.com/joho/godotenv
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
-# gopkg.in/guregu/null.v4 v4.0.0
-## explicit
-gopkg.in/guregu/null.v4
+# golang.org/x/crypto v0.13.0
+## explicit; go 1.17
+golang.org/x/crypto/bcrypt
+golang.org/x/crypto/blowfish
