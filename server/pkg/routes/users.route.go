@@ -1,14 +1,40 @@
 package routes
 
 import (
+	"net/http"
+
 	"github.com/gorilla/mux"
+	"github.com/takanome-dev/blog-with-astro-golang/internal/auth"
 	"github.com/takanome-dev/blog-with-astro-golang/pkg/controllers"
 )
 
 var UsersRoute = func (router *mux.Router) {
-	router.HandleFunc("/users", controllers.GetAllUsers).Methods("GET")
-	router.HandleFunc("/users/{id}", controllers.GetUserById).Methods("GET")
-	// router.HandleFunc("/users", controllers.CreateUser).Methods("POST")
-	router.HandleFunc("/users/{id}", controllers.UpdateUser).Methods("PUT")
-	router.HandleFunc("/users/{id}", controllers.DeleteUser).Methods("DELETE")
+	router.HandleFunc(
+		"/users",
+		auth.Middleware(
+			http.HandlerFunc(controllers.GetAllUsers), 
+			auth.AuthMiddleware,
+		).ServeHTTP,
+		).Methods("GET")
+	router.HandleFunc(
+		"/users/{id}", 
+		auth.Middleware(
+			http.HandlerFunc(controllers.GetUserById), 
+			auth.AuthMiddleware,
+		).ServeHTTP,
+	).Methods("GET")
+	router.HandleFunc(
+		"/users/{id}", 
+		auth.Middleware(
+			http.HandlerFunc(controllers.UpdateUser), 
+			auth.AuthMiddleware,
+		).ServeHTTP,
+	).Methods("PUT")
+	router.HandleFunc(
+		"/users/{id}", 
+		auth.Middleware(
+			http.HandlerFunc(controllers.DeleteUser), 
+			auth.AuthMiddleware,
+		).ServeHTTP,
+	).Methods("DELETE")
 }

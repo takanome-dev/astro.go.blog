@@ -4,9 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
-	"os"
 
-	"github.com/golang-jwt/jwt/v5"
 	"github.com/takanome-dev/blog-with-astro-golang/pkg/utils"
 )
 
@@ -18,7 +16,6 @@ type AuthParams struct {
 
 type LoginParams struct {
 	Email    string `json:"email"`
-	// Username string `json:"username"`
 	Password string `json:"password"`
 }
 
@@ -30,12 +27,6 @@ type UserResponse struct{
 type AuthResponse struct {
 	User  UserResponse `json:"user"`
 	Token string       `json:"token"`
-}
-
-type Claims struct {
-	Username             string `json:"username"`
-	Email                string `json:"email"`
-	jwt.RegisteredClaims
 }
 
 func Register(w http.ResponseWriter, r *http.Request) {
@@ -68,17 +59,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// exp := time.Now().Add(1*time.Minute)
-	// claims := Claims{
-	// 	Username: newUser.Username,
-	// 	Email: newUser.Email,
-	// 	RegisteredClaims: jwt.RegisteredClaims{
-	// 		ExpiresAt: &jwt.NumericDate{Time: exp},
-	// 	},
-	// }
-
-	utoken := jwt.New(jwt.SigningMethodHS256)
-	token, err := utoken.SignedString([]byte(os.Getenv("JWT_KEY")))
+	token, err := utils.GenerateJwt()
 	if err != nil {
 		utils.WriteError(w, err, http.StatusInternalServerError)
 		return
@@ -112,8 +93,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utoken := jwt.New(jwt.SigningMethodHS256)
-	token, err := utoken.SignedString([]byte(os.Getenv("JWT_KEY")))
+	token, err := utils.GenerateJwt()
 	if err != nil {
 		utils.WriteError(w, err, http.StatusInternalServerError)
 		return
