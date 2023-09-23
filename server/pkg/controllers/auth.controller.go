@@ -59,7 +59,7 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := utils.GenerateJwt()
+	token, err := utils.GenerateJwt(newUser.ID)
 	if err != nil {
 		utils.WriteError(w, err, http.StatusInternalServerError)
 		return
@@ -93,7 +93,7 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := utils.GenerateJwt()
+	token, err := utils.GenerateJwt(user.ID)
 	if err != nil {
 		utils.WriteError(w, err, http.StatusInternalServerError)
 		return

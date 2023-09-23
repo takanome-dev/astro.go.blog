@@ -7,6 +7,9 @@ SELECT * FROM posts;
 -- name: GetPostByID :one
 SELECT * FROM posts WHERE id = $1;
 
+-- name: GetPostsByUserID :many
+SELECT * FROM posts WHERE user_id = $1;
+
 -- name: UpdatePost :one
 UPDATE posts 
 SET

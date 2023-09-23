@@ -11,7 +11,10 @@ import (
 	"github.com/takanome-dev/blog-with-astro-golang/pkg/utils"
 )
 
-
+type CreateCommentParams struct {
+	Body   string    `json:"body"`
+	PostID uuid.UUID `json:"post_id"`
+}
 type UpdateCommentParams struct {
 	Body sql.NullString `json:"body"`
 }
@@ -44,16 +47,22 @@ func GetCommentByID(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreateComment(w http.ResponseWriter, r *http.Request) {
-	body, err := utils.ReadJSON[database.CreateCommentParams](r.Body)
+	body, err := utils.ReadJSON[CreateCommentParams](r.Body)
 	if err != nil {
 		utils.WriteError(w, err, 400)
+		return
+	}
+
+	currentUser, ok := utils.CtxValue[utils.JwtUser](r.Context()); 
+	if !ok {
+		utils.WriteError(w, fmt.Errorf("something went wrong when retrieving user id from context"), 400)
 		return
 	}
 
 	comment, err := db.CreateComment(r.Context(), database.CreateCommentParams{
 		ID: uuid.New(),
     Body: body.Body,
-    UserID: body.UserID,
+    UserID: currentUser.UserID,
     PostID: body.PostID,
 	})
 	if err != nil {

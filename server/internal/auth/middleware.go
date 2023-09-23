@@ -44,12 +44,15 @@ func AuthMiddleware(next http.Handler) http.Handler {
 			return
 		}
 
-		ok, err := utils.DecodeJwt(token)
-		if !ok {
+		decoded, err := utils.DecodeJwt(token)
+		if err != nil {
 			utils.WriteError(w, err, http.StatusUnauthorized)
 			return
 		}
 
+		// add UserID to context
+		ctx := utils.CtxWithValue[utils.JwtUser](r.Context(), utils.JwtUser{UserID: decoded})
+		r = r.WithContext(ctx)
 		next.ServeHTTP(w, r)
 	})
 }

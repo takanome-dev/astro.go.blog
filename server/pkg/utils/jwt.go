@@ -6,13 +6,26 @@ import (
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
+	"github.com/google/uuid"
 )
 
-func GenerateJwt() (string, error) {
+type Claims struct {
+	UserID uuid.UUID
+	jwt.RegisteredClaims
+}
+
+type JwtUser struct {
+	UserID uuid.UUID
+}
+
+func GenerateJwt(userId uuid.UUID) (string, error) {
 	exp := time.Now().Add(60*60*24*7*time.Second)
-	claims := jwt.RegisteredClaims{
-		ExpiresAt: &jwt.NumericDate{Time: exp},
-		IssuedAt: &jwt.NumericDate{Time: time.Now()},
+	claims := Claims{
+		UserID: userId,
+		RegisteredClaims: jwt.RegisteredClaims{
+			ExpiresAt: &jwt.NumericDate{Time: exp},
+			IssuedAt: &jwt.NumericDate{Time: time.Now()},
+		},
 	}
 	
 	utoken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
@@ -24,8 +37,8 @@ func GenerateJwt() (string, error) {
 	return token, nil
 }
 
-func DecodeJwt(token string) (bool, error) {
-	_, err := jwt.Parse(token, func(t *jwt.Token) (interface{}, error) {
+func DecodeJwt(token string) (uuid.UUID, error) {
+	decoded, err := jwt.ParseWithClaims(token, &Claims{}, func(t *jwt.Token) (interface{}, error) {
 		if _, ok := t.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, fmt.Errorf("unexpected signing method: %v", t.Header["alg"])
 		} 
@@ -34,8 +47,13 @@ func DecodeJwt(token string) (bool, error) {
 	})
 
 	if err != nil {
-		return false, err
+		return uuid.Nil, err
+	}
+
+	claims, ok := decoded.Claims.(*Claims);
+	if !ok {
+		return uuid.Nil, fmt.Errorf("invalid claims type")
 	}
 	
-	return true, nil
+	return claims.UserID, nil
 }
