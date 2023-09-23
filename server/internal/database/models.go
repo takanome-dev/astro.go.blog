@@ -11,6 +11,16 @@ import (
 	"github.com/google/uuid"
 )
 
+type Comment struct {
+	ID        uuid.UUID    `json:"id"`
+	Body      string       `json:"body"`
+	UserID    uuid.UUID    `json:"user_id"`
+	PostID    uuid.UUID    `json:"post_id"`
+	CreatedAt time.Time    `json:"created_at"`
+	UpdatedAt time.Time    `json:"updated_at"`
+	DeletedAt sql.NullTime `json:"deleted_at"`
+}
+
 type Post struct {
 	ID          uuid.UUID    `json:"id"`
 	Title       string       `json:"title"`
