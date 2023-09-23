@@ -21,6 +21,7 @@ func main() {
 	routes.UsersRoute(r)
 	routes.PostsRoutes(r)
 	routes.AuthRoute(r)
+	routes.CommentsRoutes(r)
 
 	port := os.Getenv("PORT")
 	log.Printf("🚀 server listening at localhost %v 🚀\n", port)

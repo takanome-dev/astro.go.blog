@@ -12,6 +12,7 @@ func GenerateJwt() (string, error) {
 	exp := time.Now().Add(60*60*24*7*time.Second)
 	claims := jwt.RegisteredClaims{
 		ExpiresAt: &jwt.NumericDate{Time: exp},
+		IssuedAt: &jwt.NumericDate{Time: time.Now()},
 	}
 	
 	utoken := jwt.NewWithClaims(jwt.SigningMethodHS256, claims)
