@@ -15,6 +15,9 @@ github.com/joho/godotenv
 github.com/lib/pq
 github.com/lib/pq/oid
 github.com/lib/pq/scram
+# github.com/rs/cors v1.10.0
+## explicit; go 1.13
+github.com/rs/cors
 # golang.org/x/crypto v0.13.0
 ## explicit; go 1.17
 golang.org/x/crypto/bcrypt

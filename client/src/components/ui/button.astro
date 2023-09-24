@@ -1,6 +1,6 @@
-import * as React from "react";
-import { VariantProps, cva } from "class-variance-authority";
-
+---
+import type { HTMLAttributes } from "astro/types";
+import { type VariantProps, cva } from "class-variance-authority";
 import { cn } from "@/lib/utils/merge-classes";
 
 const buttonVariants = cva(
@@ -29,22 +29,16 @@ const buttonVariants = cva(
     },
   }
 );
-
-export interface ButtonProps
-  extends React.ButtonHTMLAttributes<HTMLButtonElement>,
+export interface Props
+  extends HTMLAttributes<"button">,
     VariantProps<typeof buttonVariants> {}
 
-const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-  ({ className, variant, size, ...props }, ref) => {
-    return (
-      <button
-        className={cn(buttonVariants({ variant, size, className }))}
-        ref={ref}
-        {...props}
-      />
-    );
-  }
-);
-Button.displayName = "Button";
+const { variant = "primary", size = "default", ...props } = Astro.props;
+---
 
-export { Button, buttonVariants };
+<button
+  class={cn(buttonVariants({ variant, size, className: props.class }))}
+  {...props}
+>
+  <slot />
+</button>
