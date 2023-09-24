@@ -1,25 +1,10 @@
 ---
 import { Icon } from "astro-icon";
-import { Input, InputProps } from "@/components/ui/input";
-import { Button, ButtonProps } from "@/components/ui/button";
+
+import Input from "@/components/ui/input.astro";
+import Button from "@/components/ui/button.astro";
 import Layout from "@/layouts/layout.astro";
 import Card from "@/components/card.astro";
-import FreeTrial from "@/components/free-trial.astro";
-
-const buttonProps: ButtonProps = {
-  className:
-    "focus:ring-primary-400 dark:focus:ring-ring-400 px-6 font-semibold",
-};
-
-const inputProps: InputProps = {
-  placeholder: "Enter your email",
-  className: "w-80",
-};
-
-const secondBtnProps: ButtonProps = {
-  variant: "outline",
-  className: "w-48 justify-between",
-};
 ---
 
 <Layout title="Welcome to Astro.">
@@ -34,8 +19,8 @@ const secondBtnProps: ButtonProps = {
     </p>
     <div class="flex flex-col mt-6">
       <div class="flex gap-4">
-        <Input {...inputProps} client:visible />
-        <Button {...buttonProps} client:visible>Get started</Button>
+        <Input class="w-80" placeholder="Enter your email" />
+        <Button class="focus:ring-primary-400 dark:focus:ring-ring-400 px-6 font-semibold">Get started</Button>
       </div>
       <small class="text-gray-600 mt-2"
         >We care about your data in our <span
@@ -52,9 +37,9 @@ const secondBtnProps: ButtonProps = {
           name="tabler:search"
           class="w-6 h-6 absolute left-2 top-1/2 -translate-y-1/2 text-gray-400"
         />
-        <Input {...{className: 'pl-10', placeholder: 'Search'}} />
+        <Input class="pl-10" placeholder="Search" />
       </div>
-      <Button {...secondBtnProps} client:load>
+      <Button class="w-48 justify-between" variant="outline">
         <span class="flex gap-2 items-center">
           <Icon name="tabler:search" class="w-4 h-4 text-gray-400" /> Newest first
         </span>
@@ -80,8 +65,5 @@ const secondBtnProps: ButtonProps = {
         ))
       }
     </div>
-  </div>
-  <div class="mt-52 relative">
-    <FreeTrial className="absolute top-0 -mt-24 w-full" />
   </div>
 </Layout>
