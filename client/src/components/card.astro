@@ -1,33 +1,31 @@
 ---
+import { type Post } from '@/types/post';
 export interface Props {
-	title: string;
-	image: string;
-	author: string;
-	date: string;
-	description: string;
-	link: string;
+	post: Post
 }
 
-const { title, image, author, date, description, link } = Astro.props;
+const defaultImage = "https://res.cloudinary.com/dafwzsod0/image/upload/v1695666098/kelly-sikkema-Cg60_WXjvC4-unsplash_py5nh6.jpg"
+
+const { post } = Astro.props;
 ---
 
 <div class="border rounded-lg overflow-hidden">
 	<div class="relative h-52">
-		<img src={image} alt={title} class="w-full h-full" />
+		<img src={post.image ?? defaultImage} alt={post.title} class="w-full h-full" />
 	</div>
 	<div class="p-4">
 		<div class="flex gap-2 text-purple-600">
-			<p class="font-medium">{author}</p> &bull;
-			<p class="font-medium">{date}</p>
+			<p class="font-medium">takanome-dev</p> &bull;
+			<p class="font-medium">{post.created_at}</p>
 		</div>
 		<div class="my-3">
-			<a href={link} class="font-bold text-xl mb-4 hover:underline underline-offset-2">{title}</a>
+			<a href={`/posts/${post.id}`} class="font-bold text-xl mb-4 hover:underline underline-offset-2">{post.title}</a>
 		</div>
-		<p class="text-slate-600">{description}</p>
-		<div class="tags mt-4 flex gap-2">
+		<p class="text-slate-600">{post.body}</p>
+		<!-- <div class="tags mt-4 flex gap-2">
 			<a href="#" class="px-4 py-1 rounded-2xl text-purple-600 bg-purple-100">Product</a>
 			<a href="#" class="px-4 py-1 rounded-2xl text-green-600 bg-green-100">Management</a>
 			<a href="#" class="px-4 py-1 rounded-2xl text-blue-600 bg-blue-100">Design</a>
-		</div>
+		</div> -->
 	</div>
 </div>

@@ -1,5 +1,6 @@
 ---
 import Input from "@/components/ui/input.astro";
+import Button, { buttonVariants } from "@/components/ui/button.astro";
 import Label from "@/components/ui/label.astro";
 import Textarea from "@/components/ui/textarea.astro";
 import NewPostLayout from "@/layouts/new-post-layout.astro";
@@ -7,6 +8,33 @@ import NewPostLayout from "@/layouts/new-post-layout.astro";
 
 <NewPostLayout title="Create a Post">
   <form method="POST" class="my-10">
+    <label
+      for="new-post-image"
+      id="new-post-image-label"
+      class={buttonVariants({
+        variant: "outline",
+        class: "mb-4",
+      })}
+    >
+      Add cover image
+      <input type="file" name="image" id="new-post-image" class="hidden" />
+    </label>
+    <div id="preview-image" class="hidden h-auto items-end gap-6 mb-6">
+      <img src="" alt="New blog image" class="w-96 h-56 object-contain">
+      <div class="flex gap-4">
+        <label
+          for="new-post-image" 
+          class={buttonVariants({
+            variant: "outline",
+            size: "sm"
+          })}
+        >
+          Change
+          <input type="file" name="image" id="new-post-image" class="hidden" />
+        </label>
+        <Button variant="destructive" size="sm">Remove</Button>
+      </div>
+    </div>
     <div class="">
       <Label for="new-post-title" class="text-gray-400 mb-8">
         Title
@@ -31,24 +59,33 @@ import NewPostLayout from "@/layouts/new-post-layout.astro";
   </form>
 </NewPostLayout>
 <script>
+  const previewImageContainer = (document.getElementById("preview-image") as HTMLDivElement);
 const submitPost = (draft = false) => {
   let title = (document.getElementById("new-post-title") as HTMLInputElement).value;
   let content = (document.getElementById("new-post-content") as HTMLInputElement).value;
+  const file = imageInput.files?.[0]
 
-  console.log({ title, content })
+  const isPublished = !draft;
+  const formData = new FormData();
+  formData.append("title", title);
+  formData.append("body", content);
+  formData.append("is_draft", draft.toString());
+  formData.append("is_published", isPublished.toString());
+  if (file) {
+    formData.append("image", file);
+  }
+
   fetch("http://localhost:5000/posts", {
     method: "POST",
     headers: {
-      "Content-Type": "application/json",
       "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJlZTAzYWU0Zi02ZTE0LTRkMmEtOGRiZC0xZGMyZjk4ZTE4ZTQiLCJleHAiOjE2OTYxMDc3OTAsImlhdCI6MTY5NTUwMjk5MH0.4EdVsO1VjYsQgwdtqGiapPLdUsFoKKMRNehSX4PrRN8"
     },
-    body: JSON.stringify({ title, body: content, is_draft: draft }),
+    body: formData,
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log({serverResponse: data})
-      // TODO: redirect to dashboard
-      // window.location.href = "/";
+      console.log({ data })
+      window.location.href = "/dashboard";
     })
     .catch((error) => console.error(error));
 };
@@ -58,4 +95,36 @@ submitButton.addEventListener("click", () => submitPost());
 
 const submitAsDraft = (document.getElementById("submit-as-draft-btn") as HTMLButtonElement);
 submitAsDraft.addEventListener("click", () => submitPost(true));
+
+const imageInput = (document.getElementById("new-post-image") as HTMLInputElement);
+imageInput.addEventListener("change", () => {
+  const file = imageInput.files?.[0]
+  if (!file) return;
+
+  const validTypes = ["image/jpeg", "image/png"];
+  if (!validTypes.includes(file.type)) {
+    alert("Invalid file type. Only JPG and PNG files are allowed.");
+    return;
+  }
+
+  const reader = new FileReader();
+  reader.readAsDataURL(file);
+  reader.onload = () => {
+    document.getElementById("new-post-image-label")?.classList.add("hidden");
+    previewImageContainer.classList.remove("hidden");
+    previewImageContainer.classList.add("flex");
+    previewImageContainer.querySelector("img")!.src = reader.result as string;
+  };
+  reader.onerror = (error) => {
+    console.log('Error: ', error);
+  };
+})
+
+const removeSelectedImage = previewImageContainer.querySelector("button")!;
+removeSelectedImage.addEventListener("click", () => {
+  previewImageContainer.classList.add("hidden");
+  previewImageContainer.classList.remove("flex");
+  previewImageContainer.querySelector("img")!.src = "";
+  document.getElementById("new-post-image-label")?.classList.remove("hidden");
+})
 </script>

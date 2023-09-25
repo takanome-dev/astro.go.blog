@@ -13,6 +13,13 @@ var PostsRoutes = func (router *mux.Router)  {
 	router.HandleFunc("/posts/{id}", controllers.GetPostByID).Methods("GET")
 	router.HandleFunc("/posts/users/{userId}", controllers.GetPostsByUserID).Methods("GET")
 	router.HandleFunc(
+		"/posts/current-user",
+		auth.Middleware(
+			http.HandlerFunc(controllers.GetPostsForLoggedInUser), 
+			auth.AuthMiddleware,
+		).ServeHTTP,
+	).Methods("GET")
+	router.HandleFunc(
 		"/posts", 
 		auth.Middleware(
 			http.HandlerFunc(controllers.CreatePost), 
