@@ -1,0 +1,40 @@
+---
+import { Icon } from "astro-icon";
+
+import Input from "@/components/ui/input.astro";
+import DashboardLayout from "@/layouts/dashboard-layout.astro";
+import Card from "@/components/card.astro";
+---
+
+<DashboardLayout title="Posts">
+  <div
+    class="my-10"
+  >
+    <h1 class="text-2xl mb-2 font-bold">Your Posts</h1>
+    <p class="text-gray-600">
+      This is your posts page. You can create, edit, and delete posts from here.
+    </p>
+  </div>
+
+  <div>
+    <div class="flex justify-end">
+      <div class="relative max-w-xs">
+        <Icon
+          name="tabler:search"
+          class="w-6 h-6 absolute left-2 top-1/2 -translate-y-1/2 text-gray-400"
+        />
+        <Input class="pl-10" placeholder="Search" />
+      </div>
+    </div>
+    <div class="my-8 grid grid-cols-3 gap-8">
+      <Card
+        title="Building your API stack"
+        author="John Doe"
+        date="2021-01-01"
+        image="https://astro.build/assets/blog/astro-1-release-update/cover.jpeg"
+        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquet nisl, vitae aliquet nisl nisl sit amet lorem. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquet nisl, vitae aliquet nisl nisl sit amet lorem."
+        link="/posts/1"
+      />
+    </div>
+  </div>
+</DashboardLayout>

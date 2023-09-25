@@ -31,7 +31,7 @@ import NewPostLayout from "@/layouts/new-post-layout.astro";
   </form>
 </NewPostLayout>
 <script>
-const submitPost = () => {
+const submitPost = (draft = false) => {
   let title = (document.getElementById("new-post-title") as HTMLInputElement).value;
   let content = (document.getElementById("new-post-content") as HTMLInputElement).value;
 
@@ -42,17 +42,20 @@ const submitPost = () => {
       "Content-Type": "application/json",
       "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJlZTAzYWU0Zi02ZTE0LTRkMmEtOGRiZC0xZGMyZjk4ZTE4ZTQiLCJleHAiOjE2OTYxMDc3OTAsImlhdCI6MTY5NTUwMjk5MH0.4EdVsO1VjYsQgwdtqGiapPLdUsFoKKMRNehSX4PrRN8"
     },
-    body: JSON.stringify({ title, body: content }),
+    body: JSON.stringify({ title, body: content, is_draft: draft }),
   })
     .then((response) => response.json())
     .then((data) => {
       console.log({serverResponse: data})
-      // TODO: redirect to the post page
+      // TODO: redirect to dashboard
       // window.location.href = "/";
     })
     .catch((error) => console.error(error));
 };
 
 const submitButton = (document.getElementById("submit-new-post-btn") as HTMLButtonElement);
-submitButton.addEventListener("click", submitPost);
+submitButton.addEventListener("click", () => submitPost());
+
+const submitAsDraft = (document.getElementById("submit-as-draft-btn") as HTMLButtonElement);
+submitAsDraft.addEventListener("click", () => submitPost(true));
 </script>
