@@ -3,7 +3,11 @@ package controllers
 import (
 	"database/sql"
 	"fmt"
+	"io"
+	"log"
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -14,6 +18,7 @@ import (
 type CreatePostParams struct {
 	Title       string    `json:"title"`
 	Body        string    `json:"body"`
+	Image       string     `json:"image"`
 	IsPublished bool      `json:"is_published,omitempty"`
 	IsDraft     bool      `json:"is_draft,omitempty"`
 }
@@ -72,12 +77,94 @@ func GetPostsByUserID(w http.ResponseWriter, r *http.Request) {
 	utils.WriteJSON(w, posts)
 }
 
-func CreatePost(w http.ResponseWriter, r *http.Request) {
-	body, err := utils.ReadJSON[CreatePostParams](r.Body)
-	if err != nil {
-		utils.WriteError(w, err, 400)
+func GetPostsForLoggedInUser(w http.ResponseWriter, r *http.Request) {
+	currentUser, ok := utils.CtxValue[utils.JwtUser](r.Context()); 
+	if !ok {
+		utils.WriteError(w, fmt.Errorf("something went wrong when retrieving user id from context"), 400)
 		return
 	}
+
+	log.Printf("Logged In User: %v", currentUser)
+
+	posts, err := db.GetPostsByUserID(r.Context(), currentUser.UserID)
+	if err != nil {
+		utils.WriteError(w, err, 404)
+		return
+	}
+
+	utils.WriteJSON(w, posts)
+}
+
+func CreatePost(w http.ResponseWriter, r *http.Request) {
+		// 10 << 20 -> how much will be stored in memory
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		utils.WriteError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	file, fileHeader, err := r.FormFile("image")
+	if err != nil {
+		utils.WriteError(w, err, http.StatusBadRequest)
+		return
+	}
+
+	defer file.Close()
+
+	fileSize := fileHeader.Size
+	log.Printf("the size of the file uploaded is: %v", utils.CalcFileSize(fileSize))
+
+	if fileSize > utils.MAX_UPLOAD_SIZE {
+		utils.WriteError(w, fmt.Errorf("file is too big, the maximum allowed is 2MB"), http.StatusBadRequest)
+		return
+	}
+
+	buff := make([]byte, 512)
+	_, err = file.Read(buff)
+	if err != nil {
+		utils.WriteError(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	filetype := http.DetectContentType(buff)
+	if filetype != "image/jpeg" && filetype != "image/png" {
+		utils.WriteError(w, fmt.Errorf("the provided file format is not allowed. Please upload a JPEG or PNG image"), http.StatusBadRequest)
+		return
+	}
+
+	_, err = file.Seek(0, io.SeekStart)
+	if err != nil {
+		utils.WriteError(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	resp, err := utils.CloudinaryUpload(file, strings.Split(fileHeader.Filename, ".")[0])
+	if err != nil {
+		utils.WriteError(w, err, http.StatusInternalServerError)
+		return
+	}
+
+	// fileName := fmt.Sprintf("%d-%s", time.Now().UnixNano(), fileHeader.Filename)
+	// filePath := fmt.Sprintf("./public/uploads/%s", fileName)
+
+	// dst, err := os.Create(filePath)
+	// if err != nil {
+	// 	utils.WriteError(w, err, http.StatusInternalServerError)
+	// 	return
+	// }
+
+	// defer dst.Close()
+
+	// _, err = io.Copy(dst, file)
+	// if err != nil {
+	// 	utils.WriteError(w, err, http.StatusInternalServerError)
+	// 	return
+	// }
+
+	 // Get the title and body fields from the form data
+	 title := r.FormValue("title")
+	 body := r.FormValue("body")
+	 isPublished, _ := strconv.ParseBool(r.FormValue("is_published"))
+	 isDraft, _ := strconv.ParseBool(r.FormValue("is_draft"))
 
 	currentUser, ok := utils.CtxValue[utils.JwtUser](r.Context()); 
 	if !ok {
@@ -87,11 +174,12 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 
 	post, err := db.CreatePost(r.Context(), database.CreatePostParams{
 		ID: uuid.New(),
-		Title: body.Title,
-    Body: body.Body,
+		Title: title,
+    Body: body,
+		Image: resp.SecureURL,
 		UserID: currentUser.UserID,
-    IsPublished: body.IsPublished,
-    IsDraft: body.IsDraft,
+    IsPublished: isPublished,
+    IsDraft: isDraft,
 	})
 	if err != nil {
 		utils.WriteError(w, err, 500)

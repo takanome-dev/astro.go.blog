@@ -13,13 +13,14 @@ import (
 )
 
 const createPost = `-- name: CreatePost :one
-INSERT INTO posts (id, title, body, user_id, is_published, is_draft) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at
+INSERT INTO posts (id, title, body, image, user_id, is_published, is_draft) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at, image
 `
 
 type CreatePostParams struct {
 	ID          uuid.UUID `json:"id"`
 	Title       string    `json:"title"`
 	Body        string    `json:"body"`
+	Image       string    `json:"image"`
 	UserID      uuid.UUID `json:"user_id"`
 	IsPublished bool      `json:"is_published"`
 	IsDraft     bool      `json:"is_draft"`
@@ -30,6 +31,7 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		arg.ID,
 		arg.Title,
 		arg.Body,
+		arg.Image,
 		arg.UserID,
 		arg.IsPublished,
 		arg.IsDraft,
@@ -45,6 +47,7 @@ func (q *Queries) CreatePost(ctx context.Context, arg CreatePostParams) (Post, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.Image,
 	)
 	return i, err
 }
@@ -59,7 +62,7 @@ func (q *Queries) DeletePost(ctx context.Context, id uuid.UUID) error {
 }
 
 const getAllPosts = `-- name: GetAllPosts :many
-SELECT id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at FROM posts
+SELECT id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at, image FROM posts
 `
 
 func (q *Queries) GetAllPosts(ctx context.Context) ([]Post, error) {
@@ -81,6 +84,7 @@ func (q *Queries) GetAllPosts(ctx context.Context) ([]Post, error) {
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
+			&i.Image,
 		); err != nil {
 			return nil, err
 		}
@@ -96,7 +100,7 @@ func (q *Queries) GetAllPosts(ctx context.Context) ([]Post, error) {
 }
 
 const getPostByID = `-- name: GetPostByID :one
-SELECT id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at FROM posts WHERE id = $1
+SELECT id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at, image FROM posts WHERE id = $1
 `
 
 func (q *Queries) GetPostByID(ctx context.Context, id uuid.UUID) (Post, error) {
@@ -112,12 +116,13 @@ func (q *Queries) GetPostByID(ctx context.Context, id uuid.UUID) (Post, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.Image,
 	)
 	return i, err
 }
 
 const getPostsByUserID = `-- name: GetPostsByUserID :many
-SELECT id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at FROM posts WHERE user_id = $1
+SELECT id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at, image FROM posts WHERE user_id = $1
 `
 
 func (q *Queries) GetPostsByUserID(ctx context.Context, userID uuid.UUID) ([]Post, error) {
@@ -139,6 +144,7 @@ func (q *Queries) GetPostsByUserID(ctx context.Context, userID uuid.UUID) ([]Pos
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
+			&i.Image,
 		); err != nil {
 			return nil, err
 		}
@@ -162,7 +168,7 @@ SET
   is_draft = COALESCE($4, is_draft)
 WHERE 
   id = $5
-RETURNING id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at
+RETURNING id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at, image
 `
 
 type UpdatePostParams struct {
@@ -192,6 +198,7 @@ func (q *Queries) UpdatePost(ctx context.Context, arg UpdatePostParams) (Post, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.Image,
 	)
 	return i, err
 }

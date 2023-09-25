@@ -2,6 +2,7 @@ package utils
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"time"
 
@@ -45,6 +46,9 @@ func DecodeJwt(token string) (uuid.UUID, error) {
 
 		return []byte(os.Getenv("JWT_KEY")), nil
 	})
+
+	log.Printf("decoding uuid -> decoded: %v", decoded)
+	log.Printf("decoding uuid -> error: %v", err)
 
 	if err != nil {
 		return uuid.Nil, err

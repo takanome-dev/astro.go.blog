@@ -1,0 +1,38 @@
+---
+import { type Post } from "@/types/post";
+import DashboardLayout from "@/layouts/dashboard-layout.astro";
+
+const { id } = Astro.params;
+
+const getPostById = async () => {
+  const post = await fetch(`http://localhost:5000/posts/${id}`, {
+    method: "GET",
+    headers: {
+      "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJlZTAzYWU0Zi02ZTE0LTRkMmEtOGRiZC0xZGMyZjk4ZTE4ZTQiLCJleHAiOjE2OTYxMDc3OTAsImlhdCI6MTY5NTUwMjk5MH0.4EdVsO1VjYsQgwdtqGiapPLdUsFoKKMRNehSX4PrRN8"
+    },
+  })
+  .then(async (response) => await response.json())
+  .then((data) => data)
+  .catch((error) => {
+    console.error(error)
+    return {}
+  })
+
+  return post
+}
+
+const post: Post = await getPostById()
+---
+
+<DashboardLayout title="">
+  <div>
+    <img src={post.image} alt={post.title} />
+  </div>
+  <div>
+    <h2>{post.title}</h2>
+    <span>{post.created_at}</span>
+  </div>
+  <div>
+    <p>{post.body}</p>
+  </div>
+</DashboardLayout>

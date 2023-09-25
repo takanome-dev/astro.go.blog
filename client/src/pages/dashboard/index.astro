@@ -3,7 +3,7 @@ import { Icon } from "astro-icon";
 
 import Input from "@/components/ui/input.astro";
 import DashboardLayout from "@/layouts/dashboard-layout.astro";
-import Card from "@/components/card.astro";
+
 ---
 
 <DashboardLayout title="Posts">
@@ -26,15 +26,70 @@ import Card from "@/components/card.astro";
         <Input class="pl-10" placeholder="Search" />
       </div>
     </div>
-    <div class="my-8 grid grid-cols-3 gap-8">
-      <Card
-        title="Building your API stack"
-        author="John Doe"
-        date="2021-01-01"
-        image="https://astro.build/assets/blog/astro-1-release-update/cover.jpeg"
-        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquet nisl, vitae aliquet nisl nisl sit amet lorem. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquet nisl, vitae aliquet nisl nisl sit amet lorem."
-        link="/posts/1"
-      />
+    <div class="my-8 grid grid-cols-3 gap-8" id="posts">
+     <!-- {posts.map((p: Post) => <Card post={p} />)} -->
     </div>
   </div>
 </DashboardLayout>
+<script>
+  const getPosts = async () => {
+    const posts = await fetch("http://localhost:5000/posts/users/ee03ae4f-6e14-4d2a-8dbd-1dc2f98e18e4", {
+      method: "GET",
+      headers: {
+        "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJlZTAzYWU0Zi02ZTE0LTRkMmEtOGRiZC0xZGMyZjk4ZTE4ZTQiLCJleHAiOjE2OTYxMDc3OTAsImlhdCI6MTY5NTUwMjk5MH0.4EdVsO1VjYsQgwdtqGiapPLdUsFoKKMRNehSX4PrRN8"
+      },
+    })
+    .then(async (response) => await response.json())
+    .then((data) => data)
+    .catch((error) => {
+      console.error(error)
+      return []
+    })
+  
+    return posts
+  }
+
+  const posts = await getPosts()
+  console.log(posts)
+  /*
+  {
+    data: [
+      {
+        body: "Stay saucy friends!",
+        created_at: "2023-09-25T17:23:46.660329Z",
+        deleted_at:"0001-01-01T00:00:00Z",
+        id: "6b5f7fff-2cf1-459f-9682-bbd3b6e7b282",
+        image: "http://localhost:5000/public/uploads/1695662626657568236-code-owners.png",
+        is_draft: false,
+        is_published: true,
+        title: "Supercharge your Repository with Code Owners",
+        updated_at: "2023-09-25T17:23:46.660329Z",
+        user_id: "ee03ae4f-6e14-4d2a-8dbd-1dc2f98e18e4"
+      }
+    ]
+  }
+  */ 
+
+  const defaultImage = "https://res.cloudinary.com/dafwzsod0/image/upload/v1695666098/kelly-sikkema-Cg60_WXjvC4-unsplash_py5nh6.jpg"
+  const postsContainer = document.getElementById("posts")
+  postsContainer!.innerHTML = posts.data.map((p: any) => `
+  <div class="border rounded-lg overflow-hidden">
+	<div class="relative h-52">
+		<img src=${p.image ?? defaultImage} alt=${p.title} class="w-full h-full" />
+	</div>
+	<div class="p-4">
+		<div class="flex gap-2 text-purple-600">
+			<p class="font-medium text-sm">takanome-dev</p> &bull;
+      <p class="font-medium text-sm">${Intl.DateTimeFormat("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      }).format(new Date(p.created_at))}</p>
+		</div>
+		<div class="my-2">
+			<a href="/posts/${p.id}" class="font-bold text-xl mb-4 hover:underline underline-offset-2 line-clamp-2">${p.title}</a>
+		</div>
+		<p class="text-slate-600 line-clamp-3">${p.body}</p>
+	</div>
+</div>`).join("")
+</script>

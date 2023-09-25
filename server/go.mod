@@ -15,4 +15,12 @@ require (
 	golang.org/x/crypto v0.13.0
 )
 
-require github.com/rs/cors v1.10.0
+require (
+	github.com/cloudinary/cloudinary-go/v2 v2.5.1
+	github.com/rs/cors v1.10.0
+)
+
+require (
+	github.com/creasty/defaults v1.5.1 // indirect
+	github.com/gorilla/schema v1.2.0 // indirect
+)

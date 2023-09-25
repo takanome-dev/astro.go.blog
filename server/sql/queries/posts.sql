@@ -1,5 +1,5 @@
 -- name: CreatePost :one
-INSERT INTO posts (id, title, body, user_id, is_published, is_draft) VALUES ($1, $2, $3, $4, $5, $6) RETURNING *;
+INSERT INTO posts (id, title, body, image, user_id, is_published, is_draft) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;
 
 -- name: GetAllPosts :many
 SELECT * FROM posts;

@@ -16,18 +16,19 @@ func main() {
 	godotenv.Load()
 	r := mux.NewRouter()
 	
+	// fileServer := http.FileServer(http.Dir("./public"))
+	// http.Handle("/public/", http.StripPrefix("/public/", fileServer))
+
 	c := cors.New(cors.Options{
-    AllowedOrigins: []string{"http://localhost:4321"},
+    AllowedOrigins: []string{"*"},
+		AllowedHeaders: []string{"*"},
     AllowCredentials: true,
 		AllowedMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions},
-		AllowedHeaders: []string{"authorization", "content-type"},
-    // Enable Debugging for testing, consider disabling in production
+    // TODO: disable debug mode in production
     Debug: true,
 	})
 	handler := c.Handler(r)
-// r.Use(mux.CORSMethodMiddleware(r))
 	r.Use(auth.LoggingMiddleware)
-	
 	routes.UsersRoute(r)
 	routes.PostsRoutes(r)
 	routes.AuthRoute(r)
