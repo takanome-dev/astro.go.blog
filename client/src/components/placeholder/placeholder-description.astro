@@ -1,0 +1,19 @@
+---
+import type { HTMLAttributes } from 'astro/types';
+
+import { cn } from '@/lib/utils/merge-classes';
+
+interface Props extends HTMLAttributes<"p"> {}
+
+const { ...props } = Astro.props
+---
+
+<p
+  class={cn(
+    'mb-8 mt-2 text-center text-sm font-normal leading-6 text-muted-foreground',
+    props.class,
+  )}
+  {...props}
+>
+<slot />
+</p>

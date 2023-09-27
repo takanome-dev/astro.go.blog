@@ -1,9 +1,27 @@
 ---
 import { Icon } from "astro-icon";
 
-import Input from "@/components/ui/input.astro";
+import { type Post } from "@/types/post";
 import DashboardLayout from "@/layouts/dashboard-layout.astro";
 import Card from "@/components/card.astro";
+import EmptyPlaceholder from "@/components/placeholder/empty-placeholder.astro";
+import PlaceholderTitle from "@/components/placeholder/placeholder-title.astro";
+import PlaceholderDescription from "@/components/placeholder/placeholder-description.astro";
+import PlaceholderIcon from "@/components/placeholder/placeholder-icon.astro";
+
+const posts: Post[] = await fetch(
+  "http://localhost:5000/posts/users/ee03ae4f-6e14-4d2a-8dbd-1dc2f98e18e4", {
+    method: "GET",
+    headers: {
+      "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJlZTAzYWU0Zi02ZTE0LTRkMmEtOGRiZC0xZGMyZjk4ZTE4ZTQiLCJleHAiOjE2OTYxMDc3OTAsImlhdCI6MTY5NTUwMjk5MH0.4EdVsO1VjYsQgwdtqGiapPLdUsFoKKMRNehSX4PrRN8"
+    },
+  })
+  .then(async (response) => await response.json())
+  .then((data) => (data.data as Post[]).filter((p) => p.is_draft))
+  .catch((error) => {
+    console.error(error)
+    return []
+  })
 ---
 
 <DashboardLayout title="Drafts">
@@ -17,7 +35,7 @@ import Card from "@/components/card.astro";
   </div>
 
   <div>
-    <div class="flex justify-end">
+    <!-- <div class="flex justify-end">
       <div class="relative max-w-xs">
         <Icon
           name="tabler:search"
@@ -25,16 +43,21 @@ import Card from "@/components/card.astro";
         />
         <Input class="pl-10" placeholder="Search" />
       </div>
-    </div>
-    <div class="my-8 grid grid-cols-3 gap-8">
-      <Card
-        title="Building your API stack"
-        author="John Doe"
-        date="2021-01-01"
-        image="https://astro.build/assets/blog/astro-1-release-update/cover.jpeg"
-        description="Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquet nisl, vitae aliquet nisl nisl sit amet lorem. Sed euismod, nisl vel ultricies lacinia, nisl nisl aliquet nisl, vitae aliquet nisl nisl sit amet lorem."
-        link="/posts/1"
-      />
-    </div>
+    </div> -->
+    {posts.length <= 0 ? (
+      <EmptyPlaceholder>
+        <PlaceholderIcon name="tabler:file-search" class="text-slate-600" />
+        <PlaceholderTitle>
+          You don't have any draft posts yet.
+        </PlaceholderTitle>
+        <PlaceholderDescription>
+          You can create a new post by clicking the button below.
+        </PlaceholderDescription>
+      </EmptyPlaceholder>
+      ) : (
+        <div class="my-8 grid grid-cols-3 gap-8">
+          {posts.map((p) => <Card post={p} />)}
+        </div>
+      )}
   </div>
 </DashboardLayout>
