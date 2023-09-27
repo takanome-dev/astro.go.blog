@@ -1,5 +1,6 @@
 ---
 import { type Post } from '@/types/post';
+import { formatDate } from '../lib/utils/format';
 export interface Props {
 	post: Post
 }
@@ -15,13 +16,13 @@ const { post } = Astro.props;
 	</div>
 	<div class="p-4">
 		<div class="flex gap-2 text-purple-600">
-			<p class="font-medium">takanome-dev</p> &bull;
-			<p class="font-medium">{post.created_at}</p>
+			<p class="font-medium text-sm">takanome-dev</p> &bull;
+			<p class="font-medium text-sm">{formatDate(post.created_at)}</p>
 		</div>
-		<div class="my-3">
-			<a href={`/posts/${post.id}`} class="font-bold text-xl mb-4 hover:underline underline-offset-2">{post.title}</a>
+		<div class="my-2">
+			<a href={`/posts/${post.id}`} class="font-bold text-xl mb-4 hover:underline underline-offset-2 line-clamp-2">{post.title}</a>
 		</div>
-		<p class="text-slate-600">{post.body}</p>
+		<p class="text-slate-600 line-clamp-3">{post.body}</p>
 		<!-- <div class="tags mt-4 flex gap-2">
 			<a href="#" class="px-4 py-1 rounded-2xl text-purple-600 bg-purple-100">Product</a>
 			<a href="#" class="px-4 py-1 rounded-2xl text-green-600 bg-green-100">Management</a>

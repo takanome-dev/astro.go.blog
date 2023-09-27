@@ -1,0 +1,21 @@
+---
+import { type HTMLAttributes } from 'astro/types';
+
+import { cn } from "@/lib/utils/merge-classes";
+
+export interface Props extends HTMLAttributes<"div"> {}
+
+const { ...props } =  Astro.props
+---
+
+<div
+  class={cn(
+    'flex min-h-[400px] flex-col items-center justify-center rounded-md border border-slate-400 border-dashed p-8 text-center animate-in fade-in-50',
+    props.class
+  )}
+  {...props}
+>
+  <div class="mx-auto flex flex-col items-center justify-center text-center">
+    <slot />
+  </div>
+</div>

@@ -1,0 +1,16 @@
+---
+import { Icon } from "astro-icon";
+import { type HTMLAttributes } from "astro/types"
+
+import { cn } from "@/lib/utils/merge-classes";
+
+interface Props
+  extends Partial<HTMLAttributes<'svg'>> {
+  name: string;
+}
+
+const {name, ...props} = Astro.props
+---
+<div class="flex h-20 w-20 items-center justify-center rounded-full bg-muted">
+  <Icon name={name} class={cn('h-10 w-10', props.class)} {...props} />
+</div>

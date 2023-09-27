@@ -1,6 +1,5 @@
 ---
 import Layout from '../layouts/layout.astro';
-import Card from '../components/Card.astro';
 import Footer from '../components/footer.astro';
 
 const pageTitle = "About page";
@@ -14,6 +13,8 @@ const identity = {
 
 const skills = ["HTML", "CSS", "JavaScript", "React", "Astro", "Writing Docs"];
 const skillColor = "navy";
+
+export const prerender = true;
 ---
 
 <html lang="en">
