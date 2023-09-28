@@ -11,35 +11,39 @@ interface Props {
 
 ---
 
-<AuthLayout title="Log in">
+<AuthLayout title="Sign up">
   <div class="shadow-md rounded-xl w-[400px] px-8 py-16">
-    <h1 class="text-center text-xl font-bold">Log in to your account</h1>
-    <form class="flex flex-col gap-8 mt-8" id="login-form" method="POST">
+    <h1 class="text-center text-xl font-bold">Create a new account</h1>
+    <form class="flex flex-col gap-8 mt-8" id="register-form" method="POST">
+      <div class="flex flex-col gap-2">
+        <Label for="username">Username</Label>
+        <Input type="text" name="username" required minlength={4} placeholder="johndoe" />
+      </div>
       <div class="flex flex-col gap-2">
         <Label for="email">Email</Label>
         <Input type="email" name="email" required placeholder="johndoe@gmail.com" />
-        <div id="error-msg" class="hidden border border-red-200 p-2 rounded-md items-center gap-2">
-          <Icon name="tabler:alert-triangle" class="w-4 h-4 text-red-500" />
-          <span class="text-red-500 text-sm"></span>
-        </div>
       </div>
       <div class="flex flex-col gap-2">
         <Label for="password">Password</Label>
         <Input type="password" name="password" required minlength={8} placeholder="supersecret" />
       </div>
-      <Button type="submit">Login</Button>
+      <Button type="submit">Sign up</Button>
+      <div id="error-msg" class="hidden border border-red-200 p-2 rounded-md items-center gap-2">
+        <Icon name="tabler:alert-triangle" class="w-4 h-4 text-red-500" />
+        <span class="text-red-500 text-sm"></span>
+      </div>
     </form>
   </div>
 </AuthLayout>
 <script>
-  const form = document.getElementById("login-form") as HTMLFormElement;
+  const form = document.getElementById("register-form") as HTMLFormElement;
   const errorMsg = document.getElementById("error-msg") as HTMLDivElement;
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
-    fetch("http://localhost:5000/auth/login", {
+    fetch("http://localhost:5000/auth/register", {
       method: "POST",
       body: JSON.stringify(data),
     })

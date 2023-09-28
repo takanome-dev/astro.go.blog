@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"errors"
-	"log"
 	"net/http"
 	"time"
 
@@ -55,7 +54,6 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		Password: hashedPassword,
 	})
 	if err != nil {
-		log.Println(err)
 		utils.WriteError(w, errors.New("username already taken"), http.StatusInternalServerError)
 		return
 	}

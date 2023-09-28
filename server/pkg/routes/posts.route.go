@@ -11,11 +11,7 @@ import (
 var PostsRoutes = func (router *mux.Router)  {
 	router.HandleFunc("/posts", controllers.GetAllPosts).Methods("GET")
 	router.HandleFunc("/posts/{id}", controllers.GetPostByID).Methods("GET")
-	// TODO: remove middleware here
-	router.HandleFunc("/posts/users/{userId}", auth.Middleware(
-		http.HandlerFunc(controllers.GetPostsByUserID), 
-		auth.AuthMiddleware,
-	).ServeHTTP,).Methods("GET")
+	router.HandleFunc("/posts/users/{userId}", controllers.GetPostsByUserID).Methods("GET")
 	router.HandleFunc(
 		"/posts/current-user",
 		auth.Middleware(

@@ -143,24 +143,6 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// fileName := fmt.Sprintf("%d-%s", time.Now().UnixNano(), fileHeader.Filename)
-	// filePath := fmt.Sprintf("./public/uploads/%s", fileName)
-
-	// dst, err := os.Create(filePath)
-	// if err != nil {
-	// 	utils.WriteError(w, err, http.StatusInternalServerError)
-	// 	return
-	// }
-
-	// defer dst.Close()
-
-	// _, err = io.Copy(dst, file)
-	// if err != nil {
-	// 	utils.WriteError(w, err, http.StatusInternalServerError)
-	// 	return
-	// }
-
-	 // Get the title and body fields from the form data
 	 title := r.FormValue("title")
 	 body := r.FormValue("body")
 	 isPublished, _ := strconv.ParseBool(r.FormValue("is_published"))

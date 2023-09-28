@@ -15,9 +15,6 @@ import (
 func main() {
 	godotenv.Load()
 	r := mux.NewRouter()
-	
-	// fileServer := http.FileServer(http.Dir("./public"))
-	// http.Handle("/public/", http.StripPrefix("/public/", fileServer))
 
 	c := cors.New(cors.Options{
     AllowedOrigins: []string{"*"},
