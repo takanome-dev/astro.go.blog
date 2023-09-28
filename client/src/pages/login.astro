@@ -1,0 +1,72 @@
+---
+import Label from "@/components/ui/label.astro";
+import Input from "@/components/ui/input.astro";
+import Button from "@/components/ui/button.astro";
+import AuthLayout from "@/layouts/auth-layout.astro";
+import Icon from "astro-icon";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props
+---
+
+<AuthLayout title={title}>
+  <div class="shadow-md rounded-xl w-[400px] px-8 py-16">
+    <h1 class="text-center text-xl font-bold">Log in to your account</h1>
+    <form class="flex flex-col gap-8 mt-8" id="login-form" method="POST">
+      <div class="flex flex-col gap-2">
+        <Label for="email">Email</Label>
+        <Input type="email" name="email" required placeholder="johndoe@gmail.com" />
+        <div id="error-msg" class="hidden border border-red-200 p-2 rounded-md items-center gap-2">
+          <Icon name="tabler:alert-triangle" class="w-4 h-4 text-red-500" />
+          <span class="text-red-500 text-sm">invalid email or password</span>
+        </div>
+      </div>
+      <div class="flex flex-col gap-2">
+        <Label for="password">Password</Label>
+        <Input type="password" name="password" required minlength={8} placeholder="supersecret" />
+      </div>
+      <Button type="submit">Login</Button>
+    </form>
+  </div>
+</AuthLayout>
+<script>
+  const form = document.getElementById("login-form") as HTMLFormElement;
+  const errorMsg = document.getElementById("error-msg") as HTMLDivElement;
+
+  form.addEventListener("submit", (e) => {
+    e.preventDefault();
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData.entries());
+    fetch("http://localhost:5000/auth/login", {
+      method: "POST",
+      body: JSON.stringify(data),
+    })
+      .then(async (res) => {
+        if (!res.ok) {
+          const error = await res.json();
+          throw new Error(error.error);
+        } else {
+          return res.json();
+        }
+      })
+      .then((res) => {
+        // TODO: the server returns a cookie with the token but
+        // it's not being set in the browser, I HAVE NO IDEA WHY
+        // using localstorage for now
+
+        localStorage.setItem("token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
+        location.href = "/dashboard";
+      }).catch(err => {
+        errorMsg.classList.remove("hidden");
+        errorMsg.classList.add("flex");
+        errorMsg.querySelector("span")!.textContent = err.message;
+        setTimeout(() => {
+          errorMsg.classList.add("hidden");
+        }, 2000);
+      });
+  });
+</script>
