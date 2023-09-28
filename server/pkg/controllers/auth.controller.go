@@ -4,6 +4,7 @@ import (
 	"errors"
 	"log"
 	"net/http"
+	"time"
 
 	"github.com/takanome-dev/blog-with-astro-golang/pkg/utils"
 )
@@ -59,11 +60,16 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := utils.GenerateJwt(newUser.ID)
+	exp := time.Now().Add(60*60*24*7*time.Second)
+
+	token, err := utils.GenerateJwt(newUser.ID, exp)
 	if err != nil {
 		utils.WriteError(w, err, http.StatusInternalServerError)
 		return
 	}
+
+	// cookie := utils.EncodeCookie(token, exp)
+	// http.SetCookie(w, cookie)
 
 	utils.WriteJSON(w, AuthResponse{
 		User: UserResponse{
@@ -93,13 +99,21 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	token, err := utils.GenerateJwt(user.ID)
+	exp := time.Now().Add(60*60*24*7*time.Second)
+
+	token, err := utils.GenerateJwt(user.ID, exp)
 	if err != nil {
 		utils.WriteError(w, err, http.StatusInternalServerError)
 		return
 	}
 
-	// Maybe save token in cookies??
+	// TODO: use cookies instead
+	// cookie, err := utils.EncodeCookie(token, exp)
+	// if err != nil {
+	// 	utils.WriteError(w, err, 500)
+	// 	return
+	// }
+	// http.SetCookie(w, cookie)
 	
 	utils.WriteJSON(w, AuthResponse{
 		User: UserResponse{Username: user.Username, Email: user.Email},

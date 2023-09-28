@@ -26,6 +26,9 @@ github.com/gorilla/mux
 # github.com/gorilla/schema v1.2.0
 ## explicit
 github.com/gorilla/schema
+# github.com/gorilla/securecookie v1.1.1
+## explicit
+github.com/gorilla/securecookie
 # github.com/joho/godotenv v1.5.1
 ## explicit; go 1.12
 github.com/joho/godotenv

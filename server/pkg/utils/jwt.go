@@ -19,8 +19,7 @@ type JwtUser struct {
 	UserID uuid.UUID
 }
 
-func GenerateJwt(userId uuid.UUID) (string, error) {
-	exp := time.Now().Add(60*60*24*7*time.Second)
+func GenerateJwt(userId uuid.UUID, exp time.Time) (string, error) {
 	claims := Claims{
 		UserID: userId,
 		RegisteredClaims: jwt.RegisteredClaims{

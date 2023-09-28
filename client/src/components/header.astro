@@ -2,7 +2,8 @@
 import { Icon } from "astro-icon";
 import Logo from "./logo.astro";
 
-import Button from "@/components/ui/button.astro";
+import Button, { buttonVariants } from "@/components/ui/button.astro";
+import { cn } from "../lib/utils/merge-classes";
 ---
 
 <header class="w-full bg-white/50 backdrop-blur-md shadow">
@@ -17,14 +18,23 @@ import Button from "@/components/ui/button.astro";
         </ul>
       </nav>
     </div>
-    <div>
-      <a href="/post/new">
-        <Button
+    <div class="flex gap-4">
+      <a href="/login" class={cn(buttonVariants({variant: "link"}))}>
+        <!-- <Button
           class="font-semibold shadow-lg shadow-primary-500/50 hover:shadow-primary-500/60"
           variant="primary"
           size="sm"
+        > -->
+          Log in
+        <!-- </Button> -->
+      </a>
+      <a href="/register">
+        <Button
+          class="font-semibold"
+          variant="primary"
+          size="sm"
         >
-          Write a post <Icon name="tabler:arrow-right" class="w-4 h-4 ml-2" />
+          Sign up
         </Button>
       </a>
     </div>

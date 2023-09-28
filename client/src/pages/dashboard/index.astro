@@ -8,12 +8,15 @@ import PlaceholderTitle from "@/components/placeholder/placeholder-title.astro";
 import PlaceholderDescription from "@/components/placeholder/placeholder-description.astro";
 import PlaceholderIcon from "@/components/placeholder/placeholder-icon.astro";
 
+const headers = Astro.request.headers.get("auth_token")
+console.log({headers})
 const posts: Post[] = await fetch(
   "http://localhost:5000/posts/users/ee03ae4f-6e14-4d2a-8dbd-1dc2f98e18e4", {
     method: "GET",
     headers: {
       "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJlZTAzYWU0Zi02ZTE0LTRkMmEtOGRiZC0xZGMyZjk4ZTE4ZTQiLCJleHAiOjE2OTYxMDc3OTAsImlhdCI6MTY5NTUwMjk5MH0.4EdVsO1VjYsQgwdtqGiapPLdUsFoKKMRNehSX4PrRN8"
     },
+    credentials: "include"
   })
   .then(async (response) => await response.json())
   .then((data) => (data.data as Post[]).filter((p) => p.is_published))

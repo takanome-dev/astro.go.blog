@@ -96,7 +96,7 @@ func GetPostsForLoggedInUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func CreatePost(w http.ResponseWriter, r *http.Request) {
-		// 10 << 20 -> how much will be stored in memory
+	// 10 << 20 -> how much will be stored in memory
 	if err := r.ParseMultipartForm(10 << 20); err != nil {
 		utils.WriteError(w, err, http.StatusBadRequest)
 		return
