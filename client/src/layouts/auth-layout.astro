@@ -1,5 +1,5 @@
 ---
-import BaseLayout from "./base-layout.astro";
+import BaseLayout from "@/layouts/base-layout.astro";
 import Logo from "@/components/logo.astro";
 
 export interface Props {
@@ -19,3 +19,9 @@ const { title } = Astro.props;
     <slot />
   </main>
 </BaseLayout>
+<script>
+  import { getAuthToken } from '@/lib/utils/storage';
+
+  const token = getAuthToken();
+  if (token) window.location.href = "/dashboard";
+</script>
