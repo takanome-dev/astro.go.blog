@@ -22,7 +22,7 @@ func main() {
     AllowCredentials: true,
 		AllowedMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions},
     // TODO: disable debug mode in production
-    Debug: true,
+    Debug: false,
 	})
 	handler := c.Handler(r)
 	r.Use(auth.LoggingMiddleware)
