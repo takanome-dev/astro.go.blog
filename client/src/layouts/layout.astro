@@ -1,10 +1,18 @@
 ---
 import Footer from "@/components/footer.astro";
 import Header from "@/components/header.astro";
-import BaseLayout from "./base-layout.astro";
+import BaseLayout from "@/layouts/base-layout.astro";
+import { getAuthToken } from "@/lib/utils/storage";
 
 export interface Props {
   title: string;
+}
+
+if (typeof window !== "undefined") {
+  const token = getAuthToken();
+  if (token) {
+    Astro.redirect("/dashboard");
+  }
 }
 
 const { title } = Astro.props;
