@@ -2,6 +2,8 @@
 import BaseLayout from "@/layouts/base-layout.astro";
 import Logo from "@/components/logo.astro";
 import UserDropdown from "@/components/user-dropdown.astro";
+import Button from "../components/ui/button.astro";
+import Icon from "astro-icon";
 
 export interface Props {
   title: string;
@@ -31,7 +33,15 @@ const { title } = Astro.props;
           </ul>
         </nav>
       </div>
-      <UserDropdown />
+      <div class="flex gap-8">
+        <a href="/post/new">
+          <Button class="font-semibold shadow-sm shadow-primary-500/50 hover:shadow-primary-500/60" size="sm"
+          >
+            Write a post <Icon name="tabler:arrow-right" class="w-4 h-4 ml-2" />
+          </Button>
+        </a>
+        <UserDropdown />
+      </div>
     </div>
   </header>
   <main class="mx-36">
