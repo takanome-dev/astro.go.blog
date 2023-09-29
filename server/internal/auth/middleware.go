@@ -2,11 +2,13 @@ package auth
 
 import (
 	"errors"
-	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
 
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/takanome-dev/blog-with-astro-golang/pkg/utils"
 )
 
@@ -22,11 +24,47 @@ func Middleware(handler http.Handler, middlewares ...MiddlewareFunc) http.Handle
   return handler
 }
 
+type ResponseRecorder struct {
+	http.ResponseWriter
+	StatusCode int
+	Body []byte 
+}
+
+func (rec *ResponseRecorder) WriteHeader(statusCode int) {
+	rec.StatusCode = statusCode
+	rec.ResponseWriter.WriteHeader(statusCode)
+}
+
+func (rec *ResponseRecorder) Write(body []byte) (int, error) {
+	rec.Body = body
+	return rec.ResponseWriter.Write(body)
+}
+
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		rec := &ResponseRecorder{
+			ResponseWriter: w,
+			StatusCode: http.StatusOK,
+		}
+
 		start := time.Now()
-		next.ServeHTTP(w, r)
-		defer log.Printf("[%s] %s %s: total time %s", r.Host, r.Method, r.URL, time.Since(start))
+		next.ServeHTTP(rec, r)
+		duration := time.Since(start)
+
+		log.Logger = log.Output(zerolog.ConsoleWriter{Out: os.Stderr})
+		logger := log.Info()
+
+		if rec.StatusCode != http.StatusOK {
+			logger = log.Error().Bytes("body", rec.Body)
+		}
+
+		logger.Str("protocol", "http").
+		Str("method", r.Method).
+		Str("path", r.RequestURI).
+		Int("status_code", rec.StatusCode).
+		Str("status_text", http.StatusText(rec.StatusCode)).
+		Dur("duration", duration).
+		Msg("received an HTTP request")
 	})
 }
 

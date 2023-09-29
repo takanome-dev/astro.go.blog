@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
-	"log"
 	"net/http"
 )
 
@@ -35,7 +34,6 @@ func WriteJSON(w http.ResponseWriter, v any) error {
 // WriteError logs an error, then writes it as a JSON object 
 // in the form {"error": <error>}, setting the Content-Type header to application/json
 func WriteError(w http.ResponseWriter, err error, code int) {
-	log.Printf("%d %v: %v", code, http.StatusText(code), err) // log the error; http.StatusText gets "Not Found" from 404, etc.
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 	json.NewEncoder(w).Encode(Error{err.Error()})
