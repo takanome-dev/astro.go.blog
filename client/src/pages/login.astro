@@ -42,6 +42,7 @@ interface Props {
     fetch("http://localhost:5000/auth/login", {
       method: "POST",
       body: JSON.stringify(data),
+      credentials: "include",
     })
       .then(async (res) => {
         if (!res.ok) {
@@ -52,12 +53,7 @@ interface Props {
         }
       })
       .then((res) => {
-        // TODO: the server returns a cookie with the token but
-        // it's not being set in the browser, I HAVE NO IDEA WHY
-        // using localstorage for now
-
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+        localStorage.setItem("user", JSON.stringify(res.data));
         location.href = "/dashboard";
       }).catch(err => {
         errorMsg.classList.remove("hidden");
