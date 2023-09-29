@@ -4,22 +4,22 @@ import DashboardLayout from "@/layouts/dashboard-layout.astro";
 
 const { id } = Astro.params;
 
-// const post: Post = await fetch(`http://localhost:5000/posts/${id}`, {
-//     method: "GET",
-//     headers: {
-//       "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJlZTAzYWU0Zi02ZTE0LTRkMmEtOGRiZC0xZGMyZjk4ZTE4ZTQiLCJleHAiOjE2OTYxMDc3OTAsImlhdCI6MTY5NTUwMjk5MH0.4EdVsO1VjYsQgwdtqGiapPLdUsFoKKMRNehSX4PrRN8"
-//     },
-//   })
-//   .then(async (response) => await response.json())
-//   .then((data) => data.data)
-//   .catch((error) => {
-//     console.error(error)
-//     return {}
-//   })
-  
+const post: Post = await fetch(`http://localhost:5000/posts/${id}`, {
+    method: "GET",
+    headers: {
+      "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJlZTAzYWU0Zi02ZTE0LTRkMmEtOGRiZC0xZGMyZjk4ZTE4ZTQiLCJleHAiOjE2OTYxMDc3OTAsImlhdCI6MTY5NTUwMjk5MH0.4EdVsO1VjYsQgwdtqGiapPLdUsFoKKMRNehSX4PrRN8"
+    },
+  })
+  .then(async (response) => await response.json())
+  .then((data) => data.data)
+  .catch((error) => {
+    console.error(error)
+    return {}
+  })
+ 
 ---
 
-<!-- <DashboardLayout title={post.title}>
+<DashboardLayout title={post.title}>
   <div class="my-4 w-full h-[448px] overflow-hidden">
     <img src={post.image} alt={post.title} class="w-full h-full rounded-md" />
   </div>
@@ -39,72 +39,28 @@ const { id } = Astro.params;
   <div class="my-8">
     <h2 class="text-5xl font-bold">{post.title}</h2>
   </div>
-  <div class="my-10 opacity-0">
-    <p id="post-content">{post.body}</p>
-  </div>
-  <div id="viewer"></div>
-</DashboardLayout> -->
-
-<DashboardLayout title="Single Post">
-  <div class="my-4 w-full h-[448px] overflow-hidden">
-    <img id="post-cover-img" src="" alt="" class="w-full h-full rounded-md" />
-  </div>
-  <div class="flex gap-4 items-center mb-4">
-    <img src="https://avatars.githubusercontent.com/u/79809121?s=400&u=94c6b55ab061ac71d15afbceb0542582be7dec35&v=4" alt="My GH Avatar" class="w-16 h-16 rounded-full">
-    <div>
-      <!-- TODO: add auth and include author infos to post details -->
-      <p>takanome-dev</p>
-      <span class="text-slate-500 text-sm" id="post-date"></span>
-    </div>
-  </div>
-  <div class="my-8">
-    <h2 class="text-5xl font-bold" id="post-title"></h2>
-  </div>
-  <!-- <div class="my-10 opacity-0">
-    <p id="post-content">{post.body}</p>
-  </div> -->
-  <div id="viewer"></div>
+  <astro-view data-body={post.body}>
+    <div id="viewer"></div>
+  </astro-view>
 </DashboardLayout>
 <script>
   import Editor from '@toast-ui/editor';
 
-  const id = window.location.pathname.split('/')[2]
-  const postCoverImg = (document.querySelector('#post-cover-img') as HTMLImageElement)
-  const postDate = (document.querySelector('#post-date') as HTMLSpanElement)
-  const postTitle = (document.querySelector('#post-title') as HTMLHeadingElement)
-  const postContent = (document.querySelector('#viewer') as HTMLDivElement)
-  // Intl.DateTimeFormat("en-US", {
-  //         year: "numeric",
-  //         month: "long",
-  //         day: "numeric",
-  //       }).format(new Date(post.created_at))
-  console.log({id})
+  // see https://docs.astro.build/en/guides/client-side-scripts/#pass-frontmatter-variables-to-scripts
+  class AstroView extends HTMLElement {
+    constructor() {
+      super();
 
-  const post = await fetch(`http://localhost:5000/posts/${id}`, {
-    method: "GET",
-    headers: {
-      "Authorization": "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJVc2VySUQiOiJlZTAzYWU0Zi02ZTE0LTRkMmEtOGRiZC0xZGMyZjk4ZTE4ZTQiLCJleHAiOjE2OTYxMDc3OTAsImlhdCI6MTY5NTUwMjk5MH0.4EdVsO1VjYsQgwdtqGiapPLdUsFoKKMRNehSX4PrRN8"
-    },
-  })
-  .then(async (response) => await response.json())
-  .then((data) => data.data)
-  .catch((error) => {
-    console.error(error)
-    return {}
-  })
+      // Read the body from the data attribute.
+      const body = this.dataset.body;
+      const viewer = this.querySelector('#viewer');
+      new Editor.factory({
+        el: viewer,
+        viewer: true,
+        initialValue: body,
+      });
+    }
+  }
 
-  const viewer = new Editor.factory({
-    el: document.querySelector('#viewer'),
-    viewer: true,
-    initialValue: post.body,
-  });
-
-  postCoverImg.src = post.image
-  postCoverImg.alt = post.title
-  postDate.innerText = Intl.DateTimeFormat("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric",
-        }).format(new Date(post.created_at))
-  postTitle.innerText = post.title
+  customElements.define('astro-view', AstroView);
 </script>
