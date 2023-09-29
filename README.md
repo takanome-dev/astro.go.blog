@@ -8,4 +8,4 @@ The design is heavely inspired by https://www.figma.com/file/V8nKLCJemHJyuAN39W6
 
 ![Home page](https://user-images.githubusercontent.com/79809121/221435329-6dbea7cf-ead0-4f1f-a637-80498660d6f1.png)
 
-![create post page](https://user-images.githubusercontent.com/79809121/221435059-4025e77c-b8b1-42f6-b5d5-bd2f523841c5.png)
+![create post page](./client/public/new-post.png)
