@@ -2,7 +2,6 @@
 import Input from "@/components/ui/input.astro";
 import Button, { buttonVariants } from "@/components/ui/button.astro";
 import Label from "@/components/ui/label.astro";
-import Textarea from "@/components/ui/textarea.astro";
 import NewPostLayout from "@/layouts/new-post-layout.astro";
 ---
 
@@ -48,27 +47,30 @@ import NewPostLayout from "@/layouts/new-post-layout.astro";
       />
     </div>
     <div class="my-8">
-      <Label for="new-post-content" class="text-gray-400">Content</Label>
-      <Textarea
-        id="new-post-content"
-        name={"content"}
-        placeholder="Write your post here..."
-        class="mt-1 border-gray-100 min-h-[300px] focus:ring-gray-200"
-      />
+      <Label for="editor" class="text-gray-400">Content</Label>
+      <div id="editor" class="mt-2"></div>
     </div>
   </form>
 </NewPostLayout>
 <script>
+  import Editor from '@toast-ui/editor';
+
+  const editor = new Editor({
+    el: document.querySelector('#editor'),
+    height: '600px',
+    initialEditType: 'markdown',
+  });
+
   const previewImageContainer = (document.getElementById("preview-image") as HTMLDivElement);
 const submitPost = (draft = false) => {
   let title = (document.getElementById("new-post-title") as HTMLInputElement).value;
-  let content = (document.getElementById("new-post-content") as HTMLInputElement).value;
   const file = imageInput.files?.[0]
+  const markdown = editor.getMarkdown();
 
   const isPublished = !draft;
   const formData = new FormData();
   formData.append("title", title);
-  formData.append("body", content);
+  formData.append("body", markdown);
   formData.append("is_draft", draft.toString());
   formData.append("is_published", isPublished.toString());
   if (file) {
@@ -84,7 +86,6 @@ const submitPost = (draft = false) => {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log({ data })
       window.location.href = "/dashboard";
     })
     .catch((error) => console.error(error));
@@ -121,7 +122,9 @@ imageInput.addEventListener("change", () => {
 })
 
 const removeSelectedImage = previewImageContainer.querySelector("button")!;
-removeSelectedImage.addEventListener("click", () => {
+removeSelectedImage.addEventListener("click", (e) => {
+  e.preventDefault()
+
   previewImageContainer.classList.add("hidden");
   previewImageContainer.classList.remove("flex");
   previewImageContainer.querySelector("img")!.src = "";
