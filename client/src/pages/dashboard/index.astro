@@ -8,22 +8,17 @@ import PlaceholderTitle from "@/components/placeholder/placeholder-title.astro";
 import PlaceholderDescription from "@/components/placeholder/placeholder-description.astro";
 import PlaceholderIcon from "@/components/placeholder/placeholder-icon.astro";
 
-if (Astro.cookies.has("auth_token")) {
-  const cookie = Astro.cookies.get("auth_token")
-  console.log(({ cookie }))
-}
+const cookie = Astro.cookies.get("auth_token")
 
 const posts: Post[] = await fetch(
   "http://localhost:5000/posts/current-user", {
     method: "GET",
-    credentials: "include"
+    headers: {
+      'Cookie': `auth_token=${cookie?.value}`,
+    },
   })
   .then(async (response) => await response.json())
-  .then((data) => {
-    console.log({ data })
-    // (data.data as Post[]).filter((p) => p.is_published)
-    return []
-  })
+  .then((data) => (data.data as Post[]).filter((p) => p.is_published))
   .catch((error) => {
     console.error(error)
     return []

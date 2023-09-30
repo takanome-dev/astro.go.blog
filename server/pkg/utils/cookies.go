@@ -33,7 +33,7 @@ func EncodeCookie(token string, exp time.Time) (*http.Cookie, error) {
 		// TODO: set secure true on prod
 		Secure: false,
 		HttpOnly: true,
-		// SameSite: http.SameSite(3),
+		SameSite: http.SameSite(3),
 	}
 
 	return cookie, nil
