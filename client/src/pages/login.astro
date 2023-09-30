@@ -3,7 +3,7 @@ import Label from "@/components/ui/label.astro";
 import Input from "@/components/ui/input.astro";
 import Button from "@/components/ui/button.astro";
 import AuthLayout from "@/layouts/auth-layout.astro";
-import Icon from "astro-icon";
+import ErrorMessage from "@/components/error-message.astro";
 
 interface Props {
   title: string;
@@ -18,10 +18,7 @@ interface Props {
       <div class="flex flex-col gap-2">
         <Label for="email">Email</Label>
         <Input type="email" name="email" required placeholder="johndoe@gmail.com" />
-        <div id="error-msg" class="hidden border border-red-200 p-2 rounded-md items-center gap-2">
-          <Icon name="tabler:alert-triangle" class="w-4 h-4 text-red-500" />
-          <span class="text-red-500 text-sm"></span>
-        </div>
+        <ErrorMessage id="error-msg" />
       </div>
       <div class="flex flex-col gap-2">
         <Label for="password">Password</Label>
@@ -29,6 +26,10 @@ interface Props {
       </div>
       <Button type="submit">Login</Button>
     </form>
+    <div class="flex items-center justify-between mt-8">
+      <p class="">Don't have an account?</p>
+      <a href="/register" class="text-primary-600">Register</a>
+    </div>
   </div>
 </AuthLayout>
 <script>
@@ -59,9 +60,6 @@ interface Props {
         errorMsg.classList.remove("hidden");
         errorMsg.classList.add("flex");
         errorMsg.querySelector("span")!.textContent = err.message;
-        setTimeout(() => {
-          errorMsg.classList.add("hidden");
-        }, 2000);
       });
   });
 </script>
