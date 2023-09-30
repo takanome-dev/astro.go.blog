@@ -3,6 +3,7 @@ import Input from "@/components/ui/input.astro";
 import Button, { buttonVariants } from "@/components/ui/button.astro";
 import Label from "@/components/ui/label.astro";
 import NewPostLayout from "@/layouts/new-post-layout.astro";
+import ErrorMessage from "@/components/error-message.astro";
 ---
 
 <NewPostLayout title="Create a Post">
@@ -34,7 +35,8 @@ import NewPostLayout from "@/layouts/new-post-layout.astro";
         <Button variant="destructive" size="sm">Remove</Button>
       </div>
     </div>
-    <div class="">
+    <ErrorMessage id="post-img-err" />
+    <div class="mb-4">
       <Label for="new-post-title" class="text-gray-400 mb-8">
         Title
       </Label>
@@ -46,7 +48,9 @@ import NewPostLayout from "@/layouts/new-post-layout.astro";
         class="border-gray-100 focus:ring-gray-200"
       />
     </div>
+    <ErrorMessage id="post-title-err" />
     <div class="my-8">
+      <ErrorMessage id="post-content-err" />
       <Label for="editor" class="text-gray-400">Content</Label>
       <div id="editor" class="mt-2"></div>
     </div>
@@ -66,6 +70,30 @@ const submitPost = (draft = false) => {
   let title = (document.getElementById("new-post-title") as HTMLInputElement).value;
   const file = imageInput.files?.[0]
   const markdown = editor.getMarkdown();
+  let error = document.getElementById("post-title-err")!;
+
+  if (!title) {
+    error.classList.remove("hidden");
+    error.classList.add("flex");
+    error.querySelector("span")!.textContent = "the post title is required";
+    return;
+  }
+
+  if (!markdown) {
+    error = document.getElementById("post-content-err")!;
+    error.classList.remove("hidden");
+    error.classList.add("flex");
+    error.querySelector("span")!.textContent = "the post content is required";
+    return;
+  }
+
+  if (!file) {
+    error = document.getElementById("post-img-err")!;
+    error.classList.remove("hidden");
+    error.classList.add("flex");
+    error.querySelector("span")!.textContent = "the post image is required";
+    return;
+  }
 
   const isPublished = !draft;
   const formData = new FormData();
@@ -84,8 +112,7 @@ const submitPost = (draft = false) => {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log({data});
-      // window.location.href = "/dashboard";
+      window.location.href = `/posts/${data.data.id}`
     })
     .catch((error) => console.error(error));
 };

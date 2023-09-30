@@ -1,0 +1,41 @@
+---
+import Icon from 'astro-icon';
+import type { HTMLAttributes } from 'astro/types';
+
+import { cn } from '@/lib/utils/merge-classes';
+
+interface Props extends HTMLAttributes<"div"> {
+  id: string;
+}
+
+const { id, ...props } = Astro.props;
+---
+
+<div 
+  id={id} 
+  class={cn(
+    "hidden border border-red-200 p-2 rounded-md items-center gap-2",
+    props.class
+  )}
+  {...props}
+>
+  <Icon name="tabler:alert-triangle" class="w-4 h-4 text-red-500" />
+  <span class="text-red-500 text-sm"></span>
+</div>
+<script define:vars={{ id }}>
+
+if (id) {
+  const div = document.getElementById(id);
+  const span = div.querySelector('span');
+
+  const observer = new MutationObserver(() => {
+    if (span.textContent) {
+      setTimeout(() => {
+        div.classList.add('hidden');
+      }, 3000);
+    }
+  });
+
+  observer.observe(span, { childList: true });
+}
+</script>

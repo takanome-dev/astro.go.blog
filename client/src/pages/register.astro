@@ -4,6 +4,7 @@ import Input from "@/components/ui/input.astro";
 import Button from "@/components/ui/button.astro";
 import AuthLayout from "@/layouts/auth-layout.astro";
 import Icon from "astro-icon";
+import ErrorMessage from "../components/error-message.astro";
 
 interface Props {
   title: string;
@@ -14,6 +15,7 @@ interface Props {
 <AuthLayout title="Sign up">
   <div class="shadow-md rounded-xl w-[400px] px-8 py-16">
     <h1 class="text-center text-xl font-bold">Create a new account</h1>
+    <ErrorMessage id="register-error-msg" class="mt-4" />
     <form class="flex flex-col gap-8 mt-8" id="register-form" method="POST">
       <div class="flex flex-col gap-2">
         <Label for="username">Username</Label>
@@ -28,16 +30,16 @@ interface Props {
         <Input type="password" name="password" required minlength={8} placeholder="supersecret" />
       </div>
       <Button type="submit">Sign up</Button>
-      <div id="error-msg" class="hidden border border-red-200 p-2 rounded-md items-center gap-2">
-        <Icon name="tabler:alert-triangle" class="w-4 h-4 text-red-500" />
-        <span class="text-red-500 text-sm"></span>
+      <div class="flex items-center justify-between">
+        <p class="">Already have an account?</p>
+        <a href="/login" class="text-primary-600">Login</a>
       </div>
     </form>
   </div>
 </AuthLayout>
 <script>
   const form = document.getElementById("register-form") as HTMLFormElement;
-  const errorMsg = document.getElementById("error-msg") as HTMLDivElement;
+  const errorMsg = document.getElementById("register-error-msg") as HTMLDivElement;
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -46,6 +48,7 @@ interface Props {
     fetch("http://localhost:5000/auth/register", {
       method: "POST",
       body: JSON.stringify(data),
+      credentials: "include",
     })
       .then(async (res) => {
         if (!res.ok) {
@@ -56,20 +59,12 @@ interface Props {
         }
       })
       .then((res) => {
-        // TODO: the server returns a cookie with the token but
-        // it's not being set in the browser, I HAVE NO IDEA WHY
-        // using localstorage for now
-
-        localStorage.setItem("token", res.data.token);
-        localStorage.setItem("user", JSON.stringify(res.data.user));
+        localStorage.setItem("user", JSON.stringify(res.data));
         location.href = "/dashboard";
       }).catch(err => {
         errorMsg.classList.remove("hidden");
         errorMsg.classList.add("flex");
         errorMsg.querySelector("span")!.textContent = err.message;
-        setTimeout(() => {
-          errorMsg.classList.add("hidden");
-        }, 2000);
       });
   });
 </script>
