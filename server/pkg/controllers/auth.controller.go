@@ -24,10 +24,10 @@ type UserResponse struct{
 	Username string `json:"username"`
 }
 
-type AuthResponse struct {
-	User  UserResponse `json:"user"`
-	Token string       `json:"token"`
-}
+// type AuthResponse struct {
+// 	User  UserResponse `json:"user"`
+// 	Token string       `json:"token"`
+// }
 
 func Register(w http.ResponseWriter, r *http.Request) {
 	body, err := utils.ReadJSON[AuthParams](r.Body)
@@ -66,15 +66,16 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// cookie := utils.EncodeCookie(token, exp)
-	// http.SetCookie(w, cookie)
+	cookie, err := utils.EncodeCookie(token, exp)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
+	http.SetCookie(w, cookie)
 
-	utils.WriteJSON(w, AuthResponse{
-		User: UserResponse{
-			Email: newUser.Email,
-			Username: newUser.Username,
-		},
-		Token: token,
+	utils.WriteJSON(w,  UserResponse{
+		Email: newUser.Email,
+		Username: newUser.Username,
 	})
 }
 
@@ -105,16 +106,15 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// TODO: use cookies instead
-	// cookie, err := utils.EncodeCookie(token, exp)
-	// if err != nil {
-	// 	utils.WriteError(w, err, 500)
-	// 	return
-	// }
-	// http.SetCookie(w, cookie)
+	cookie, err := utils.EncodeCookie(token, exp)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
+	http.SetCookie(w, cookie)
 	
-	utils.WriteJSON(w, AuthResponse{
-		User: UserResponse{Username: user.Username, Email: user.Email},
-		Token: token,
+	utils.WriteJSON(w, UserResponse{
+		Username: user.Username, 
+		Email: user.Email,
 	})
 }

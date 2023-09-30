@@ -4,7 +4,6 @@ import (
 	"errors"
 	"net/http"
 	"os"
-	"strings"
 	"time"
 
 	"github.com/rs/zerolog"
@@ -30,6 +29,14 @@ type ResponseRecorder struct {
 	Body []byte 
 }
 
+
+// we'll use this helper function to log the beginning and end of each middleware. no need for this in the real world,
+// but just for debugging purposes.
+func logExec(name string) func() {
+	log.Printf("middleware: begin %s", name)
+	return func() { defer log.Printf("middleware: end %s", name) }
+}
+
 func (rec *ResponseRecorder) WriteHeader(statusCode int) {
 	rec.StatusCode = statusCode
 	rec.ResponseWriter.WriteHeader(statusCode)
@@ -42,6 +49,7 @@ func (rec *ResponseRecorder) Write(body []byte) (int, error) {
 
 func LoggingMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// defer logExec("LoggingMiddleware")()
 		rec := &ResponseRecorder{
 			ResponseWriter: w,
 			StatusCode: http.StatusOK,
@@ -70,19 +78,21 @@ func LoggingMiddleware(next http.Handler) http.Handler {
 
 func AuthMiddleware(next http.Handler) http.Handler {
 	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		authHeader := r.Header.Get("Authorization")
-		if authHeader == "" {
-			utils.WriteError(w, errors.New("auth header is missing"), http.StatusUnauthorized)
-			return
-		}
-
-		token := strings.Split(authHeader, " ")[1]
-		if token == "" {
+		// defer logExec("AuthMiddleware")()
+		cookie, err := r.Cookie("auth_token")
+		
+		if err != nil {
 			utils.WriteError(w, errors.New("auth token is missing"), http.StatusUnauthorized)
 			return
 		}
 
-		decoded, err := utils.DecodeJwt(token)
+		value, err := utils.DecodeCookie(cookie)
+		if err != nil {
+			utils.WriteError(w, err, http.StatusUnauthorized)
+			return
+		}
+
+		decoded, err := utils.DecodeJwt(value.AccessToken)
 		if err != nil {
 			utils.WriteError(w, err, http.StatusUnauthorized)
 			return

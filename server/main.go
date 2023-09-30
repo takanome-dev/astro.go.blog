@@ -17,7 +17,7 @@ func main() {
 	r := mux.NewRouter()
 
 	c := cors.New(cors.Options{
-    AllowedOrigins: []string{"*"},
+    AllowedOrigins: []string{"http://localhost:4321"},
 		AllowedHeaders: []string{"*"},
     AllowCredentials: true,
 		AllowedMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions},

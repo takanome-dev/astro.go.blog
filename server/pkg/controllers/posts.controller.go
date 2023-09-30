@@ -84,8 +84,6 @@ func GetPostsForLoggedInUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	log.Printf("Logged In User: %v", currentUser)
-
 	posts, err := db.GetPostsByUserID(r.Context(), currentUser.UserID)
 	if err != nil {
 		utils.WriteError(w, err, 404)
