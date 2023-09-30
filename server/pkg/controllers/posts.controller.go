@@ -3,8 +3,6 @@ package controllers
 import (
 	"database/sql"
 	"fmt"
-	"io"
-	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -106,38 +104,9 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	defer file.Close()
-
-	fileSize := fileHeader.Size
-	log.Printf("the size of the file uploaded is: %v", utils.CalcFileSize(fileSize))
-
-	if fileSize > utils.MAX_UPLOAD_SIZE {
-		utils.WriteError(w, fmt.Errorf("file is too big, the maximum allowed is 2MB"), http.StatusBadRequest)
-		return
-	}
-
-	buff := make([]byte, 512)
-	_, err = file.Read(buff)
+	url, err := utils.HandleImage(file, fileHeader)
 	if err != nil {
-		utils.WriteError(w, err, http.StatusInternalServerError)
-		return
-	}
-
-	filetype := http.DetectContentType(buff)
-	if filetype != "image/jpeg" && filetype != "image/png" {
-		utils.WriteError(w, fmt.Errorf("the provided file format is not allowed. Please upload a JPEG or PNG image"), http.StatusBadRequest)
-		return
-	}
-
-	_, err = file.Seek(0, io.SeekStart)
-	if err != nil {
-		utils.WriteError(w, err, http.StatusInternalServerError)
-		return
-	}
-
-	resp, err := utils.CloudinaryUpload(file, strings.Split(fileHeader.Filename, ".")[0])
-	if err != nil {
-		utils.WriteError(w, err, http.StatusInternalServerError)
+		utils.WriteError(w, err, http.StatusBadRequest)
 		return
 	}
 
@@ -156,7 +125,7 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		ID: uuid.New(),
 		Title: title,
     Body: body,
-		Image: resp.SecureURL,
+		Image: url,
 		UserID: currentUser.UserID,
     IsPublished: isPublished,
     IsDraft: isDraft,
@@ -177,11 +146,35 @@ func UpdatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	body, err := utils.ReadJSON[UpdatePostParams](r.Body)
-	if err != nil {
-		utils.WriteError(w, err, 400)
+	if err := r.ParseMultipartForm(10 << 20); err != nil {
+		utils.WriteError(w, err, http.StatusBadRequest)
 		return
 	}
+
+	var image string
+	var url string
+	image = r.FormValue("image")
+
+	if strings.HasPrefix(image, "data:image") {
+		file, fileHeader, err := r.FormFile("image")
+		if err != nil {
+			utils.WriteError(w, err, http.StatusBadRequest)
+			return
+		}
+
+		url, err = utils.HandleImage(file, fileHeader)
+		if err != nil {
+			utils.WriteError(w, err, http.StatusBadRequest)
+			return
+		}
+	} else {
+		url = image
+	}
+	
+	postTitle := r.FormValue("title")
+	postBody := r.FormValue("body")
+	isPublished, _ := strconv.ParseBool(r.FormValue("is_published"))
+	isDraft, _ := strconv.ParseBool(r.FormValue("is_draft"))
 
 	foundPost, err := db.GetPostByID(r.Context(), id)
   if err != nil {
@@ -190,41 +183,29 @@ func UpdatePost(w http.ResponseWriter, r *http.Request) {
   }
 
   var title sql.NullString
-  if body.Title != nil {
-      title.String = *body.Title
+  if postTitle != "" {
+      title.String = postTitle
       title.Valid = true
   } else {
       title = sql.NullString{String: foundPost.Title, Valid: true}
   }
 
-  var postBody sql.NullString
-  if body.Body != nil {
-      postBody.String = *body.Body
-      postBody.Valid = true
+  var body sql.NullString
+  if postBody != "" {
+      body.String = postBody
+      body.Valid = true
   } else {
-      postBody = sql.NullString{String: foundPost.Body, Valid: true}
+		body = sql.NullString{String: postBody, Valid: true}
   }
 
-  var published sql.NullBool
-  if body.IsPublished != nil {
-		published.Bool = *body.IsPublished
-		published.Valid= true
-  } else {
-		published = sql.NullBool{Bool: foundPost.IsPublished, Valid: true}
-	}
-
-	var draft sql.NullBool
-  if body.IsDraft != nil {
-		draft.Bool = *body.IsDraft
-		draft.Valid = true
-  } else {
-		draft = sql.NullBool{Bool: foundPost.IsDraft, Valid: true}
-	}
+  published := sql.NullBool{Bool: isPublished, Valid: true}
+	draft := sql.NullBool{Bool: isDraft, Valid: true}
 
 	post, err := db.UpdatePost(r.Context(), database.UpdatePostParams{
 		ID: id,
 		Title: title,
-		Body: postBody,
+		Body: body,
+		Image: sql.NullString{String: url, Valid: true},
 		IsPublished: published,
 		IsDraft: draft,
 	})

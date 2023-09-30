@@ -15,6 +15,7 @@ UPDATE posts
 SET
   title = COALESCE(sqlc.narg('title'), title),
   body = COALESCE(sqlc.narg('body'), body),
+  image = COALESCE(sqlc.narg('image'), image),
   is_published = COALESCE(sqlc.narg('is_published'), is_published),
   is_draft = COALESCE(sqlc.narg('is_draft'), is_draft)
 WHERE 
