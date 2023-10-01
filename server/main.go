@@ -13,15 +13,11 @@ import (
 )
 
 func main() {
-<<<<<<< HEAD
 	err := godotenv.Load()
 	if err != nil {
 		log.Printf("failed to load envs: %v", err)
 	}
 
-=======
-	godotenv.Load()
->>>>>>> origin/main
 	r := mux.NewRouter()
 	c := cors.New(cors.Options{
     AllowedOrigins: []string{"http://localhost:4321"},
