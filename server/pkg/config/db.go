@@ -17,7 +17,7 @@ var db *database.Queries
 func init() {
 	err := godotenv.Load()
 	if err != nil {
-		log.Fatalf("failed to load envs: %v", err)
+		log.Printf("failed to load envs: %v", err)
 	}
 	
 	dbUrl := os.Getenv("DB_URL")

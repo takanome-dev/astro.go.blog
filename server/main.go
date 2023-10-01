@@ -13,7 +13,11 @@ import (
 )
 
 func main() {
-	godotenv.Load()
+	err := godotenv.Load()
+	if err != nil {
+		log.Printf("failed to load envs: %v", err)
+	}
+
 	r := mux.NewRouter()
 	c := cors.New(cors.Options{
     AllowedOrigins: []string{"http://localhost:4321"},
@@ -39,7 +43,7 @@ func main() {
 	port := os.Getenv("PORT")
 	log.Printf("🚀 server listening at localhost:%s", port)
 
-	err := http.ListenAndServe("0.0.0.0:" + port, handler)
+	err = http.ListenAndServe("0.0.0.0:" + port, handler)
 	if err != nil {
 		log.Fatal(err)
 	}
