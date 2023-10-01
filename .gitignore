@@ -4,6 +4,9 @@ dist/
 # vscode
 .vscode/
 
+# binaries
+bin/
+
 # generated types
 .astro/
 

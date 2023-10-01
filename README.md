@@ -26,6 +26,7 @@ You will need to have installed the following:
 - [Golang](https://go.dev/dl/) (version 1.21 or higher)
 - [PNPM](https://pnpm.io/installation) (version 8.6.0 or higher)
 - [PostgreSQL](https://www.postgresql.org/download/) (version 13 or higher)
+- [Make](https://www.gnu.org/software/make/) (version 4.3 or higher)
 - [Docker (optional)](https://docs.docker.com/get-docker/) (version 20.10.8 or higher)
 
 Once you have installed the prerequisites, you can follow the steps below to start the app locally.
@@ -51,7 +52,7 @@ cd blog-with-astro-golang
 cd client && pnpm install
 
 # install dependencies for the server
-cd server && go mod tidy && go mod vendor
+cd server && make install
 ```
 
 Step 4. Create a `.env` file in the `server` directory
@@ -76,10 +77,8 @@ CREATE DATABASE blog;
 \q
 
 # run the migrations
-cd server/sql/schema && goose postgres postgres://<user>:<pwd>@localhost:5432/blog up
-
-# if the cmd goose is not found, you can try:
-cd server/sql/schema && ~/go/bin/goose postgres postgres://<user>:<pwd>@localhost:5432/blog up
+cd server && make migrate DB_URL=<your_database_url>
+# i.e. make migrate DB_URL=postgres://<user>:<pwd>@localhost:5432/blog
 ```
 
 See the next section for how to run the migrations using Docker (easier).
@@ -91,7 +90,7 @@ Step 6. Run the development server.
 cd client && pnpm dev
 
 # run the server
-cd server && go run main.go
+cd server && make run
 ```
 
 This will start the web app at [http://localhost:4321](http://localhost:4321) and the server at [http://localhost:5000](http://localhost:5000).
