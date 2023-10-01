@@ -35,12 +35,13 @@ interface Props {
 <script>
   const form = document.getElementById("login-form") as HTMLFormElement;
   const errorMsg = document.getElementById("error-msg") as HTMLDivElement;
+  const BASE_URL = import.meta.env.PUBLIC_API
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
-    fetch("http://localhost:5000/auth/login", {
+    fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
       body: JSON.stringify(data),
       credentials: "include",

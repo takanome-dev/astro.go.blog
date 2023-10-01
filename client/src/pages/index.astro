@@ -7,10 +7,19 @@ import Button from "@/components/ui/button.astro";
 import Layout from "@/layouts/layout.astro";
 import Card from "@/components/card.astro";
 
+const BASE_URL = import.meta.env.PUBLIC_API
+
 const posts: Post[] = await fetch(
-  "http://localhost:5000/posts")
+  `${BASE_URL}/posts`)
   .then(async (response) => await response.json())
-  .then((data) => data.data)
+  .then((data) => {
+    const posts = data.data
+    if (posts === "null") {
+      return []
+    }
+
+    return posts
+  })
   .catch((error) => {
     console.error(error)
     return []
@@ -64,7 +73,7 @@ export const prerender = true;
       </Button>
     </div>
     <div class="blog-cards my-8 grid grid-cols-3 gap-8">
-      {posts.map((p) => <Card post={p} />)}
+      {posts?.map((p) => <Card post={p} />)}
     </div>
   </div>
 </Layout>

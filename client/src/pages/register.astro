@@ -38,6 +38,8 @@ interface Props {
   </div>
 </AuthLayout>
 <script>
+  const BASE_URL = import.meta.env.PUBLIC_API
+
   const form = document.getElementById("register-form") as HTMLFormElement;
   const errorMsg = document.getElementById("register-error-msg") as HTMLDivElement;
 
@@ -45,7 +47,7 @@ interface Props {
     e.preventDefault();
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
-    fetch("http://localhost:5000/auth/register", {
+    fetch(`${BASE_URL}/auth/register`, {
       method: "POST",
       body: JSON.stringify(data),
       credentials: "include",

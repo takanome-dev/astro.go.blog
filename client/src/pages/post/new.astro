@@ -105,14 +105,18 @@ const submitPost = (draft = false) => {
     formData.append("image", file);
   }
 
-  fetch("http://localhost:5000/posts", {
+  const BASE_URL = import.meta.env.PUBLIC_API
+
+  fetch(`${BASE_URL}/posts`, {
     method: "POST",
     body: formData,
     credentials: "include",
   })
     .then((response) => response.json())
     .then((data) => {
-      window.location.href = `/posts/${data.data.id}`
+      console.log({data})
+      // window.location.href = `/posts/${data.data.id}`
+      window.location.href = '/dashboard'
     })
     .catch((error) => console.error(error));
 };
