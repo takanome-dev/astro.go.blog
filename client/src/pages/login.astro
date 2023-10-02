@@ -35,17 +35,21 @@ interface Props {
 <script>
   const form = document.getElementById("login-form") as HTMLFormElement;
   const errorMsg = document.getElementById("error-msg") as HTMLDivElement;
+  const BASE_URL = import.meta.env.PUBLIC_API
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
-    fetch("http://localhost:5000/auth/login", {
+    fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
       body: JSON.stringify(data),
       credentials: "include",
     })
       .then(async (res) => {
+        res.headers.forEach((value, name) => {
+          console.log(`${name}: ${value}`);
+        });
         if (!res.ok) {
           const error = await res.json();
           throw new Error(error.error);
@@ -54,8 +58,9 @@ interface Props {
         }
       })
       .then((res) => {
+        console.log({apiResult: res});
         localStorage.setItem("user", JSON.stringify(res.data));
-        location.href = "/dashboard";
+        // location.href = "/dashboard";
       }).catch(err => {
         errorMsg.classList.remove("hidden");
         errorMsg.classList.add("flex");

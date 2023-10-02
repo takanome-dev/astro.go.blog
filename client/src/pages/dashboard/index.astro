@@ -9,9 +9,10 @@ import PlaceholderDescription from "@/components/placeholder/placeholder-descrip
 import PlaceholderIcon from "@/components/placeholder/placeholder-icon.astro";
 
 const cookie = Astro.cookies.get("auth_token")
+const BASE_URL = import.meta.env.PUBLIC_API
 
 const posts: Post[] = await fetch(
-  "http://localhost:5000/posts/current-user", {
+  `${BASE_URL}/posts/current-user`, {
     method: "GET",
     headers: {
       'Cookie': `auth_token=${cookie?.value}`,

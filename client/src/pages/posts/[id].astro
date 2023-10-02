@@ -7,8 +7,9 @@ import { cn } from "../../lib/utils/merge-classes";
 const { id } = Astro.params;
 
 const cookie = Astro.cookies.get("auth_token")
+const BASE_URL = import.meta.env.PUBLIC_API
 
-const post: Post = await fetch(`http://localhost:5000/posts/${id}`, {
+const post: Post = await fetch(`${BASE_URL}/posts/${id}`, {
     method: "GET",
     headers: {
       'Cookie': `auth_token=${cookie?.value}`,
