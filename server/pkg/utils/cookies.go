@@ -1,7 +1,6 @@
 package utils
 
 import (
-	"log"
 	"net/http"
 	"os"
 	"time"
@@ -17,8 +16,6 @@ var secure = securecookie.New([]byte(os.Getenv("COOKIE_HASH_KEY")), []byte(os.Ge
 const CookieName = string("auth_token")
 
 func EncodeCookie(token string, exp time.Time) (*http.Cookie, error) {
-	log.Printf("Cookie Hash ENV: %s", os.Getenv("COOKIE_HASH_KEY"))
-	log.Printf("Cookie Block ENV: %s", os.Getenv("COOKIE_BLOCK_KEY"))
 	value := map[string]string{
 		CookieName: token,
 	}
@@ -33,12 +30,11 @@ func EncodeCookie(token string, exp time.Time) (*http.Cookie, error) {
 		Value: encoded,
 		Expires: exp,
 		Path:  "/",
-		Secure: true,
+		// TODO: Set to true when using HTTPS
+		Secure: false,
 		HttpOnly: true,
 		SameSite: http.SameSite(3),
 	}
-
-	log.Printf("Cookie: %v", cookie)
 
 	return cookie, nil
 }
