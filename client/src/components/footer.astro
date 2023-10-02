@@ -2,39 +2,30 @@
 import Logo from "./logo.astro";
 import Button from "@/components/ui/button.astro";
 import Input from "@/components/ui/input.astro";
+import Icon from "astro-icon";
 ---
 
 <footer class="bg-gray-800">
-  <div class="container mx-auto px-20 pt-56 pb-32">
-    <div class="flex justify-between">
+  <div class="container mx-auto px-20 py-32">
+    <div class="flex justify-between items-center">
       <div class="self-end">
         <Logo color="text-white" />
-        <div class="flex gap-4 mt-4">
-          <a href="#" class="text-white">Overview</a>
-          <a href="#" class="text-white">features</a>
-          <a href="#" class="text-white">Pricing</a>
-          <a href="#" class="text-white">Careers</a>
-          <a href="#" class="text-white">Help</a>
-          <a href="#" class="text-white">Privacy</a>
-        </div>
       </div>
-      <div>
-        <p class="text-white">Stay up to date</p>
-        <div class="flex gap-2 mt-4">
-          <Input
-            {...{placeholder: 'Enter your email', className: 'bg-white'}}
-          />
-          <Button>Subscribe</Button>
-        </div>
+      <div class="flex items-center gap-4">
+        <Icon name="octicon:mark-github-16" class="text-white w-8 h-8" />
+        <Icon name="logos:discord-icon" class="w-8 h-8" />
+        <Icon name="logos:twitter" class="w-8 h-8" />
+        <Icon name="logos:youtube-icon" class="w-8 h-8" />
+        <Icon name="ri:instagram-line" class="text-white w-8 h-8" />
       </div>
     </div>
-    <hr class="bg-gray-200 my-8" />
+    <hr class="bg-slate-50 my-8" />
     <div class="flex justify-between items-center">
       <p class="text-white">&copy; 2023 Untitled UI. All rights reserved</p>
       <div class="flex gap-4">
-        <a href="#" class="text-white/50">Terms</a>
-        <a href="#" class="text-white/50">Privacy</a>
-        <a href="#" class="text-white/50">Cookies</a>
+        <a href="#" class="text-white/50 hover:underline underline-offset-2">Terms</a>
+        <a href="#" class="text-white/50 hover:underline underline-offset-2">Privacy</a>
+        <a href="#" class="text-white/50 hover:underline underline-offset-2">Cookies</a>
       </div>
     </div>
   </div>

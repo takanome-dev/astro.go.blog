@@ -12,21 +12,14 @@ import { cn } from "../lib/utils/merge-classes";
       <Logo />
       <nav class="ml-10">
         <ul class="flex gap-8">
-          <li class="text-lg text-gray-600"><a href="/">Home</a></li>
-          <li class="text-lg text-gray-600"><a href="/blog">Blog</a></li>
-          <li class="text-lg text-gray-600"><a href="/about">About</a></li>
+          <li class="text-lg text-gray-600"><a href="/posts">Posts</a></li>
+          <li class="text-lg text-gray-600"><a href="/#">About</a></li>
         </ul>
       </nav>
     </div>
     <div class="flex gap-4">
       <a href="/login" class={cn(buttonVariants({variant: "link"}))}>
-        <!-- <Button
-          class="font-semibold shadow-lg shadow-primary-500/50 hover:shadow-primary-500/60"
-          variant="primary"
-          size="sm"
-        > -->
-          Log in
-        <!-- </Button> -->
+        Log in
       </a>
       <a href="/register">
         <Button
