@@ -114,9 +114,7 @@ const submitPost = (draft = false) => {
   })
     .then((response) => response.json())
     .then((data) => {
-      console.log({data})
-      // window.location.href = `/posts/${data.data.id}`
-      window.location.href = '/dashboard'
+      window.location.href = `/posts/${data.data.id}`
     })
     .catch((error) => console.error(error));
 };

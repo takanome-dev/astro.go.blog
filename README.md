@@ -1,4 +1,14 @@
-# Astro Blog App
+<h1 align="center">Astro Blog with Golang</h1>
+
+<p align="center">
+ <a href="https://github.com/takanome-dev/blog-with-astro-golang/blob/main/LICENSE">
+    <img alt="GitHub license" src="https://img.shields.io/github/license/takanome-dev/blog-with-astro-golang" />
+  </a>
+ <a href="https://github.com/takanome-dev/blog-with-astro-golang/actions/workflows/codeql.yml">
+    <img alt="CodeQL Action" src="https://github.com/takanome-dev/blog-with-astro-golang/actions/workflows/codeql.yml/badge.svg" />
+  </a>
+
+</p>
 
 ## :construction: Status :construction:
 
@@ -55,9 +65,13 @@ cd client && pnpm install
 cd server && make install
 ```
 
-Step 4. Create a `.env` file in the `server` directory
+Step 4. Create a `.env` file
 
 ```bash
+# create a .env file for the client
+cd client && cp .env.example .env
+
+# create a .env file for the server
 cd server && cp .env.example .env
 ```
 

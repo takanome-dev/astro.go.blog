@@ -24,11 +24,6 @@ type UserResponse struct{
 	Username string `json:"username"`
 }
 
-// type AuthResponse struct {
-// 	User  UserResponse `json:"user"`
-// 	Token string       `json:"token"`
-// }
-
 func Register(w http.ResponseWriter, r *http.Request) {
 	body, err := utils.ReadJSON[AuthParams](r.Body)
 	if err != nil {
