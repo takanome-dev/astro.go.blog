@@ -28,8 +28,12 @@ const { title } = Astro.props;
             <li class="text-gray-500">
               <a href="/dashboard/drafts" class="flex items-center">
                 Drafts
-              </a
-              >
+              </a>
+            </li>
+            <li class="text-gray-500">
+              <a href="/dashboard/analytics" class="flex items-center">
+                Analytics
+              </a>
             </li>
           </ul>
         </nav>
@@ -45,7 +49,7 @@ const { title } = Astro.props;
       </div>
     </div>
   </header>
-  <main class="mx-36">
+  <main class="mx-36 mb-20">
     <slot />
   </main>
   <Footer />

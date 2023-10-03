@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"errors"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -37,6 +38,22 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 	}
 
 	user, err := db.GetUserByID(r.Context(), id)
+	if err != nil {
+		utils.WriteError(w, err, 404)
+		return
+	}
+
+	utils.WriteJSON(w, user)
+}
+
+func GetUserByUsername(w http.ResponseWriter, r *http.Request) {
+	username := mux.Vars(r)["username"]
+	if username == "" {
+		utils.WriteError(w, errors.New("username is required"), http.StatusBadRequest)
+		return
+	}
+
+	user, err := db.GetUserByUsername(r.Context(), username)
 	if err != nil {
 		utils.WriteError(w, err, 404)
 		return
