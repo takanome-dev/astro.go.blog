@@ -1,0 +1,44 @@
+---
+import { type User } from "@/types/user";
+import DashboardLayout from "@/layouts/dashboard-layout.astro";
+import { buttonVariants } from "@/components/ui/button.astro";
+import { cn } from "@/lib/utils/merge-classes";
+import Icon from "astro-icon";
+
+const { username } = Astro.params;
+
+const cookie = Astro.cookies.get("auth_token")
+const BASE_URL = import.meta.env.PUBLIC_API
+
+const user: User = await fetch(`${BASE_URL}/users/username/${username}`, {
+    method: "GET",
+    headers: {
+      'Cookie': `auth_token=${cookie?.value}`,
+    },
+  })
+  .then(async (response) => await response.json())
+  .then((data) => data.data)
+  .catch((error) => {
+    console.error(error)
+    return {}
+  })
+---
+
+<DashboardLayout title={username}>
+  <div class="w-full h-80 bg-slate-100 mt-24 p-8 flex items-center justify-center relative">
+    <div class="absolute w-36 h-36 bg-white rounded-full overflow-hidden left-1/2 -translate-x-1/2 -top-16">
+      <img src="https://res.cloudinary.com/dafwzsod0/image/upload/v1687431921/user-avatar-4_zdqcbw.svg" alt="User avatar" class="w-full h-full">
+    </div>
+    <div class="flex flex-col">
+      <h2 class="text-2xl font-bold">@{user.username}</h2>
+      <p class="text-sm text-slate-500">{user.email}</p>
+    </div>
+  </div>
+  <div class="flex items-center justify-center mt-4">
+    <span class="text-red-500 uppercase flex gap-4 items-center">
+      <Icon name="tabler:alert-triangle" class="w-4 h-4 text-red-500" />
+        This page is still under construction
+      <Icon name="tabler:alert-triangle" class="w-4 h-4 text-red-500" />
+    </span>
+  </div>
+</DashboardLayout>

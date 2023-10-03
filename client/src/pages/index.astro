@@ -3,9 +3,11 @@ import { Icon } from "astro-icon";
 
 import type { Post } from "@/types/post";
 import Input from "@/components/ui/input.astro";
-import Button from "@/components/ui/button.astro";
+import Button, { buttonVariants } from "@/components/ui/button.astro";
 import Layout from "@/layouts/layout.astro";
 import Card from "@/components/card.astro";
+import { cn } from "../lib/utils/merge-classes";
+// import NewCardDesign from "@/components/new-card-design.astro";
 
 const BASE_URL = import.meta.env.PUBLIC_API
 
@@ -51,8 +53,8 @@ export const prerender = true;
     </div>
   </div>
 
-  <div>
-    <div class="search flex items-center justify-between">
+  <div class="bg-gray-50 px-28 py-10">
+    <!-- <div class="search flex items-center justify-between">
       <div class="relative">
         <Icon
           name="tabler:search"
@@ -71,9 +73,24 @@ export const prerender = true;
           /></span
         >
       </Button>
+    </div> -->
+    <div class="flex items-center justify-between">
+      <h2 class="text-xl font-semibold">Latest Writings</h2>
+      <a href="/posts" class={cn(buttonVariants({ variant: "primary" }))}>View all posts</a>
     </div>
     <div class="blog-cards my-8 grid grid-cols-3 gap-8">
       {posts?.map((p) => <Card post={p} />)}
+    </div>
+  </div>
+  <div class="mx-28 grid grid-cols-2 gap-16 my-10">
+    <div class="self-center">
+      <h3 class="text-4xl font-bold">
+        Growth performance tracking made easy
+      </h3>
+      <img src="/app-store.png" alt="App Stores Images" class="mt-4 w-80 h-12">
+    </div>
+    <div class="w-[400px] h-[500px] bg-slate-300 rounded-md flex justify-center items-center">
+      <p class="tetx-sm">Placeholder for an upcoming image</p>
     </div>
   </div>
 </Layout>

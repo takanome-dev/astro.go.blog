@@ -24,6 +24,13 @@ var UsersRoute = func (router *mux.Router) {
 		).ServeHTTP,
 	).Methods("GET")
 	router.HandleFunc(
+		"/users/username/{username}", 
+		auth.Middleware(
+			http.HandlerFunc(controllers.GetUserByUsername), 
+			auth.AuthMiddleware,
+		).ServeHTTP,
+	).Methods("GET")
+	router.HandleFunc(
 		"/users/{id}", 
 		auth.Middleware(
 			http.HandlerFunc(controllers.UpdateUser), 
