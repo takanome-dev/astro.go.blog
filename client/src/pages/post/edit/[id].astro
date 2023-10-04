@@ -80,6 +80,7 @@ const post: Post = await fetch(`${BASE_URL}/posts/${id}`, {
   </form>
 </NewPostLayout>
 <script>
+  // @ts-ignore
   import Editor from '@toast-ui/editor';
   const bodyPlaceholder = document.getElementById("body-placeholder")!;
 
@@ -142,11 +143,11 @@ const submitPost = (draft = false) => {
     body: formData,
     credentials: "include",
   })
-    .then((response) => response.json())
-    .then((data) => {
-      window.location.href = `/posts/${data.data.id}`
-    })
-    .catch((error) => console.error(error));
+  .then((response) => response.json())
+  .then((data) => {
+    window.location.href = `/posts/${data.data.id}`
+  })
+  .catch((error) => console.error(error));
 };
 
 const submitButton = (document.getElementById("submit-new-post-btn") as HTMLButtonElement);
