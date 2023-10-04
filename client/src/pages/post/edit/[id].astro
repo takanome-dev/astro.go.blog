@@ -80,6 +80,7 @@ const post: Post = await fetch(`${BASE_URL}/posts/${id}`, {
   </form>
 </NewPostLayout>
 <script>
+  // @ts-ignore
   import Editor from '@toast-ui/editor';
   const bodyPlaceholder = document.getElementById("body-placeholder")!;
 
