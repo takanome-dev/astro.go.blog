@@ -142,11 +142,11 @@ const submitPost = (draft = false) => {
     body: formData,
     credentials: "include",
   })
-    .then((response) => response.json())
-    .then((data) => {
-      window.location.href = `/posts/${data.data.id}`
-    })
-    .catch((error) => console.error(error));
+  .then((response) => response.json())
+  .then((data) => {
+    window.location.href = `/posts/${data.data.id}`
+  })
+  .catch((error) => console.error(error));
 };
 
 const submitButton = (document.getElementById("submit-new-post-btn") as HTMLButtonElement);

@@ -1,8 +1,7 @@
 ---
 import { type Post } from "@/types/post";
 import DashboardLayout from "@/layouts/dashboard-layout.astro";
-import { buttonVariants } from "@/components/ui/button.astro";
-import { cn } from "@/lib/utils/merge-classes";
+import ActionMenu from "@/components/action-menu.astro";
 
 const { id } = Astro.params;
 
@@ -43,7 +42,7 @@ const post: Post = await fetch(`${BASE_URL}/posts/${id}`, {
       </div>
     </div>
   <div>
-    <a class={cn(buttonVariants({ variant: "outline", class: "cursor-pointer" }))} href={`/post/edit/${post.id}`}>Edit</a>
+    <ActionMenu />
   </div>
   </div>
   <div class="my-8">
