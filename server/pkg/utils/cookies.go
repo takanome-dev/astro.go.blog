@@ -30,8 +30,7 @@ func EncodeCookie(token string, exp time.Time) (*http.Cookie, error) {
 		Value: encoded,
 		Expires: exp,
 		Path:  "/",
-		// TODO: Set to true when using HTTPS
-		Secure: false,
+		Secure: !(os.Getenv("ENV") == "development"),
 		HttpOnly: true,
 		SameSite: http.SameSite(3),
 	}
