@@ -49,6 +49,7 @@ interface Props {
     fetch(`${BASE_URL}/auth/register`, {
       method: "POST",
       body: JSON.stringify(data),
+      mode: "cors",
       credentials: "include",
     })
       .then(async (res) => {
