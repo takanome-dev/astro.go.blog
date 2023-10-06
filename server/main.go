@@ -22,9 +22,9 @@ func main() {
 	c := cors.New(cors.Options{
     AllowedOrigins: []string{
 			"http://localhost:4321", 
-			os.Getenv("DOMAIN_1"), 
-			os.Getenv("DOMAIN_2"),
-			os.Getenv("DOMAIN_3"), 
+			"https://blog-with-astro-golang.vercel.app/", 
+			"https://blog-with-astro-golang-takanome-dev.vercel.app/",
+			"https://blog-with-astro-golang-git-main-takanome-dev.vercel.app/", 
 		},
 		AllowedHeaders: []string{"*"},
     AllowCredentials: true,
