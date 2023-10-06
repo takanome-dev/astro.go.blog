@@ -29,6 +29,7 @@ func main() {
 		AllowedHeaders: []string{"*"},
     AllowCredentials: true,
 		AllowedMethods: []string{http.MethodGet, http.MethodPost, http.MethodPut, http.MethodDelete, http.MethodOptions},
+		MaxAge: 86400,
     Debug: false,
 	})
 
