@@ -2,55 +2,55 @@
 import { type Post } from "@/types/post";
 import DashboardLayout from "@/layouts/dashboard-layout.astro";
 import ActionMenu from "@/components/action-menu.astro";
+import Layout from "@/layouts/layout.astro";
 
 const { id } = Astro.params;
 
 const cookie = Astro.cookies.get("auth_token")
 const BASE_URL = import.meta.env.PUBLIC_API
 
-const post: Post = await fetch(`${BASE_URL}/posts/${id}`, {
-    method: "GET",
-    headers: {
-      'Cookie': `auth_token=${cookie?.value}`,
-    },
-  })
+const post: Post = await fetch(`${BASE_URL}/posts/${id}`)
   .then(async (response) => await response.json())
   .then((data) => data.data)
   .catch((error) => {
     console.error(error)
     return {}
   })
+
+const PageLayout = cookie ? DashboardLayout : Layout
  
 ---
 
-<DashboardLayout title={post.title}>
-  <div class="my-4 w-full h-[448px] overflow-hidden">
-    <img src={post.image} alt={post.title} class="w-full h-full rounded-md" />
-  </div>
-  <div class="flex justify-between items-center">
-    <div class="flex gap-4 items-center mb-4">
-      <img src="https://avatars.githubusercontent.com/u/79809121?s=400&u=94c6b55ab061ac71d15afbceb0542582be7dec35&v=4" alt="My GH Avatar" class="w-16 h-16 rounded-full">
-      <div>
-        <p>takanome-dev</p>
-        <span class="text-slate-500 text-sm">
-          {Intl.DateTimeFormat("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric",
-          }).format(new Date(post.created_at))}
-        </span>
-      </div>
+<PageLayout title={post.title}>
+  <div class={cookie ? "" : "mx-36 mb-20"}>
+    <div class="my-4 w-full h-[448px] overflow-hidden">
+      <img src={post.image} alt={post.title} class="w-full h-full rounded-md" />
     </div>
-  <div>
-    <ActionMenu />
+    <div class="flex justify-between items-center">
+      <div class="flex gap-4 items-center mb-4">
+        <img src="https://avatars.githubusercontent.com/u/79809121?s=400&u=94c6b55ab061ac71d15afbceb0542582be7dec35&v=4" alt="My GH Avatar" class="w-16 h-16 rounded-full">
+        <div>
+          <p>takanome-dev</p>
+          <span class="text-slate-500 text-sm">
+            {Intl.DateTimeFormat("en-US", {
+              year: "numeric",
+              month: "long",
+              day: "numeric",
+            }).format(new Date(post.created_at))}
+          </span>
+        </div>
+      </div>
+    <div>
+      <ActionMenu />
+    </div>
+    </div>
+    <div class="my-8">
+      <h2 class="text-5xl font-bold">{post.title}</h2>
+    </div>
+    <div data-body={post.body} id="post-body-placeholder"></div>
+    <div id="viewer"></div>
   </div>
-  </div>
-  <div class="my-8">
-    <h2 class="text-5xl font-bold">{post.title}</h2>
-  </div>
-  <div data-body={post.body} id="post-body-placeholder"></div>
-  <div id="viewer"></div>
-</DashboardLayout>
+</PageLayout>
 <script>
   // @ts-ignore
   import Editor from '@toast-ui/editor';

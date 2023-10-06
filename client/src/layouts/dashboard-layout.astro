@@ -54,9 +54,3 @@ const { title } = Astro.props;
   </main>
   <Footer />
 </BaseLayout>
-<script>
-  import { getCurrentUser } from '@/lib/utils/storage';
-
-  const user = getCurrentUser();
-  if (!user) window.location.href = "/login";
-</script>
