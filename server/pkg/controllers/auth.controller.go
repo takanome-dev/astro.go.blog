@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"time"
 
+	"github.com/gorilla/csrf"
 	"github.com/takanome-dev/blog-with-astro-golang/pkg/utils"
 )
 
@@ -66,7 +67,9 @@ func Register(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, err, 500)
 		return
 	}
+
 	http.SetCookie(w, cookie)
+	w.Header().Set("X-CSRF-Token", csrf.Token(r))
 
 	utils.WriteJSON(w,  UserResponse{
 		Email: newUser.Email,
@@ -106,8 +109,10 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, err, 500)
 		return
 	}
+
 	http.SetCookie(w, cookie)
-	
+	w.Header().Set("X-CSRF-Token", csrf.Token(r))
+
 	utils.WriteJSON(w, UserResponse{
 		Username: user.Username, 
 		Email: user.Email,

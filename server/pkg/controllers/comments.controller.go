@@ -55,7 +55,7 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 
 	currentUser, ok := utils.CtxValue[utils.JwtUser](r.Context()); 
 	if !ok {
-		utils.WriteError(w, fmt.Errorf("something went wrong when retrieving user id from context"), 400)
+		utils.WriteError(w, fmt.Errorf("something went wrong when retrieving user ID from context"), 400)
 		return
 	}
 

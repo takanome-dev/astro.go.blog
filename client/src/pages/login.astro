@@ -60,7 +60,7 @@ interface Props {
       })
       .then((res) => {
         localStorage.setItem("user", JSON.stringify(res.data));
-        location.href = "/dashboard";
+        // location.href = "/dashboard";
       }).catch(err => {
         errorMsg.classList.remove("hidden");
         errorMsg.classList.add("flex");
