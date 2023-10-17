@@ -207,7 +207,7 @@ func UpdatePost(w http.ResponseWriter, r *http.Request) {
       title.String = postTitle
       title.Valid = true
   } else {
-      title = sql.NullString{String: foundPost.Title, Valid: true}
+      title = sql.NullString{String: foundPost.Post.Title, Valid: true}
   }
 
   var body sql.NullString

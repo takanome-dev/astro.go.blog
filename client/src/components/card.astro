@@ -2,27 +2,27 @@
 import { type Post } from '@/types/post';
 import { formatDate } from '../lib/utils/format';
 export interface Props {
-	post: Post
+	data: Post
 }
 
 const defaultImage = "https://res.cloudinary.com/dafwzsod0/image/upload/v1695666098/kelly-sikkema-Cg60_WXjvC4-unsplash_py5nh6.jpg"
 
-const { post } = Astro.props;
+const { data } = Astro.props;
 ---
 
 <div class="border rounded-lg overflow-hidden">
 	<div class="relative h-52">
-		<img src={post.image ?? defaultImage} alt={post.title} class="w-full h-full" />
+		<img src={data.post.image ?? defaultImage} alt={data.post.title} class="w-full h-full" />
 	</div>
 	<div class="p-4">
 		<div class="flex gap-2 text-purple-600">
-			<p class="font-medium text-sm">takanome-dev</p> &bull;
-			<p class="font-medium text-sm">{formatDate(post.created_at)}</p>
+			<p class="font-medium text-sm">{data.user?.username}</p> &bull;
+			<p class="font-medium text-sm">{formatDate(data.post.created_at)}</p>
 		</div>
 		<div class="my-2">
-			<a href={`/posts/${post.id}`} class="font-bold text-xl mb-4 hover:underline underline-offset-2 line-clamp-2">{post.title}</a>
+			<a href={`/posts/${data.post.id}`} class="font-bold text-xl mb-4 hover:underline underline-offset-2 line-clamp-2">{data.post.title}</a>
 		</div>
-		<p class="text-slate-600 line-clamp-3">{post.body}</p>
+		<p class="text-slate-600 line-clamp-3">{data.post.body}</p>
 		<!-- <div class="tags mt-4 flex gap-2">
 			<a href="#" class="px-4 py-1 rounded-2xl text-purple-600 bg-purple-100">Product</a>
 			<a href="#" class="px-4 py-1 rounded-2xl text-green-600 bg-green-100">Management</a>

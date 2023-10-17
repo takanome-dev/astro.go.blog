@@ -2,13 +2,18 @@
 INSERT INTO posts (id, title, body, image, user_id, is_published, is_draft) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *;
 
 -- name: GetAllPosts :many
-SELECT * FROM posts;
+SELECT sqlc.embed(posts), sqlc.embed(users) FROM posts
+JOIN users ON posts.user_id = users.id;
 
 -- name: GetPostByID :one
-SELECT * FROM posts WHERE id = $1;
+SELECT sqlc.embed(posts), sqlc.embed(users) FROM posts
+JOIN users ON posts.user_id = users.id
+WHERE posts.id = $1;
 
 -- name: GetPostsByUserID :many
-SELECT * FROM posts WHERE user_id = $1;
+SELECT sqlc.embed(posts), sqlc.embed(users) FROM posts
+JOIN users ON posts.user_id = users.id
+WHERE user_id = $1;
 
 -- name: UpdatePost :one
 UPDATE posts 

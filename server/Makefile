@@ -7,6 +7,9 @@ migrate:
 install:
 	go mod tidy && go mod vendor
 
+generate:
+	sqlc generate
+
 build:
 	go build -o bin/$(BINARY_NAME) main.go
 

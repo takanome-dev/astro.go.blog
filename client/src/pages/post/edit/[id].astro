@@ -12,7 +12,7 @@ const { id } = Astro.params;
 const cookie = Astro.cookies.get("auth_token")
 const BASE_URL = import.meta.env.PUBLIC_API
 
-const post: Post = await fetch(`${BASE_URL}/posts/${id}`, {
+const data: Post = await fetch(`${BASE_URL}/posts/${id}`, {
     method: "GET",
     headers: {
       'Cookie': `auth_token=${cookie?.value}`,
@@ -41,7 +41,7 @@ const post: Post = await fetch(`${BASE_URL}/posts/${id}`, {
       <input type="file" name="image" id="new-post-image" class="hidden" />
     </label>
     <div id="preview-image" class="flex h-auto items-end gap-6 mb-6">
-      <img src={post.image} alt={post.title} class="w-96 h-56 object-contain">
+      <img src={data.post.image} alt={data.post.title} class="w-96 h-56 object-contain">
       <div class="flex gap-4">
         <label
           for="new-post-image" 
@@ -64,7 +64,7 @@ const post: Post = await fetch(`${BASE_URL}/posts/${id}`, {
       <Input
         type="text"
         name="title"
-        value={post.title}
+        value={data.post.title}
         placeholder="Your post title..."
         id="new-post-title"
         class="border-gray-100 focus:ring-gray-200"
@@ -74,7 +74,7 @@ const post: Post = await fetch(`${BASE_URL}/posts/${id}`, {
     <div class="my-8">
       <ErrorMessage id="post-content-err" />
       <Label for="editor" class="text-gray-400">Content</Label>
-      <div data-body={post.body} id="body-placeholder"></div>
+      <div data-body={data.post.body} id="body-placeholder"></div>
       <div id="editor" class="mt-2"></div>
     </div>
   </form>

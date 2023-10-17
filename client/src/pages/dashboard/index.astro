@@ -23,7 +23,7 @@ const posts: Post[] = await fetch(
     },
   })
   .then(async (response) => await response.json())
-  .then((data) => (data.data as Post[]).filter((p) => p.is_published))
+  .then((data) => (data.data as Post[]).filter((p) => p.post.is_published))
   .catch((error) => {
     console.error(error)
     return []
@@ -62,7 +62,7 @@ const posts: Post[] = await fetch(
       </EmptyPlaceholder>
     ) : (
       <div class="my-8 grid grid-cols-3 gap-8" id="posts">
-        {posts.map((p) => <Card post={p} />)}
+        {posts.map((p) => <Card data={p} />)}
       </div>
     )}
   </div>
