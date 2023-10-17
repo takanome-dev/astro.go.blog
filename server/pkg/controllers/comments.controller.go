@@ -26,7 +26,11 @@ func GetAllComments(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, comments)
+	err = utils.WriteJSON(w, comments)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
 }
 
 func GetCommentByID(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +47,11 @@ func GetCommentByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, comments)
+	err = utils.WriteJSON(w, comments)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
 }
 
 func CreateComment(w http.ResponseWriter, r *http.Request) {
@@ -70,7 +78,11 @@ func CreateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	utils.WriteJSON(w, comment)
+	err = utils.WriteJSON(w, comment)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
 }
 
 func UpdateComment(w http.ResponseWriter, r *http.Request) {
@@ -96,7 +108,11 @@ func UpdateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, comment)
+	err = utils.WriteJSON(w, comment)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
 }
 
 func DeleteComment(w http.ResponseWriter, r *http.Request) {
@@ -113,5 +129,9 @@ func DeleteComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, fmt.Sprintf("Comment with id %s has been deleted!", id))
+	err = utils.WriteJSON(w, fmt.Sprintf("Comment with id %s has been deleted!", id))
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
 }

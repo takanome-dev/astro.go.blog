@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"errors"
 	"io"
+	"log"
 	"net/http"
 )
 
@@ -36,5 +37,8 @@ func WriteJSON(w http.ResponseWriter, v any) error {
 func WriteError(w http.ResponseWriter, err error, code int) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
-	json.NewEncoder(w).Encode(Error{err.Error()})
+	err = json.NewEncoder(w).Encode(Error{err.Error()})
+	if err != nil {
+		log.Printf("failed to write error: %v", err)
+	}
 }

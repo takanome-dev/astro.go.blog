@@ -68,10 +68,14 @@ func Register(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, cookie)
 
-	utils.WriteJSON(w,  UserResponse{
+	err = utils.WriteJSON(w,  UserResponse{
 		Email: newUser.Email,
 		Username: newUser.Username,
 	})
+	if err != nil {
+		utils.WriteError(w, err, http.StatusInternalServerError)
+		return
+	}
 }
 
 func Login(w http.ResponseWriter, r *http.Request) {
@@ -108,8 +112,12 @@ func Login(w http.ResponseWriter, r *http.Request) {
 	}
 	http.SetCookie(w, cookie)
 	
-	utils.WriteJSON(w, UserResponse{
+	err = utils.WriteJSON(w, UserResponse{
 		Username: user.Username, 
 		Email: user.Email,
 	})
+	if err != nil {
+		utils.WriteError(w, err, http.StatusInternalServerError)
+		return
+	}
 }
