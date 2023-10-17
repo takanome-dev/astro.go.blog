@@ -38,7 +38,11 @@ func GetAllPosts(w http.ResponseWriter, r *http.Request) {
 	// TODO: the results is an empty array if there is no posts
 	// TODO: but for some reason null is returned
 
-	utils.WriteJSON(w, posts)
+	err = utils.WriteJSON(w, posts)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
 }
 
 func GetPostByID(w http.ResponseWriter, r *http.Request) {
@@ -55,7 +59,11 @@ func GetPostByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, post)
+	err = utils.WriteJSON(w, post)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
 }
 
 func GetPostsByUserID(w http.ResponseWriter, r *http.Request) {
@@ -72,7 +80,11 @@ func GetPostsByUserID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, posts)
+	err = utils.WriteJSON(w, posts)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
 }
 
 func GetPostsForLoggedInUser(w http.ResponseWriter, r *http.Request) {
@@ -88,7 +100,11 @@ func GetPostsForLoggedInUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, posts)
+	err = utils.WriteJSON(w, posts)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
 }
 
 func CreatePost(w http.ResponseWriter, r *http.Request) {
@@ -135,7 +151,11 @@ func CreatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 	
-	utils.WriteJSON(w, post)
+	err = utils.WriteJSON(w, post)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
 }
 
 func UpdatePost(w http.ResponseWriter, r *http.Request) {
@@ -214,7 +234,11 @@ func UpdatePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, post)
+	err = utils.WriteJSON(w, post)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
 }
 
 func DeletePost(w http.ResponseWriter, r *http.Request) {
@@ -231,5 +255,9 @@ func DeletePost(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, fmt.Sprintf("Post with id %s has been deleted!", id))
+	err = utils.WriteJSON(w, fmt.Sprintf("Post with id %s has been deleted!", id))
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
 }

@@ -25,7 +25,11 @@ func GetAllUsers(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, users)
+	err = utils.WriteJSON(w, users)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
 }
 
 func GetUserById(w http.ResponseWriter, r *http.Request) {
@@ -43,7 +47,11 @@ func GetUserById(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, user)
+	err = utils.WriteJSON(w, user)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
 }
 
 func GetUserByUsername(w http.ResponseWriter, r *http.Request) {
@@ -59,7 +67,11 @@ func GetUserByUsername(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	utils.WriteJSON(w, user)
+	err = utils.WriteJSON(w, user)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
 }
 
 func CreateUser(ctx context.Context, user *AuthParams) (database.User, error) {

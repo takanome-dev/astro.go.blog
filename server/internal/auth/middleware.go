@@ -32,10 +32,10 @@ type ResponseRecorder struct {
 
 // we'll use this helper function to log the beginning and end of each middleware. no need for this in the real world,
 // but just for debugging purposes.
-func logExec(name string) func() {
-	log.Printf("middleware: begin %s", name)
-	return func() { defer log.Printf("middleware: end %s", name) }
-}
+// func logExec(name string) func() {
+// 	log.Printf("middleware: begin %s", name)
+// 	return func() { defer log.Printf("middleware: end %s", name) }
+// }
 
 func (rec *ResponseRecorder) WriteHeader(statusCode int) {
 	rec.StatusCode = statusCode

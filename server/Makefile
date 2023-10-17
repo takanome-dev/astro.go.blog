@@ -13,5 +13,8 @@ build:
 run: build
 	bin/$(BINARY_NAME)
 
+lint:
+	golangci-lint run
+
 clean: 
 	rm -r bin
