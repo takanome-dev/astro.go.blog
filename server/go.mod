@@ -17,6 +17,7 @@ require (
 
 require (
 	github.com/cloudinary/cloudinary-go/v2 v2.5.1
+	github.com/gorilla/csrf v1.7.1
 	github.com/gorilla/securecookie v1.1.1
 	github.com/rs/cors v1.10.0
 	github.com/rs/zerolog v1.31.0
@@ -27,5 +28,6 @@ require (
 	github.com/gorilla/schema v1.2.0 // indirect
 	github.com/mattn/go-colorable v0.1.13 // indirect
 	github.com/mattn/go-isatty v0.0.19 // indirect
+	github.com/pkg/errors v0.9.1 // indirect
 	golang.org/x/sys v0.12.0 // indirect
 )
