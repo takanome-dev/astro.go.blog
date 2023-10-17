@@ -1,7 +1,11 @@
 {
   "name": "blog-client",
   "type": "module",
-  "version": "0.0.1",
+  "version": "1.0.0",
+  "packageManager": "pnpm@8.8.0",
+  "engines": {
+    "node": ">=18.0.0"
+  },
   "scripts": {
     "dev": "astro dev",
     "start": "astro dev",
