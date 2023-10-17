@@ -62,29 +62,42 @@ func (q *Queries) DeletePost(ctx context.Context, id uuid.UUID) error {
 }
 
 const getAllPosts = `-- name: GetAllPosts :many
-SELECT id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at, image FROM posts
+SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at FROM posts
+JOIN users ON posts.user_id = users.id
 `
 
-func (q *Queries) GetAllPosts(ctx context.Context) ([]Post, error) {
+type GetAllPostsRow struct {
+	Post Post `json:"post"`
+	User User `json:"user"`
+}
+
+func (q *Queries) GetAllPosts(ctx context.Context) ([]GetAllPostsRow, error) {
 	rows, err := q.db.QueryContext(ctx, getAllPosts)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Post
+	var items []GetAllPostsRow
 	for rows.Next() {
-		var i Post
+		var i GetAllPostsRow
 		if err := rows.Scan(
-			&i.ID,
-			&i.Title,
-			&i.Body,
-			&i.UserID,
-			&i.IsPublished,
-			&i.IsDraft,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
-			&i.Image,
+			&i.Post.ID,
+			&i.Post.Title,
+			&i.Post.Body,
+			&i.Post.UserID,
+			&i.Post.IsPublished,
+			&i.Post.IsDraft,
+			&i.Post.CreatedAt,
+			&i.Post.UpdatedAt,
+			&i.Post.DeletedAt,
+			&i.Post.Image,
+			&i.User.ID,
+			&i.User.Username,
+			&i.User.Email,
+			&i.User.Password,
+			&i.User.CreatedAt,
+			&i.User.UpdatedAt,
+			&i.User.DeletedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -100,51 +113,85 @@ func (q *Queries) GetAllPosts(ctx context.Context) ([]Post, error) {
 }
 
 const getPostByID = `-- name: GetPostByID :one
-SELECT id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at, image FROM posts WHERE id = $1
+SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at FROM posts
+JOIN users ON posts.user_id = users.id
+WHERE posts.id = $1
 `
 
-func (q *Queries) GetPostByID(ctx context.Context, id uuid.UUID) (Post, error) {
+type GetPostByIDRow struct {
+	Post Post `json:"post"`
+	User User `json:"user"`
+}
+
+// SELECT * FROM posts
+// JOIN users ON posts.user_id = users.id
+// WHERE posts.id = $1;
+func (q *Queries) GetPostByID(ctx context.Context, id uuid.UUID) (GetPostByIDRow, error) {
 	row := q.db.QueryRowContext(ctx, getPostByID, id)
-	var i Post
+	var i GetPostByIDRow
 	err := row.Scan(
-		&i.ID,
-		&i.Title,
-		&i.Body,
-		&i.UserID,
-		&i.IsPublished,
-		&i.IsDraft,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.DeletedAt,
-		&i.Image,
+		&i.Post.ID,
+		&i.Post.Title,
+		&i.Post.Body,
+		&i.Post.UserID,
+		&i.Post.IsPublished,
+		&i.Post.IsDraft,
+		&i.Post.CreatedAt,
+		&i.Post.UpdatedAt,
+		&i.Post.DeletedAt,
+		&i.Post.Image,
+		&i.User.ID,
+		&i.User.Username,
+		&i.User.Email,
+		&i.User.Password,
+		&i.User.CreatedAt,
+		&i.User.UpdatedAt,
+		&i.User.DeletedAt,
 	)
 	return i, err
 }
 
 const getPostsByUserID = `-- name: GetPostsByUserID :many
-SELECT id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at, image FROM posts WHERE user_id = $1
+SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at FROM posts
+JOIN users ON posts.user_id = users.id
+WHERE user_id = $1
 `
 
-func (q *Queries) GetPostsByUserID(ctx context.Context, userID uuid.UUID) ([]Post, error) {
+type GetPostsByUserIDRow struct {
+	Post Post `json:"post"`
+	User User `json:"user"`
+}
+
+// SELECT * FROM posts
+// JOIN users ON posts.user_id = users.id
+// WHERE user_id = $1;
+func (q *Queries) GetPostsByUserID(ctx context.Context, userID uuid.UUID) ([]GetPostsByUserIDRow, error) {
 	rows, err := q.db.QueryContext(ctx, getPostsByUserID, userID)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
-	var items []Post
+	var items []GetPostsByUserIDRow
 	for rows.Next() {
-		var i Post
+		var i GetPostsByUserIDRow
 		if err := rows.Scan(
-			&i.ID,
-			&i.Title,
-			&i.Body,
-			&i.UserID,
-			&i.IsPublished,
-			&i.IsDraft,
-			&i.CreatedAt,
-			&i.UpdatedAt,
-			&i.DeletedAt,
-			&i.Image,
+			&i.Post.ID,
+			&i.Post.Title,
+			&i.Post.Body,
+			&i.Post.UserID,
+			&i.Post.IsPublished,
+			&i.Post.IsDraft,
+			&i.Post.CreatedAt,
+			&i.Post.UpdatedAt,
+			&i.Post.DeletedAt,
+			&i.Post.Image,
+			&i.User.ID,
+			&i.User.Username,
+			&i.User.Email,
+			&i.User.Password,
+			&i.User.CreatedAt,
+			&i.User.UpdatedAt,
+			&i.User.DeletedAt,
 		); err != nil {
 			return nil, err
 		}

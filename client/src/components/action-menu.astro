@@ -5,7 +5,7 @@ import Button from "@/components/ui/button.astro";
 
 const id = Astro.params.id
 ---
-<div class="flex items-center justify-center z-20" id="user-dropdown-container">
+<div class="flex items-center justify-center z-20">
   <div class="relative inline-block text-left">
     <Button 
       variant="ghost" 
@@ -40,15 +40,9 @@ const id = Astro.params.id
   </div>
 </div>
 <script>
-import { getCurrentUser } from "@/lib/utils/storage";
 
 const menuActionsDropdownBtn = (document.getElementById('menu-actions-dropdown-btn') as HTMLButtonElement);
 const menuActionsDropdown = (document.getElementById('menu-actions-dropdown') as HTMLDivElement);
-
-const user = getCurrentUser();
-if (!user) {
-  document.getElementById("user-dropdown-container")!.classList.add("hidden");
-}
 
 menuActionsDropdownBtn.addEventListener('click', () => {
   menuActionsDropdown.classList.toggle('hidden');
