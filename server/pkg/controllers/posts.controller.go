@@ -3,6 +3,7 @@ package controllers
 import (
 	"database/sql"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -26,6 +27,11 @@ type UpdatePostParams struct {
 	IsPublished *bool   `json:"is_published"`
 	IsDraft     *bool   `json:"is_draft"`
 }
+// type GetPostByIDRow struct {
+// 	Post    database.Post    `json:"post"`
+// 	User    database.User    `json:"user"`
+// 	Comments []database.Comment `json:"comments"`
+// }
 
 func GetAllPosts(w http.ResponseWriter, r *http.Request) {
 	posts, err := db.GetAllPosts(r.Context())
@@ -48,6 +54,7 @@ func GetAllPosts(w http.ResponseWriter, r *http.Request) {
 func GetPostByID(w http.ResponseWriter, r *http.Request) {
 	idStr := mux.Vars(r)["id"]
 	id, err := uuid.Parse(idStr)
+	log.Printf("parsed id: %v", id)
 	if err != nil {
 		utils.WriteError(w, err, 400)
 		return
@@ -59,6 +66,11 @@ func GetPostByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	// err = utils.WriteJSON(w, GetPostByIDRow{
+	// 	Post: post.Post,
+	// 	User: post.User,
+	// 	Comments: []database.Comment{post.Comment},
+	// })
 	err = utils.WriteJSON(w, post)
 	if err != nil {
 		utils.WriteError(w, err, 500)
