@@ -7,15 +7,18 @@ JOIN users ON posts.user_id = users.id;
 
 -- name: GetPostByID :one
 SELECT sqlc.embed(posts), sqlc.embed(users), 
-(SELECT array_agg(comments) FROM comments WHERE posts.id = comments.post_id) as comments
+COALESCE(
+  (
+    SELECT json_agg(json_build_object('comment', comments, 'user', users))::text
+    FROM comments 
+    JOIN users ON comments.user_id = users.id
+    WHERE posts.id = comments.post_id
+  ), 
+  NULL
+  ) as comments
 FROM posts
 JOIN users ON posts.user_id = users.id
 WHERE posts.id = $1;
-
--- SELECT sqlc.embed(posts), sqlc.embed(users), sqlc.embed(comments) FROM posts
--- JOIN users ON posts.user_id = users.id
--- JOIN comments ON posts.id = comments.post_id
--- WHERE posts.id = $1;
 
 -- name: GetPostsByUserID :many
 SELECT sqlc.embed(posts), sqlc.embed(users) FROM posts

@@ -114,7 +114,15 @@ func (q *Queries) GetAllPosts(ctx context.Context) ([]GetAllPostsRow, error) {
 
 const getPostByID = `-- name: GetPostByID :one
 SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at, 
-(SELECT array_agg(comments) FROM comments WHERE posts.id = comments.post_id) as comments
+COALESCE(
+  (
+    SELECT json_agg(json_build_object('comment', comments, 'user', users))::text
+    FROM comments 
+    JOIN users ON comments.user_id = users.id
+    WHERE posts.id = comments.post_id
+  ), 
+  NULL
+  ) as comments
 FROM posts
 JOIN users ON posts.user_id = users.id
 WHERE posts.id = $1
@@ -164,9 +172,19 @@ type GetPostsByUserIDRow struct {
 	User User `json:"user"`
 }
 
-// SELECT sqlc.embed(posts), sqlc.embed(users), sqlc.embed(comments) FROM posts
+// SELECT sqlc.embed(posts), sqlc.embed(users),
+// COALESCE(
+//
+//	(
+//	  SELECT json_agg(comments)
+//	  FROM comments
+//	  WHERE posts.id = comments.post_id
+//	),
+//	NULL
+//	) as comments
+//
+// FROM posts
 // JOIN users ON posts.user_id = users.id
-// JOIN comments ON posts.id = comments.post_id
 // WHERE posts.id = $1;
 func (q *Queries) GetPostsByUserID(ctx context.Context, userID uuid.UUID) ([]GetPostsByUserIDRow, error) {
 	rows, err := q.db.QueryContext(ctx, getPostsByUserID, userID)
