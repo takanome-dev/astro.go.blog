@@ -8,7 +8,6 @@ import ErrorMessage from "@/components/error-message.astro";
 interface Props {
   title: string;
 }
-
 ---
 
 <AuthLayout title="Log in">
@@ -17,12 +16,23 @@ interface Props {
     <form class="flex flex-col gap-8 mt-8" id="login-form" method="POST">
       <div class="flex flex-col gap-2">
         <Label for="email">Email</Label>
-        <Input type="email" name="email" required placeholder="johndoe@gmail.com" />
+        <Input
+          type="email"
+          name="email"
+          required
+          placeholder="johndoe@gmail.com"
+        />
         <ErrorMessage id="error-msg" />
       </div>
       <div class="flex flex-col gap-2">
         <Label for="password">Password</Label>
-        <Input type="password" name="password" required minlength={8} placeholder="supersecret" />
+        <Input
+          type="password"
+          name="password"
+          required
+          minlength={8}
+          placeholder="supersecret"
+        />
       </div>
       <Button type="submit">Login</Button>
     </form>
@@ -35,7 +45,7 @@ interface Props {
 <script>
   const form = document.getElementById("login-form") as HTMLFormElement;
   const errorMsg = document.getElementById("error-msg") as HTMLDivElement;
-  const BASE_URL = import.meta.env.PUBLIC_API
+  const BASE_URL = import.meta.env.PUBLIC_API;
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -48,9 +58,6 @@ interface Props {
       credentials: "include",
     })
       .then(async (res) => {
-        res.headers.forEach((value, name) => {
-          console.log(`${name}: ${value}`);
-        });
         if (!res.ok) {
           const error = await res.json();
           throw new Error(error.error);
@@ -61,7 +68,8 @@ interface Props {
       .then((res) => {
         localStorage.setItem("user", JSON.stringify(res.data));
         location.href = "/dashboard";
-      }).catch(err => {
+      })
+      .catch((err) => {
         errorMsg.classList.remove("hidden");
         errorMsg.classList.add("flex");
         errorMsg.querySelector("span")!.textContent = err.message;

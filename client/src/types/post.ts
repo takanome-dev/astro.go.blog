@@ -1,4 +1,5 @@
 import type { User } from "./user";
+import type { Comment } from "./comment";
 
 export interface Post {
   post: {
@@ -13,4 +14,8 @@ export interface Post {
     user_id?: string;
   };
   user?: User;
+  comments?: {
+    comment: Comment;
+    user: User;
+  }[];
 }

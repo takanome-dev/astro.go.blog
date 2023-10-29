@@ -1,81 +1,179 @@
 ---
 import { type Post } from "@/types/post";
 import DashboardLayout from "@/layouts/dashboard-layout.astro";
+import { siteConfig } from "@/lib/config/site";
+import { timeAgo } from "@/lib/utils/format";
 import ActionMenu from "@/components/action-menu.astro";
+import Textarea from "@/components/ui/textarea.astro";
+import Button from "@/components/ui/button.astro";
+import ErrorMessage from "@/components/error-message.astro";
 import Layout from "@/layouts/layout.astro";
-import type { User } from "../../types/user";
+import type { User } from "@/types/user";
 
 const { id } = Astro.params;
 
-const cookie = Astro.cookies.get("auth_token")
-const BASE_URL = import.meta.env.PUBLIC_API
+const cookie = Astro.cookies.get("auth_token");
+const BASE_URL = import.meta.env.PUBLIC_API;
 
 const data: Post = await fetch(`${BASE_URL}/posts/${id}`)
   .then(async (response) => await response.json())
   .then((data) => data.data)
   .catch((error) => {
-    console.error(error)
-    return {}
-  })
+    console.error(error);
+    return {};
+  });
 
 const user: User = await fetch(`${BASE_URL}/users/current`, {
-    method: "GET",
-    headers: {
-      'Cookie': `auth_token=${cookie?.value}`,
-    },
-  })
+  method: "GET",
+  headers: {
+    Cookie: `auth_token=${cookie?.value}`,
+  },
+})
   .then(async (response) => await response.json())
   .then((data) => data.data)
   .catch((error) => {
-    console.error(error)
-    return {}
-  })
+    console.error(error);
+    return {};
+  });
 
-const PageLayout = cookie ? DashboardLayout : Layout
- 
+const PageLayout = cookie ? DashboardLayout : Layout;
 ---
 
-<PageLayout title={data.post.title}>
+<PageLayout title={data?.post?.title}>
   <div class={cookie ? "" : "mx-36 mb-20"}>
     <div class="my-4 w-full h-[448px] overflow-hidden">
-      <img src={data.post.image} alt={data.post.title} class="w-full h-full rounded-md" />
+      <img
+        src={data?.post?.image}
+        alt={data?.post?.title}
+        class="w-full h-full rounded-md"
+      />
     </div>
     <div class="flex justify-between items-center">
       <div class="flex gap-4 items-center mb-4">
-        <img src="https://avatars.githubusercontent.com/u/9?s=400&u=94c6b55ab061ac71d15afbceb0542582be7dec35&v=4" alt="My GH Avatar" class="w-16 h-16 rounded-full">
+        <img
+          src={siteConfig.avatarUrl}
+          alt="My GH Avatar"
+          class="w-16 h-16 rounded-full"
+        />
         <div>
-          <p>{data.user?.username}</p>
+          <p>{data?.user?.username}</p>
           <span class="text-slate-500 text-sm">
-            {Intl.DateTimeFormat("en-US", {
-              year: "numeric",
-              month: "long",
-              day: "numeric",
-            }).format(new Date(data.post.created_at))}
+            {
+              Intl.DateTimeFormat("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              }).format(new Date(data?.post?.created_at))
+            }
           </span>
         </div>
       </div>
-    {!cookie || user.id !== data.user?.id ? "" : <ActionMenu />}
+      {!cookie || user?.id !== data?.user?.id ? "" : <ActionMenu />}
     </div>
     <div class="my-8">
-      <h2 class="text-5xl font-bold">{data.post.title}</h2>
+      <h2 class="text-5xl font-bold">{data?.post?.title}</h2>
     </div>
-    <div data-body={data.post.body} id="post-body-placeholder"></div>
+    <div data-body={data?.post?.body} id="post-body-placeholder"></div>
     <div id="viewer"></div>
+    <div class="my-10 flex flex-col gap-10">
+      <div class="w-full h-[2px] bg-slate-300"></div>
+      <h2 class="text-3xl font-bold">Comments</h2>
+      {
+        cookie && (
+          <form class="flex gap-4" id="comment-form" method="POST">
+            <img
+              src={siteConfig.avatarUrl}
+              alt="My GH Avatar"
+              class="w-12 h-12 rounded-full"
+            />
+            <div class="flex flex-col gap-2 w-full">
+              <div class="flex flex-col gap-2 w-1/2">
+                <Textarea
+                  name="comment"
+                  required
+                  placeholder="Write a comment..."
+                  minlength={10}
+                />
+                <ErrorMessage id="error-msg" />
+              </div>
+              <Button type="submit" class="w-fit">
+                Submit
+              </Button>
+            </div>
+          </form>
+        )
+      }
+      <div class="flex flex-col gap-4">
+        {
+          data?.comments?.map((c) => (
+            <div class="flex gap-4 items-center mb-4">
+              <img
+                src={siteConfig.avatarUrl}
+                alt="My GH Avatar"
+                class="w-12 h-12 rounded-full"
+              />
+              <div class="flex flex-col gap-2">
+                <div class="flex items-center gap-2">
+                  <p class="text-sm">{c?.user?.username}</p>
+                  <span class="text-slate-500 text-sm">
+                    {timeAgo(new Date(c?.comment.created_at))}
+                  </span>
+                </div>
+                <p>{c?.comment.body}</p>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+    </div>
   </div>
 </PageLayout>
 <script>
   // @ts-ignore
-  import Editor from '@toast-ui/editor';
+  import Editor from "@toast-ui/editor";
 
-  const postBodyPlaceholder = document.getElementById('post-body-placeholder');
+  const postBodyPlaceholder = document.getElementById("post-body-placeholder");
 
   new Editor.factory({
-    el: document.querySelector('#viewer'),
+    el: document.querySelector("#viewer"),
     viewer: true,
-    initialValue: postBodyPlaceholder?.getAttribute('data-body'),
+    initialValue: postBodyPlaceholder?.getAttribute("data-body"),
   });
 
   if (document.querySelector("#viewer .toastui-editor-contents")) {
     postBodyPlaceholder!.remove();
   }
+
+  const form = document.getElementById("comment-form") as HTMLFormElement;
+  const errorMsg = document.getElementById("error-msg") as HTMLDivElement;
+  const BASE_URL = import.meta.env.PUBLIC_API;
+  const postId = window.location.pathname.split("/").pop();
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(form);
+    const body = formData.get("comment") as string;
+
+    const response = await fetch(`${BASE_URL}/comments`, {
+      method: "POST",
+      mode: "cors",
+      credentials: "include",
+      body: JSON.stringify({
+        body,
+        post_id: postId,
+      }),
+    });
+
+    const data = await response.json();
+
+    if (data.error) {
+      errorMsg.classList.remove("hidden");
+      errorMsg.classList.add("flex");
+      errorMsg.querySelector("span")!.textContent = data.error;
+    } else {
+      form.reset();
+      window.location.reload();
+    }
+  });
 </script>

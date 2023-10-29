@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"database/sql"
+	"encoding/json"
 	"fmt"
 	"net/http"
 	"strconv"
@@ -34,10 +35,6 @@ func GetAllPosts(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// log.Printf("posts retrieved from db: %v", posts)
-	// TODO: the results is an empty array if there is no posts
-	// TODO: but for some reason null is returned
-
 	err = utils.WriteJSON(w, posts)
 	if err != nil {
 		utils.WriteError(w, err, 500)
@@ -59,7 +56,27 @@ func GetPostByID(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = utils.WriteJSON(w, post)
+	var comments []struct {
+		Comment database.Comment `json:"comment"`
+		User    database.User    `json:"user"`
+	}
+	type GetPostByIDRow struct {
+		Post     database.Post        `json:"post"`
+		User     database.User        `json:"user"`
+		Comments interface{}          `json:"comments"`
+	}
+
+	err = json.Unmarshal([]byte(post.Comments.(string)), &comments)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
+
+	err = utils.WriteJSON(w, GetPostByIDRow{
+		Post: post.Post,
+		User: post.User,
+		Comments: comments,
+	})
 	if err != nil {
 		utils.WriteError(w, err, 500)
 		return
