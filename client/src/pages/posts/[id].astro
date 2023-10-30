@@ -9,6 +9,7 @@ import Button from "@/components/ui/button.astro";
 import ErrorMessage from "@/components/error-message.astro";
 import Layout from "@/layouts/layout.astro";
 import type { User } from "@/types/user";
+import Icon from "astro-icon";
 
 const { id } = Astro.params;
 
@@ -105,25 +106,109 @@ const PageLayout = cookie ? DashboardLayout : Layout;
       }
       <div class="flex flex-col gap-4">
         {
-          data?.comments?.map((c) => (
-            <div class="flex gap-4 items-center mb-4">
-              <img
-                src={siteConfig.avatarUrl}
-                alt="My GH Avatar"
-                class="w-12 h-12 rounded-full"
-              />
-              <div class="flex flex-col gap-2">
-                <div class="flex items-center gap-2">
-                  <p class="text-sm">{c?.user?.username}</p>
-                  <span class="text-slate-500 text-sm">
-                    {timeAgo(new Date(c?.comment.created_at))}
-                  </span>
+          data?.comments?.map((c, idx) => (
+            <div class="flex items-center justify-between">
+              <div class="flex gap-4 items-center mb-4">
+                <img
+                  src={siteConfig.avatarUrl}
+                  alt="My GH Avatar"
+                  class="w-12 h-12 rounded-full"
+                />
+                <div class="flex flex-col gap-2">
+                  <div class="flex items-center gap-2">
+                    <p class="text-sm">{c?.user?.username}</p>
+                    <span class="text-slate-500 text-sm">
+                      {timeAgo(new Date(c?.comment.created_at))}
+                    </span>
+                  </div>
+                  <p id={`comment-${idx}`}>{c?.comment.body}</p>
                 </div>
-                <p>{c?.comment.body}</p>
+              </div>
+              <div class="flex items-center justify-center">
+                <div class="relative inline-block text-left">
+                  <Button
+                    variant="ghost"
+                    id={`comment-action-btn-${idx}`}
+                    aria-haspopup="true"
+                    aria-expanded="true"
+                    aria-controls={`comment-action-${idx}`}
+                    aria-label="Menu actions dropdown"
+                    size="sm"
+                  >
+                    <Icon
+                      name="tabler:dots-vertical"
+                      class="w-6 h-6 text-slate-500 cursor-pointer"
+                    />
+                  </Button>
+                  <div
+                    id={`comment-action-${idx}`}
+                    class="hidden z-30 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+                  >
+                    <div
+                      class="py-2 p-2 divide-y divide-gray-100"
+                      role="menu"
+                      aria-orientation="vertical"
+                      aria-labelledby={`comment-action-btn-${idx}`}
+                    >
+                      <div
+                        class="flex rounded-md px-4 py-2 text-sm text-slate-700 hover:bg-gray-100 active:bg-blue-100 cursor-pointer"
+                        role="menuitem"
+                        id="edit-comment"
+                      >
+                        <span>Edit</span>
+                      </div>
+                      <div
+                        class="flex rounded-md px-4 py-2 text-sm text-red-700 hover:bg-red-100 active:bg-red-100 cursor-pointer"
+                        role="menuitem"
+                        id="delete-comment"
+                      >
+                        <span>Delete</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
               </div>
             </div>
           ))
         }
+      </div>
+    </div>
+  </div>
+  <!-- TODO: add scroll to top -->
+  <!-- <div
+    class="fixed bottom-0 right-0 z-50 flex items-center justify-center w-16 h-16 rounded-full bg-blue-500 hover:bg-blue-600 active:bg-blue-700 cursor-pointer"
+    aria-label="Scroll to top"
+    title="Scroll to top"
+  ></div> -->
+
+  <!-- edit modal here -->
+  <div
+    class="hidden fixed inset-0 z-50 items-center justify-center w-full h-full bg-black bg-opacity-50"
+    id="edit-modal"
+  >
+    <div
+      class="relative w-1/3 h-[220px] bg-white rounded-md px-6 flex items-center"
+    >
+      <div class="absolute top-2 right-2">
+        <button
+          class="flex items-center justify-center w-6 h-6 rounded-full bg-slate-200 hover:bg-slate-300 active:bg-slate-400 cursor-pointer"
+          aria-label="Close modal"
+          title="Close modal"
+          id="close-modal"
+        >
+          <Icon name="tabler:x" class="w-4 h-4 text-slate-800 cursor-pointer" />
+        </button>
+      </div>
+      <div class="flex flex-col gap-4 w-full">
+        <h2 class="text-2xl font-bold text-slate-700 mb-4">Edit comment</h2>
+        <Textarea
+          name="comment"
+          required
+          placeholder="Write a comment..."
+          minlength={10}
+          class="w-full"
+        />
+        <Button type="submit" class="w-fit">Submit</Button>
       </div>
     </div>
   </div>
@@ -143,6 +228,8 @@ const PageLayout = cookie ? DashboardLayout : Layout;
   if (document.querySelector("#viewer .toastui-editor-contents")) {
     postBodyPlaceholder!.remove();
   }
+
+  /* ------------------------ Submit comment form ------------------------ */
 
   const form = document.getElementById("comment-form") as HTMLFormElement;
   const errorMsg = document.getElementById("error-msg") as HTMLDivElement;
@@ -175,5 +262,112 @@ const PageLayout = cookie ? DashboardLayout : Layout;
       form.reset();
       window.location.reload();
     }
+  });
+
+  /* ------------------------ Comment action dropdown ------------------------ */
+
+  const commentsBtns = document.querySelectorAll(
+    "[id^=comment-action-btn-]"
+  ) as NodeListOf<HTMLButtonElement>;
+
+  commentsBtns.forEach((btn) => {
+    const commentIdx = btn?.id.split("-").pop();
+    const dropdown = document.getElementById(`comment-action-${commentIdx}`)!;
+    const editBtn = dropdown?.querySelector("#edit-comment") as HTMLDivElement;
+    const deleteBtn = dropdown?.querySelector(
+      "#delete-comment"
+    ) as HTMLDivElement;
+
+    btn?.addEventListener("click", () => {
+      dropdown?.classList.toggle("hidden");
+    });
+
+    btn?.addEventListener("keydown", (e) => {
+      if (e.key === "Enter") {
+        dropdown.classList.toggle("hidden");
+      }
+    });
+
+    window.addEventListener("click", (e) => {
+      if (
+        !btn?.contains(e.target as Node) &&
+        !dropdown?.contains(e.target as Node)
+      ) {
+        dropdown?.classList.add("hidden");
+      }
+    });
+
+    /* ------------------------ Edit comment ------------------------ */
+
+    const editModal = document.getElementById("edit-modal")!;
+    const closeModal = document.getElementById("close-modal")!;
+
+    editModal.querySelector("button")!.addEventListener("click", () => {
+      const editedComment = editModal.querySelector("textarea")!.value;
+      console.log({ editedComment });
+      // fetch(`${BASE_URL}/comments/${commentId}`, {
+      //   method: "PUT",
+      //   credentials: "include",
+      //   body: JSON.stringify({
+      //     body: editedComment,
+      //     post_id: postId,
+      //   }),
+      // })
+      //   .then((res) => res.json())
+      //   .then(() => {
+      //     window.location.reload();
+      //   })
+      //   .catch((err) => {
+      //     console.log(err);
+      //     alert("Something went wrong. Please try again.");
+      //   });
+
+      editModal.classList.remove("flex");
+    });
+
+    editBtn.addEventListener("click", () => {
+      editModal.classList.remove("hidden");
+      editModal.classList.add("flex");
+
+      const comment = document.getElementById(
+        `comment-${commentIdx}`
+      )!.textContent;
+      editModal.querySelector("textarea")!.textContent = comment;
+    });
+
+    closeModal.addEventListener("click", () => {
+      editModal.classList.remove("flex");
+      editModal.classList.add("hidden");
+    });
+
+    editModal.addEventListener("click", (e) => {
+      if (e.target === editModal) {
+        editModal.classList.remove("flex");
+        editModal.classList.add("hidden");
+      }
+    });
+
+    /* ------------------------ Delete comment ------------------------ */
+
+    deleteBtn?.addEventListener("click", () => {
+      const deleteComment = confirm(
+        "Are you sure you want to delete this comment?"
+      );
+
+      if (deleteComment) {
+        fetch(`${BASE_URL}/comments/${commentIdx}`, {
+          method: "DELETE",
+          credentials: "include",
+        })
+          .then((res) => res.json())
+          .then(() => {
+            window.location.reload();
+          })
+          .catch((err) => {
+            console.log(err);
+            alert("Something went wrong. Please try again.");
+          });
+      }
+    });
   });
 </script>
