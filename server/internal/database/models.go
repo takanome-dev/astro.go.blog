@@ -19,6 +19,7 @@ type Comment struct {
 	CreatedAt time.Time    `json:"created_at"`
 	UpdatedAt time.Time    `json:"updated_at"`
 	DeletedAt sql.NullTime `json:"deleted_at"`
+	EditedAt  sql.NullTime `json:"edited_at"`
 }
 
 type Post struct {

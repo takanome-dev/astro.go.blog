@@ -4,25 +4,29 @@ import Input from "@/components/ui/input.astro";
 import Button, { buttonVariants } from "@/components/ui/button.astro";
 import Layout from "@/layouts/layout.astro";
 import Card from "@/components/card.astro";
-import { cn } from "../lib/utils/merge-classes";
+import { cn } from "@/lib/utils/merge-classes";
 
-const BASE_URL = import.meta.env.PUBLIC_API
+const BASE_URL = import.meta.env.PUBLIC_API;
+const cookie = Astro.cookies.get("auth_token");
 
-const posts: Post[] = await fetch(
-  `${BASE_URL}/posts`)
+if (cookie) {
+  Astro.redirect("/dashboard");
+}
+
+const posts: Post[] = await fetch(`${BASE_URL}/posts`)
   .then(async (response) => await response.json())
   .then((data) => {
-    const posts = data.data
+    const posts = data.data;
     if (posts === "null") {
-      return []
+      return [];
     }
 
-    return posts
+    return posts;
   })
   .catch((error) => {
-    console.error(error)
-    return []
-  })
+    console.error(error);
+    return [];
+  });
 
 // export const prerender = true;
 ---
@@ -40,7 +44,11 @@ const posts: Post[] = await fetch(
     <div class="flex flex-col mt-6">
       <div class="flex gap-4">
         <Input class="w-80" placeholder="Enter your email" />
-        <Button class="focus:ring-primary-400 dark:focus:ring-ring-400 px-6 font-semibold">Get started</Button>
+        <Button
+          class="focus:ring-primary-400 dark:focus:ring-ring-400 px-6 font-semibold"
+        >
+          Get started
+        </Button>
       </div>
       <small class="text-gray-600 mt-2"
         >We care about your data in our <span
@@ -73,7 +81,9 @@ const posts: Post[] = await fetch(
     </div> -->
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-semibold">Latest Writings</h2>
-      <a href="/posts" class={cn(buttonVariants({ variant: "primary" }))}>View all posts</a>
+      <a href="/posts" class={cn(buttonVariants({ variant: "primary" }))}
+        >View all posts</a
+      >
     </div>
     <div class="blog-cards my-8 grid grid-cols-3 gap-8">
       {posts?.map((p) => <Card data={p} />)}
@@ -81,12 +91,16 @@ const posts: Post[] = await fetch(
   </div>
   <div class="mx-28 grid grid-cols-2 gap-16 my-10">
     <div class="self-center">
-      <h3 class="text-4xl font-bold">
-        Growth performance tracking made easy
-      </h3>
-      <img src="/app-store.png" alt="App Stores Images" class="mt-4 w-80 h-12">
+      <h3 class="text-4xl font-bold">Growth performance tracking made easy</h3>
+      <img
+        src="/app-store.png"
+        alt="App Stores Images"
+        class="mt-4 w-80 h-12"
+      />
     </div>
-    <div class="w-[400px] h-[500px] bg-slate-300 rounded-md flex justify-center items-center">
+    <div
+      class="w-[400px] h-[500px] bg-slate-300 rounded-md flex justify-center items-center"
+    >
       <p class="tetx-sm">Placeholder for an upcoming image</p>
     </div>
   </div>

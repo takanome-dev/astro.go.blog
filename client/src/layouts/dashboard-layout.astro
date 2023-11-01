@@ -21,14 +21,13 @@ const { title } = Astro.props;
         <nav class="">
           <ul class="flex gap-8">
             <li class="text-gray-500">
-              <a href="/dashboard" class="flex items-center">
-                Dashboard
-              </a>
+              <a href="/posts" class="flex items-center"> Home</a>
             </li>
             <li class="text-gray-500">
-              <a href="/dashboard/drafts" class="flex items-center">
-                Drafts
-              </a>
+              <a href="/dashboard" class="flex items-center"> Dashboard</a>
+            </li>
+            <li class="text-gray-500">
+              <a href="/dashboard/drafts" class="flex items-center"> Drafts</a>
             </li>
             <li class="text-gray-500">
               <a href="/dashboard/analytics" class="flex items-center">
@@ -40,7 +39,9 @@ const { title } = Astro.props;
       </div>
       <div class="flex gap-8">
         <a href="/post/new">
-          <Button class="font-semibold shadow-sm shadow-primary-500/50 hover:shadow-primary-500/60" size="sm"
+          <Button
+            class="font-semibold shadow-sm shadow-primary-500/50 hover:shadow-primary-500/60"
+            size="sm"
           >
             Write a post <Icon name="tabler:arrow-right" class="w-4 h-4 ml-2" />
           </Button>

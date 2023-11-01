@@ -6,4 +6,5 @@ export interface Comment {
   created_at: string;
   updated_at: string;
   deleted_at?: string;
+  edited_at?: string;
 }
