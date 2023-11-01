@@ -3,7 +3,8 @@ INSERT INTO posts (id, title, body, image, user_id, is_published, is_draft) VALU
 
 -- name: GetAllPosts :many
 SELECT sqlc.embed(posts), sqlc.embed(users) FROM posts
-JOIN users ON posts.user_id = users.id;
+JOIN users ON posts.user_id = users.id
+ORDER BY posts.created_at DESC;
 
 -- name: GetPostByID :one
 SELECT sqlc.embed(posts), sqlc.embed(users), 

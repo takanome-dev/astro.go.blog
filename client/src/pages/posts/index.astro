@@ -8,54 +8,52 @@ import PlaceholderTitle from "@/components/placeholder/placeholder-title.astro";
 import PlaceholderDescription from "@/components/placeholder/placeholder-description.astro";
 import PlaceholderIcon from "@/components/placeholder/placeholder-icon.astro";
 
-const BASE_URL = import.meta.env.PUBLIC_API
+const BASE_URL = import.meta.env.PUBLIC_API;
 
-const posts: Post[] = await fetch(
-  `${BASE_URL}/posts`, {
-    method: "GET",
-    headers: {
-      'Content-Type': 'application/json',
-    },
-  })
+const posts: Post[] = await fetch(`${BASE_URL}/posts`, {
+  method: "GET",
+  headers: {
+    "Content-Type": "application/json",
+  },
+})
   .then(async (response) => await response.json())
   .then((data) => {
-    const posts = data.data
-    if (posts === "null") return []
-    return posts
+    const posts = data.data;
+    if (posts === "null") return [];
+    return posts;
   })
   .catch((error) => {
-    console.error(error)
-    return []
-  })
-console.log({ posts })
+    console.error(error);
+    return [];
+  });
 ---
 
 <Layout title="Posts">
   <div class="mx-28">
-    <div
-      class="my-10"
-    >
+    <div class="my-10">
       <h1 class="text-2xl mb-2 font-bold">All Posts</h1>
       <p class="text-gray-600">
         This page shows all of the posts created by our users.
       </p>
     </div>
     <div>
-      {posts.length <= 0 ? (
-        <EmptyPlaceholder>
-          <PlaceholderIcon name="tabler:file-search" class="text-slate-600" />
-          <PlaceholderTitle>
-            You don't have any posts yet.
-          </PlaceholderTitle>
-          <PlaceholderDescription>
-            You can create a new post by clicking the button below.
-          </PlaceholderDescription>
-        </EmptyPlaceholder>
-      ) : (
-        <div class="my-8 grid grid-cols-3 gap-8" id="posts">
-          {posts.map((p) => <Card data={p} />)}
-        </div>
-      )}
+      {
+        posts.length < 0 ? (
+          <EmptyPlaceholder>
+            <PlaceholderIcon name="tabler:file-search" class="text-slate-600" />
+            <PlaceholderTitle>You don't have any posts yet.</PlaceholderTitle>
+            <PlaceholderDescription>
+              You can create a new post by clicking the button below.
+            </PlaceholderDescription>
+          </EmptyPlaceholder>
+        ) : (
+          <div class="my-8 grid grid-cols-3 gap-8" id="posts">
+            {posts.map((p) => (
+              <Card data={p} />
+            ))}
+          </div>
+        )
+      }
     </div>
   </div>
 </Layout>

@@ -64,6 +64,7 @@ func (q *Queries) DeletePost(ctx context.Context, id uuid.UUID) error {
 const getAllPosts = `-- name: GetAllPosts :many
 SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at FROM posts
 JOIN users ON posts.user_id = users.id
+ORDER BY posts.created_at DESC
 `
 
 type GetAllPostsRow struct {
@@ -161,7 +162,6 @@ func (q *Queries) GetPostByID(ctx context.Context, id uuid.UUID) (GetPostByIDRow
 }
 
 const getPostsByUserID = `-- name: GetPostsByUserID :many
-
 SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at FROM posts
 JOIN users ON posts.user_id = users.id
 WHERE user_id = $1
@@ -172,20 +172,6 @@ type GetPostsByUserIDRow struct {
 	User User `json:"user"`
 }
 
-// SELECT sqlc.embed(posts), sqlc.embed(users),
-// COALESCE(
-//
-//	(
-//	  SELECT json_agg(comments)
-//	  FROM comments
-//	  WHERE posts.id = comments.post_id
-//	),
-//	NULL
-//	) as comments
-//
-// FROM posts
-// JOIN users ON posts.user_id = users.id
-// WHERE posts.id = $1;
 func (q *Queries) GetPostsByUserID(ctx context.Context, userID uuid.UUID) ([]GetPostsByUserIDRow, error) {
 	rows, err := q.db.QueryContext(ctx, getPostsByUserID, userID)
 	if err != nil {

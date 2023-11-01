@@ -1,7 +1,6 @@
 package controllers
 
 import (
-	"database/sql"
 	"fmt"
 	"net/http"
 
@@ -14,9 +13,6 @@ import (
 type CreateCommentParams struct {
 	Body   string    `json:"body"`
 	PostID uuid.UUID `json:"post_id"`
-}
-type UpdateCommentParams struct {
-	Body sql.NullString `json:"body"`
 }
 
 func GetAllComments(w http.ResponseWriter, r *http.Request) {
@@ -93,13 +89,13 @@ func UpdateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	body, err := utils.ReadJSON[UpdateCommentParams](r.Body)
+	body, err := utils.ReadJSON[database.UpdateCommentParams](r.Body)
 	if err != nil {
 		utils.WriteError(w, err, 400)
 		return
 	}
 
-	comment, err := db.UpdateComment(r.Context(), database.UpdateCommentParams{
+	err = db.UpdateComment(r.Context(), database.UpdateCommentParams{
 		ID: id,
 		Body: body.Body,
 	})
@@ -108,7 +104,8 @@ func UpdateComment(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = utils.WriteJSON(w, comment)
+	type Response struct {Message string `json:"message"`}
+	err = utils.WriteJSON(w, Response{Message: fmt.Sprintf("Comment with id %s has been updated!", id)})
 	if err != nil {
 		utils.WriteError(w, err, 500)
 		return

@@ -7,13 +7,12 @@ package database
 
 import (
 	"context"
-	"database/sql"
 
 	"github.com/google/uuid"
 )
 
 const createComment = `-- name: CreateComment :one
-INSERT INTO comments (id, body, user_id, post_id) VALUES ($1, $2, $3, $4) RETURNING id, body, user_id, post_id, created_at, updated_at, deleted_at
+INSERT INTO comments (id, body, user_id, post_id) VALUES ($1, $2, $3, $4) RETURNING id, body, user_id, post_id, created_at, updated_at, deleted_at, edited_at
 `
 
 type CreateCommentParams struct {
@@ -39,6 +38,7 @@ func (q *Queries) CreateComment(ctx context.Context, arg CreateCommentParams) (C
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.EditedAt,
 	)
 	return i, err
 }
@@ -53,7 +53,8 @@ func (q *Queries) DeleteComment(ctx context.Context, id uuid.UUID) error {
 }
 
 const getAllComments = `-- name: GetAllComments :many
-SELECT id, body, user_id, post_id, created_at, updated_at, deleted_at FROM comments
+SELECT id, body, user_id, post_id, created_at, updated_at, deleted_at, edited_at FROM comments
+ORDER BY created_at DESC
 `
 
 func (q *Queries) GetAllComments(ctx context.Context) ([]Comment, error) {
@@ -73,6 +74,7 @@ func (q *Queries) GetAllComments(ctx context.Context) ([]Comment, error) {
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
+			&i.EditedAt,
 		); err != nil {
 			return nil, err
 		}
@@ -88,7 +90,8 @@ func (q *Queries) GetAllComments(ctx context.Context) ([]Comment, error) {
 }
 
 const getCommentByID = `-- name: GetCommentByID :one
-SELECT id, body, user_id, post_id, created_at, updated_at, deleted_at FROM comments WHERE id = $1
+SELECT id, body, user_id, post_id, created_at, updated_at, deleted_at, edited_at FROM comments WHERE id = $1
+ORDER BY created_at DESC
 `
 
 func (q *Queries) GetCommentByID(ctx context.Context, id uuid.UUID) (Comment, error) {
@@ -102,33 +105,23 @@ func (q *Queries) GetCommentByID(ctx context.Context, id uuid.UUID) (Comment, er
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.EditedAt,
 	)
 	return i, err
 }
 
-const updateComment = `-- name: UpdateComment :one
+const updateComment = `-- name: UpdateComment :exec
 UPDATE comments
-SET body = COALESCE($1, body)
-WHERE id = $2
-RETURNING id, body, user_id, post_id, created_at, updated_at, deleted_at
+SET body = $2, edited_at = NOW()
+WHERE id = $1
 `
 
 type UpdateCommentParams struct {
-	Body sql.NullString `json:"body"`
-	ID   uuid.UUID      `json:"id"`
+	ID   uuid.UUID `json:"id"`
+	Body string    `json:"body"`
 }
 
-func (q *Queries) UpdateComment(ctx context.Context, arg UpdateCommentParams) (Comment, error) {
-	row := q.db.QueryRowContext(ctx, updateComment, arg.Body, arg.ID)
-	var i Comment
-	err := row.Scan(
-		&i.ID,
-		&i.Body,
-		&i.UserID,
-		&i.PostID,
-		&i.CreatedAt,
-		&i.UpdatedAt,
-		&i.DeletedAt,
-	)
-	return i, err
+func (q *Queries) UpdateComment(ctx context.Context, arg UpdateCommentParams) error {
+	_, err := q.db.ExecContext(ctx, updateComment, arg.ID, arg.Body)
+	return err
 }

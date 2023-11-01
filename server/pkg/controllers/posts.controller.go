@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"strconv"
 	"strings"
+	"time"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
@@ -27,6 +28,17 @@ type UpdatePostParams struct {
 	IsPublished *bool   `json:"is_published"`
 	IsDraft     *bool   `json:"is_draft"`
 }
+type Comment struct {
+	ID        uuid.UUID    `json:"id"`
+	Body      string       `json:"body"`
+	UserID    uuid.UUID    `json:"user_id"`
+	PostID    uuid.UUID    `json:"post_id"`
+	CreatedAt time.Time    `json:"created_at"`
+	UpdatedAt time.Time    `json:"updated_at"`
+	DeletedAt string `json:"deleted_at"`
+	EditedAt  string `json:"edited_at"`
+}
+
 
 func GetAllPosts(w http.ResponseWriter, r *http.Request) {
 	posts, err := db.GetAllPosts(r.Context())
@@ -57,7 +69,7 @@ func GetPostByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	var comments []struct {
-		Comment database.Comment `json:"comment"`
+		Comment Comment `json:"comment"`
 		User    database.User    `json:"user"`
 	}
 	type GetPostByIDRow struct {
