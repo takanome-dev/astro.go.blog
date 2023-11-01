@@ -12,7 +12,7 @@ import (
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, username, email, password) VALUES ($1, $2, $3, $4) RETURNING id, username, email, password, created_at, updated_at, deleted_at
+INSERT INTO users (id, username, email, password) VALUES ($1, $2, $3, $4) RETURNING id, username, email, password, created_at, updated_at, deleted_at, name, bio, image, location, website_url, github_username, twitter_username, title
 `
 
 type CreateUserParams struct {
@@ -38,12 +38,20 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.Name,
+		&i.Bio,
+		&i.Image,
+		&i.Location,
+		&i.WebsiteUrl,
+		&i.GithubUsername,
+		&i.TwitterUsername,
+		&i.Title,
 	)
 	return i, err
 }
 
 const getAllUsers = `-- name: GetAllUsers :many
-SELECT id, username, email, password, created_at, updated_at, deleted_at FROM users
+SELECT id, username, email, password, created_at, updated_at, deleted_at, name, bio, image, location, website_url, github_username, twitter_username, title FROM users
 `
 
 func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
@@ -63,6 +71,14 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
+			&i.Name,
+			&i.Bio,
+			&i.Image,
+			&i.Location,
+			&i.WebsiteUrl,
+			&i.GithubUsername,
+			&i.TwitterUsername,
+			&i.Title,
 		); err != nil {
 			return nil, err
 		}
@@ -78,7 +94,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, username, email, password, created_at, updated_at, deleted_at FROM users WHERE email = $1
+SELECT id, username, email, password, created_at, updated_at, deleted_at, name, bio, image, location, website_url, github_username, twitter_username, title FROM users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -92,12 +108,21 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.Name,
+		&i.Bio,
+		&i.Image,
+		&i.Location,
+		&i.WebsiteUrl,
+		&i.GithubUsername,
+		&i.TwitterUsername,
+		&i.Title,
 	)
 	return i, err
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, username, email, password, created_at, updated_at, deleted_at FROM users WHERE id = $1
+SELECT id, username, email, password, created_at, updated_at, deleted_at, name, bio, image, location, website_url, github_username, twitter_username, title FROM users 
+WHERE id = $1
 `
 
 func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
@@ -111,12 +136,20 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.Name,
+		&i.Bio,
+		&i.Image,
+		&i.Location,
+		&i.WebsiteUrl,
+		&i.GithubUsername,
+		&i.TwitterUsername,
+		&i.Title,
 	)
 	return i, err
 }
 
 const getUserByUsername = `-- name: GetUserByUsername :one
-SELECT id, username, email, password, created_at, updated_at, deleted_at FROM users WHERE username = $1
+SELECT id, username, email, password, created_at, updated_at, deleted_at, name, bio, image, location, website_url, github_username, twitter_username, title FROM users WHERE username = $1
 `
 
 func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
@@ -130,6 +163,14 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.Name,
+		&i.Bio,
+		&i.Image,
+		&i.Location,
+		&i.WebsiteUrl,
+		&i.GithubUsername,
+		&i.TwitterUsername,
+		&i.Title,
 	)
 	return i, err
 }

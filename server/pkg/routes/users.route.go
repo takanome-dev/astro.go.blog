@@ -30,6 +30,7 @@ var UsersRoute = func (router *mux.Router) {
 			auth.AuthMiddleware,
 		).ServeHTTP,
 	).Methods("GET")
+	// TODO: this should be public
 	router.HandleFunc(
 		"/users/username/{username}", 
 		auth.Middleware(
@@ -37,18 +38,18 @@ var UsersRoute = func (router *mux.Router) {
 			auth.AuthMiddleware,
 		).ServeHTTP,
 	).Methods("GET")
-	router.HandleFunc(
-		"/users/{id}", 
-		auth.Middleware(
-			http.HandlerFunc(controllers.UpdateUser), 
-			auth.AuthMiddleware,
-		).ServeHTTP,
-	).Methods("PUT")
-	router.HandleFunc(
-		"/users/{id}", 
-		auth.Middleware(
-			http.HandlerFunc(controllers.DeleteUser), 
-			auth.AuthMiddleware,
-		).ServeHTTP,
-	).Methods("DELETE")
+	// router.HandleFunc(
+	// 	"/users/{id}", 
+	// 	auth.Middleware(
+	// 		http.HandlerFunc(controllers.UpdateUser), 
+	// 		auth.AuthMiddleware,
+	// 	).ServeHTTP,
+	// ).Methods("PUT")
+	// router.HandleFunc(
+	// 	"/users/{id}", 
+	// 	auth.Middleware(
+	// 		http.HandlerFunc(controllers.DeleteUser), 
+	// 		auth.AuthMiddleware,
+	// 	).ServeHTTP,
+	// ).Methods("DELETE")
 }

@@ -62,7 +62,7 @@ func (q *Queries) DeletePost(ctx context.Context, id uuid.UUID) error {
 }
 
 const getAllPosts = `-- name: GetAllPosts :many
-SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at FROM posts
+SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at, users.name, users.bio, users.image, users.location, users.website_url, users.github_username, users.twitter_username, users.title FROM posts
 JOIN users ON posts.user_id = users.id
 WHERE posts.is_published = true
 ORDER BY posts.created_at DESC
@@ -100,6 +100,14 @@ func (q *Queries) GetAllPosts(ctx context.Context) ([]GetAllPostsRow, error) {
 			&i.User.CreatedAt,
 			&i.User.UpdatedAt,
 			&i.User.DeletedAt,
+			&i.User.Name,
+			&i.User.Bio,
+			&i.User.Image,
+			&i.User.Location,
+			&i.User.WebsiteUrl,
+			&i.User.GithubUsername,
+			&i.User.TwitterUsername,
+			&i.User.Title,
 		); err != nil {
 			return nil, err
 		}
@@ -115,7 +123,7 @@ func (q *Queries) GetAllPosts(ctx context.Context) ([]GetAllPostsRow, error) {
 }
 
 const getDraftPostsByUserID = `-- name: GetDraftPostsByUserID :many
-SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at FROM posts
+SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at, users.name, users.bio, users.image, users.location, users.website_url, users.github_username, users.twitter_username, users.title FROM posts
 JOIN users ON posts.user_id = users.id
 WHERE user_id = $1 AND posts.is_draft = true
 `
@@ -152,6 +160,14 @@ func (q *Queries) GetDraftPostsByUserID(ctx context.Context, userID uuid.UUID) (
 			&i.User.CreatedAt,
 			&i.User.UpdatedAt,
 			&i.User.DeletedAt,
+			&i.User.Name,
+			&i.User.Bio,
+			&i.User.Image,
+			&i.User.Location,
+			&i.User.WebsiteUrl,
+			&i.User.GithubUsername,
+			&i.User.TwitterUsername,
+			&i.User.Title,
 		); err != nil {
 			return nil, err
 		}
@@ -167,7 +183,7 @@ func (q *Queries) GetDraftPostsByUserID(ctx context.Context, userID uuid.UUID) (
 }
 
 const getPostByID = `-- name: GetPostByID :one
-SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at, 
+SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at, users.name, users.bio, users.image, users.location, users.website_url, users.github_username, users.twitter_username, users.title, 
 COALESCE(
   (
     SELECT json_agg(json_build_object('comment', comments, 'user', users))::text
@@ -209,13 +225,21 @@ func (q *Queries) GetPostByID(ctx context.Context, id uuid.UUID) (GetPostByIDRow
 		&i.User.CreatedAt,
 		&i.User.UpdatedAt,
 		&i.User.DeletedAt,
+		&i.User.Name,
+		&i.User.Bio,
+		&i.User.Image,
+		&i.User.Location,
+		&i.User.WebsiteUrl,
+		&i.User.GithubUsername,
+		&i.User.TwitterUsername,
+		&i.User.Title,
 		&i.Comments,
 	)
 	return i, err
 }
 
 const getPostsByUserID = `-- name: GetPostsByUserID :many
-SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at FROM posts
+SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at, users.name, users.bio, users.image, users.location, users.website_url, users.github_username, users.twitter_username, users.title FROM posts
 JOIN users ON posts.user_id = users.id
 WHERE user_id = $1 AND posts.is_published = true
 `
@@ -252,6 +276,14 @@ func (q *Queries) GetPostsByUserID(ctx context.Context, userID uuid.UUID) ([]Get
 			&i.User.CreatedAt,
 			&i.User.UpdatedAt,
 			&i.User.DeletedAt,
+			&i.User.Name,
+			&i.User.Bio,
+			&i.User.Image,
+			&i.User.Location,
+			&i.User.WebsiteUrl,
+			&i.User.GithubUsername,
+			&i.User.TwitterUsername,
+			&i.User.Title,
 		); err != nil {
 			return nil, err
 		}

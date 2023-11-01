@@ -36,11 +36,19 @@ type Post struct {
 }
 
 type User struct {
-	ID        uuid.UUID    `json:"id"`
-	Username  string       `json:"username"`
-	Email     string       `json:"email"`
-	Password  string       `json:"password"`
-	CreatedAt time.Time    `json:"created_at"`
-	UpdatedAt time.Time    `json:"updated_at"`
-	DeletedAt sql.NullTime `json:"deleted_at"`
+	ID              uuid.UUID    `json:"id"`
+	Username        string       `json:"username"`
+	Email           string       `json:"email"`
+	Password        string       `json:"password"`
+	CreatedAt       time.Time    `json:"created_at"`
+	UpdatedAt       time.Time    `json:"updated_at"`
+	DeletedAt       sql.NullTime `json:"deleted_at"`
+	Name            string       `json:"name"`
+	Bio             string       `json:"bio"`
+	Image           string       `json:"image"`
+	Location        string       `json:"location"`
+	WebsiteUrl      string       `json:"website_url"`
+	GithubUsername  string       `json:"github_username"`
+	TwitterUsername string       `json:"twitter_username"`
+	Title           string       `json:"title"`
 }
