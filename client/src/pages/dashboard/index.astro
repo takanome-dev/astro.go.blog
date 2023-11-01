@@ -27,7 +27,6 @@ const posts: Post[] = await fetch(`${BASE_URL}/posts/current-user/published`, {
     console.error(error);
     return [];
   });
-// .then((data) => (data.data as Post[]).filter((p) => p.post.is_published))
 ---
 
 <DashboardLayout title="Posts">
