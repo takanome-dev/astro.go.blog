@@ -8,32 +8,29 @@ import PlaceholderTitle from "@/components/placeholder/placeholder-title.astro";
 import PlaceholderDescription from "@/components/placeholder/placeholder-description.astro";
 import PlaceholderIcon from "@/components/placeholder/placeholder-icon.astro";
 
-const cookie = Astro.cookies.get("auth_token")
-const BASE_URL = import.meta.env.PUBLIC_API
+const cookie = Astro.cookies.get("auth_token");
+const BASE_URL = import.meta.env.PUBLIC_API;
 
 if (!cookie) {
-  Astro.redirect("/login")
+  Astro.redirect("/login");
 }
 
-const posts: Post[] = await fetch(
-  `${BASE_URL}/posts/current-user`, {
-    method: "GET",
-    headers: {
-      'Cookie': `auth_token=${cookie?.value}`,
-    },
-  })
+const posts: Post[] = await fetch(`${BASE_URL}/posts/current-user/published`, {
+  method: "GET",
+  headers: {
+    Cookie: `auth_token=${cookie?.value}`,
+  },
+})
   .then(async (response) => await response.json())
-  .then((data) => (data.data as Post[]).filter((p) => p.post.is_published))
+  .then((data) => data.data)
   .catch((error) => {
-    console.error(error)
-    return []
-  })
+    console.error(error);
+    return [];
+  });
 ---
 
 <DashboardLayout title="Posts">
-  <div
-    class="my-10"
-  >
+  <div class="my-10">
     <h1 class="text-2xl mb-2 font-bold">Your Posts</h1>
     <p class="text-gray-600">
       This is your posts page. You can create, edit, and delete posts from here.
@@ -41,29 +38,22 @@ const posts: Post[] = await fetch(
   </div>
 
   <div>
-    <!-- <div class="flex justify-end">
-      <div class="relative max-w-xs">
-        <Icon
-          name="tabler:search"
-          class="w-6 h-6 absolute left-2 top-1/2 -translate-y-1/2 text-gray-400"
-        />
-        <Input class="pl-10" placeholder="Search" />
-      </div>
-    </div> -->
-    {posts.length <= 0 ? (
-      <EmptyPlaceholder>
-        <PlaceholderIcon name="tabler:file-search" class="text-slate-600" />
-        <PlaceholderTitle>
-          You don't have any posts yet.
-        </PlaceholderTitle>
-        <PlaceholderDescription>
-          You can create a new post by clicking the button below.
-        </PlaceholderDescription>
-      </EmptyPlaceholder>
-    ) : (
-      <div class="my-8 grid grid-cols-3 gap-8" id="posts">
-        {posts.map((p) => <Card data={p} />)}
-      </div>
-    )}
+    {
+      posts.length < 0 ? (
+        <EmptyPlaceholder>
+          <PlaceholderIcon name="tabler:file-search" class="text-slate-600" />
+          <PlaceholderTitle>You don't have any posts yet.</PlaceholderTitle>
+          <PlaceholderDescription>
+            You can create a new post by clicking the button below.
+          </PlaceholderDescription>
+        </EmptyPlaceholder>
+      ) : (
+        <div class="my-8 grid grid-cols-3 gap-8" id="posts">
+          {posts.map((p) => (
+            <Card data={p} />
+          ))}
+        </div>
+      )
+    }
   </div>
 </DashboardLayout>

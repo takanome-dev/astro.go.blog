@@ -10,15 +10,22 @@ import (
 
 var PostsRoutes = func (router *mux.Router)  {
 	router.HandleFunc("/posts", controllers.GetAllPosts).Methods("GET")
+	router.HandleFunc("/posts/{id}", controllers.GetPostByID).Methods("GET")
+	router.HandleFunc("/posts/users/{userId}", controllers.GetPostsByUserID).Methods("GET")
 	router.HandleFunc(
-		"/posts/current-user",
+		"/posts/current-user/published",
 		auth.Middleware(
-			http.HandlerFunc(controllers.GetPostsForLoggedInUser), 
+			http.HandlerFunc(controllers.GetCurrentUserPosts), 
 			auth.AuthMiddleware,
 		).ServeHTTP,
 	).Methods("GET")
-	router.HandleFunc("/posts/{id}", controllers.GetPostByID).Methods("GET")
-	router.HandleFunc("/posts/users/{userId}", controllers.GetPostsByUserID).Methods("GET")
+	router.HandleFunc(
+		"/posts/current-user/drafts",
+		auth.Middleware(
+			http.HandlerFunc(controllers.GetCurrentUserDraftPosts), 
+			auth.AuthMiddleware,
+		).ServeHTTP,
+	).Methods("GET")
 	router.HandleFunc(
 		"/posts", 
 		auth.Middleware(

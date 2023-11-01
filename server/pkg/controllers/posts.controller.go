@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 	"strconv"
 	"strings"
@@ -78,10 +79,22 @@ func GetPostByID(w http.ResponseWriter, r *http.Request) {
 		Comments interface{}          `json:"comments"`
 	}
 
+	if post.Comments == nil {
+		post.Comments = "[]"
+	}
+
 	err = json.Unmarshal([]byte(post.Comments.(string)), &comments)
+	log.Printf("err when unmarshalling comments: %v", err)
 	if err != nil {
 		utils.WriteError(w, err, 500)
 		return
+	}
+
+	if comments == nil {
+		comments = []struct {
+			Comment Comment `json:"comment"`
+			User    database.User    `json:"user"`
+		}{}
 	}
 
 	err = utils.WriteJSON(w, GetPostByIDRow{
@@ -116,7 +129,7 @@ func GetPostsByUserID(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func GetPostsForLoggedInUser(w http.ResponseWriter, r *http.Request) {
+func GetCurrentUserPosts(w http.ResponseWriter, r *http.Request) {
 	currentUser, ok := utils.CtxValue[utils.JwtUser](r.Context()); 
 	if !ok {
 		utils.WriteError(w, fmt.Errorf("something went wrong when retrieving user id from context"), 400)
@@ -124,6 +137,26 @@ func GetPostsForLoggedInUser(w http.ResponseWriter, r *http.Request) {
 	}
 
 	posts, err := db.GetPostsByUserID(r.Context(), currentUser.UserID)
+	if err != nil {
+		utils.WriteError(w, err, 404)
+		return
+	}
+
+	err = utils.WriteJSON(w, posts)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
+}
+
+func GetCurrentUserDraftPosts(w http.ResponseWriter, r *http.Request) {
+	currentUser, ok := utils.CtxValue[utils.JwtUser](r.Context()); 
+	if !ok {
+		utils.WriteError(w, fmt.Errorf("something went wrong when retrieving user id from context"), 400)
+		return
+	}
+
+	posts, err := db.GetDraftPostsByUserID(r.Context(), currentUser.UserID)
 	if err != nil {
 		utils.WriteError(w, err, 404)
 		return

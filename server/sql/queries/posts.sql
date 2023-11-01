@@ -4,6 +4,7 @@ INSERT INTO posts (id, title, body, image, user_id, is_published, is_draft) VALU
 -- name: GetAllPosts :many
 SELECT sqlc.embed(posts), sqlc.embed(users) FROM posts
 JOIN users ON posts.user_id = users.id
+WHERE posts.is_published = true
 ORDER BY posts.created_at DESC;
 
 -- name: GetPostByID :one
@@ -24,7 +25,12 @@ WHERE posts.id = $1;
 -- name: GetPostsByUserID :many
 SELECT sqlc.embed(posts), sqlc.embed(users) FROM posts
 JOIN users ON posts.user_id = users.id
-WHERE user_id = $1;
+WHERE user_id = $1 AND posts.is_published = true;
+
+-- name: GetDraftPostsByUserID :many
+SELECT sqlc.embed(posts), sqlc.embed(users) FROM posts
+JOIN users ON posts.user_id = users.id
+WHERE user_id = $1 AND posts.is_draft = true;
 
 -- name: UpdatePost :one
 UPDATE posts 

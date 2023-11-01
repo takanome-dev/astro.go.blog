@@ -64,6 +64,7 @@ func (q *Queries) DeletePost(ctx context.Context, id uuid.UUID) error {
 const getAllPosts = `-- name: GetAllPosts :many
 SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at FROM posts
 JOIN users ON posts.user_id = users.id
+WHERE posts.is_published = true
 ORDER BY posts.created_at DESC
 `
 
@@ -81,6 +82,58 @@ func (q *Queries) GetAllPosts(ctx context.Context) ([]GetAllPostsRow, error) {
 	var items []GetAllPostsRow
 	for rows.Next() {
 		var i GetAllPostsRow
+		if err := rows.Scan(
+			&i.Post.ID,
+			&i.Post.Title,
+			&i.Post.Body,
+			&i.Post.UserID,
+			&i.Post.IsPublished,
+			&i.Post.IsDraft,
+			&i.Post.CreatedAt,
+			&i.Post.UpdatedAt,
+			&i.Post.DeletedAt,
+			&i.Post.Image,
+			&i.User.ID,
+			&i.User.Username,
+			&i.User.Email,
+			&i.User.Password,
+			&i.User.CreatedAt,
+			&i.User.UpdatedAt,
+			&i.User.DeletedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
+const getDraftPostsByUserID = `-- name: GetDraftPostsByUserID :many
+SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at FROM posts
+JOIN users ON posts.user_id = users.id
+WHERE user_id = $1 AND posts.is_draft = true
+`
+
+type GetDraftPostsByUserIDRow struct {
+	Post Post `json:"post"`
+	User User `json:"user"`
+}
+
+func (q *Queries) GetDraftPostsByUserID(ctx context.Context, userID uuid.UUID) ([]GetDraftPostsByUserIDRow, error) {
+	rows, err := q.db.QueryContext(ctx, getDraftPostsByUserID, userID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []GetDraftPostsByUserIDRow
+	for rows.Next() {
+		var i GetDraftPostsByUserIDRow
 		if err := rows.Scan(
 			&i.Post.ID,
 			&i.Post.Title,
@@ -164,7 +217,7 @@ func (q *Queries) GetPostByID(ctx context.Context, id uuid.UUID) (GetPostByIDRow
 const getPostsByUserID = `-- name: GetPostsByUserID :many
 SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at FROM posts
 JOIN users ON posts.user_id = users.id
-WHERE user_id = $1
+WHERE user_id = $1 AND posts.is_published = true
 `
 
 type GetPostsByUserIDRow struct {
