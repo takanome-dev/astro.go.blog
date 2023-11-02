@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/google/uuid"
 )
@@ -171,6 +172,61 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 		&i.GithubUsername,
 		&i.TwitterUsername,
 		&i.Title,
+	)
+	return i, err
+}
+
+const getUserKPIs = `-- name: GetUserKPIs :one
+SELECT users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at, users.name, users.bio, users.image, users.location, users.website_url, users.github_username, users.twitter_username, users.title, 
+       (
+           SELECT json_agg(posts)
+           FROM (
+               SELECT id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at, image FROM posts
+               WHERE posts.user_id = users.id
+               ORDER BY posts.created_at DESC
+               LIMIT 3
+           ) AS posts
+       ) AS last_three_posts,
+       (
+           SELECT json_agg(comments)
+           FROM (
+               SELECT id, body, user_id, post_id, created_at, updated_at, deleted_at, edited_at FROM comments
+               WHERE comments.user_id = users.id
+               ORDER BY comments.created_at DESC
+               LIMIT 3
+           ) AS comments
+       ) AS last_three_comments
+FROM users
+WHERE users.id = $1
+`
+
+type GetUserKPIsRow struct {
+	User              User            `json:"user"`
+	LastThreePosts    json.RawMessage `json:"last_three_posts"`
+	LastThreeComments json.RawMessage `json:"last_three_comments"`
+}
+
+func (q *Queries) GetUserKPIs(ctx context.Context, id uuid.UUID) (GetUserKPIsRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserKPIs, id)
+	var i GetUserKPIsRow
+	err := row.Scan(
+		&i.User.ID,
+		&i.User.Username,
+		&i.User.Email,
+		&i.User.Password,
+		&i.User.CreatedAt,
+		&i.User.UpdatedAt,
+		&i.User.DeletedAt,
+		&i.User.Name,
+		&i.User.Bio,
+		&i.User.Image,
+		&i.User.Location,
+		&i.User.WebsiteUrl,
+		&i.User.GithubUsername,
+		&i.User.TwitterUsername,
+		&i.User.Title,
+		&i.LastThreePosts,
+		&i.LastThreeComments,
 	)
 	return i, err
 }

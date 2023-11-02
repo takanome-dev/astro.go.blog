@@ -75,6 +75,26 @@ func GetCurrentUser(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
+func GetCurrentUserKPIs(w http.ResponseWriter, r *http.Request) {
+	currentUserID, ok := utils.CtxValue[utils.JwtUser](r.Context()); 
+	if !ok {
+		utils.WriteError(w, fmt.Errorf("something went wrong when retrieving user id from context"), 400)
+		return
+	}
+
+	user, err := db.GetUserKPIs(r.Context(), currentUserID.UserID)
+	if err != nil {
+		utils.WriteError(w, err, 404)
+		return
+	}
+
+	err = utils.WriteJSON(w, user)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
+}
+
 func GetUserByUsername(w http.ResponseWriter, r *http.Request) {
 	username := mux.Vars(r)["username"]
 	if username == "" {

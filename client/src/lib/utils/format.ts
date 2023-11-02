@@ -1,9 +1,11 @@
 export const formatDate = (date: string) => {
+  const newDate = date ? new Date(date) : new Date();
+
   return Intl.DateTimeFormat("en-US", {
     year: "numeric",
     month: "long",
     day: "numeric",
-  }).format(new Date(date));
+  }).format(newDate);
 };
 
 export const timeAgo = (date: Date) => {

@@ -1,10 +1,9 @@
 ---
-import { type User } from "@/types/user";
+import { type CurrentUserKPIs } from "@/types/user";
 import Icon from "astro-icon";
 import ProfileLayout from "@/layouts/profile-layout.astro";
 import { formatDate } from "@/lib/utils/format";
-
-const { username } = Astro.params;
+import { siteConfig } from "@/lib/config/site";
 
 const cookie = Astro.cookies.get("auth_token");
 const BASE_URL = import.meta.env.PUBLIC_API;
@@ -13,33 +12,21 @@ if (!cookie) {
   Astro.redirect("/login");
 }
 
-// const user: User = await fetch(`${BASE_URL}/users/username/${username}`, {
-//   method: "GET",
-//   headers: {
-//     Cookie: `auth_token=${cookie?.value}`,
-//   },
-// })
-//   .then(async (response) => await response.json())
-//   .then((data) => data.data)
-//   .catch((error) => {
-//     console.error(error);
-//     return {};
-//   });
-
-const user: User = await fetch(`${BASE_URL}/users/current`, {
-  method: "GET",
-  headers: {
-    Cookie: `auth_token=${cookie?.value}`,
-  },
-})
+const currentUser: CurrentUserKPIs = await fetch(
+  `${BASE_URL}/users/current/kpis`,
+  {
+    method: "GET",
+    headers: {
+      Cookie: `auth_token=${cookie?.value}`,
+    },
+  }
+)
   .then(async (response) => await response.json())
   .then((data) => data.data)
   .catch((error) => {
     console.error(error);
     return {};
   });
-
-console.log({ currentUser: user });
 ---
 
 <ProfileLayout title="User Profile">
@@ -49,22 +36,116 @@ console.log({ currentUser: user });
   <div class="flex flex-col items-center">
     <div class="w-36 h-36 rounded-full overflow-hidden -mt-20">
       <img
-        src="https://res.cloudinary.com/dafwzsod0/image/upload/v1687431921/user-avatar-4_zdqcbw.svg"
+        src={currentUser.user?.image ?? siteConfig.avatarUrl}
         alt="User avatar"
-        class="w-full h-full"
+        class="w-full h-full object-cover"
       />
     </div>
     <div class="flex flex-col items-center gap-2 mt-4">
-      <h2 class="text-2xl font-bold">{user?.name}</h2>
-      <p class="text-slate-700 max-w-xl text-center">{user?.bio}</p>
+      <h1 class="text-2xl font-bold">{currentUser.user?.name}</h1>
+      <p class="text-slate-700 max-w-xl text-center">{currentUser.user?.bio}</p>
       <span class="text-slate-500"
-        >@{user.username} &bull; Joined {formatDate(user.created_at)}</span
+        >@{currentUser.user.username} &bull; Joined {
+          formatDate(currentUser.user.created_at)
+        }</span
       >
     </div>
   </div>
-  <div class="w-full h-[2px] bg-slate-300 my-10"></div>
-  <div class="mx-36 grid grid-cols-[200px,1fr] gap-8">
-    <div class="border">Resume</div>
-    <div class="border flex-1">About</div>
+  <div class="w-full h-[1px] bg-slate-300 my-10"></div>
+  <div class="mx-36 grid grid-cols-[300px,1fr] gap-8">
+    <div class="flex flex-col gap-2">
+      <h3 class="text-xl font-medium mb-4">About</h3>
+      <div class="flex items-center gap-2">
+        <Icon name="tabler:map" class="w-6 h-6 text-slate-400" />
+        <span>{currentUser.user.location}</span>
+      </div>
+      <div class="flex gap-2">
+        <Icon name="tabler:world" class="w-6 h-6 text-slate-400" />
+        <a href={currentUser.user.website_url} target="_blank" rel="noopener">
+          {currentUser.user.website_url}
+        </a>
+      </div>
+      <div class="flex items-center gap-2">
+        <Icon name="tabler:brand-github" class="w-6 h-6 text-slate-400" />
+        <a
+          href={`https://github.com/${currentUser.user.github_username}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          @{currentUser.user.github_username}
+        </a>
+      </div>
+      <div class="flex items-center gap-2">
+        <Icon name="tabler:brand-twitter" class="w-6 h-6 text-slate-400" />
+        <a
+          href={`https://twitter.com/${currentUser.user.twitter_username}`}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          @{currentUser.user.twitter_username}
+        </a>
+      </div>
+    </div>
+    <div class="flex-1">
+      <h3 class="text-xl font-medium mb-4">Latest Posts</h3>
+      <div class="flex flex-col gap-2">
+        {
+          currentUser.last_three_posts.map((p) => (
+            <div class="border rounded-md p-4 flex gap-2">
+              <div class="w-8 h-8 rounded-full overflow-hidden">
+                <img
+                  src={currentUser.user?.image ?? siteConfig.avatarUrl}
+                  alt="User avatar"
+                  class="w-full h-full"
+                />
+              </div>
+              <div class="flex flex-col gap-2">
+                <div>
+                  <p>{currentUser.user.name}</p>
+                  <small class="text-sm text-slate-400">
+                    {formatDate(p.created_at)}
+                  </small>
+                </div>
+                <div class="flex flex-col gap-2">
+                  <p class="text-lg font-medium text-slate-700">{p.title}</p>
+                  <div class="flex items-center gap-2">
+                    <Icon
+                      name="tabler:message-circle"
+                      class="w-4 h-4 text-slate-400"
+                    />
+                    <span class="text-slate-400">0 comments</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))
+        }
+      </div>
+      <div class="mt-10">
+        <h3 class="text-xl font-medium mb-4">Latest Comments</h3>
+        <div class="flex flex-col gap-2">
+          {
+            currentUser.last_three_comments.map((c) => (
+              <div class="border p-4 flex flex-col gap-2 rounded-md">
+                <p>{c.body}</p>
+                <small>{formatDate(c.created_at)}</small>
+                <div class="mt-2 flex items-center gap-2">
+                  <a
+                    href={`/posts/${c.post_id}`}
+                    class="text-primary-700 underline"
+                  >
+                    see post
+                  </a>
+                  <Icon
+                    name="tabler:external-link"
+                    class="w-5 h-5 text-primary-700"
+                  />
+                </div>
+              </div>
+            ))
+          }
+        </div>
+      </div>
+    </div>
   </div>
 </ProfileLayout>

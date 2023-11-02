@@ -23,6 +23,13 @@ var UsersRoute = func (router *mux.Router) {
 				auth.AuthMiddleware,
 			).ServeHTTP,
 		).Methods("GET")
+		router.HandleFunc(
+			"/users/current/kpis", 
+			auth.Middleware(
+				http.HandlerFunc(controllers.GetCurrentUserKPIs), 
+				auth.AuthMiddleware,
+			).ServeHTTP,
+		).Methods("GET")
 	router.HandleFunc(
 		"/users/{id}", 
 		auth.Middleware(
