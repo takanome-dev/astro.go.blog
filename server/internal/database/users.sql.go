@@ -7,12 +7,13 @@ package database
 
 import (
 	"context"
+	"encoding/json"
 
 	"github.com/google/uuid"
 )
 
 const createUser = `-- name: CreateUser :one
-INSERT INTO users (id, username, email, password) VALUES ($1, $2, $3, $4) RETURNING id, username, email, password, created_at, updated_at, deleted_at
+INSERT INTO users (id, username, email, password) VALUES ($1, $2, $3, $4) RETURNING id, username, email, password, created_at, updated_at, deleted_at, name, bio, image, location, website_url, github_username, twitter_username, title
 `
 
 type CreateUserParams struct {
@@ -38,12 +39,20 @@ func (q *Queries) CreateUser(ctx context.Context, arg CreateUserParams) (User, e
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.Name,
+		&i.Bio,
+		&i.Image,
+		&i.Location,
+		&i.WebsiteUrl,
+		&i.GithubUsername,
+		&i.TwitterUsername,
+		&i.Title,
 	)
 	return i, err
 }
 
 const getAllUsers = `-- name: GetAllUsers :many
-SELECT id, username, email, password, created_at, updated_at, deleted_at FROM users
+SELECT id, username, email, password, created_at, updated_at, deleted_at, name, bio, image, location, website_url, github_username, twitter_username, title FROM users
 `
 
 func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
@@ -63,6 +72,14 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 			&i.CreatedAt,
 			&i.UpdatedAt,
 			&i.DeletedAt,
+			&i.Name,
+			&i.Bio,
+			&i.Image,
+			&i.Location,
+			&i.WebsiteUrl,
+			&i.GithubUsername,
+			&i.TwitterUsername,
+			&i.Title,
 		); err != nil {
 			return nil, err
 		}
@@ -78,7 +95,7 @@ func (q *Queries) GetAllUsers(ctx context.Context) ([]User, error) {
 }
 
 const getUserByEmail = `-- name: GetUserByEmail :one
-SELECT id, username, email, password, created_at, updated_at, deleted_at FROM users WHERE email = $1
+SELECT id, username, email, password, created_at, updated_at, deleted_at, name, bio, image, location, website_url, github_username, twitter_username, title FROM users WHERE email = $1
 `
 
 func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error) {
@@ -92,12 +109,21 @@ func (q *Queries) GetUserByEmail(ctx context.Context, email string) (User, error
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.Name,
+		&i.Bio,
+		&i.Image,
+		&i.Location,
+		&i.WebsiteUrl,
+		&i.GithubUsername,
+		&i.TwitterUsername,
+		&i.Title,
 	)
 	return i, err
 }
 
 const getUserByID = `-- name: GetUserByID :one
-SELECT id, username, email, password, created_at, updated_at, deleted_at FROM users WHERE id = $1
+SELECT id, username, email, password, created_at, updated_at, deleted_at, name, bio, image, location, website_url, github_username, twitter_username, title FROM users 
+WHERE id = $1
 `
 
 func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
@@ -111,12 +137,20 @@ func (q *Queries) GetUserByID(ctx context.Context, id uuid.UUID) (User, error) {
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.Name,
+		&i.Bio,
+		&i.Image,
+		&i.Location,
+		&i.WebsiteUrl,
+		&i.GithubUsername,
+		&i.TwitterUsername,
+		&i.Title,
 	)
 	return i, err
 }
 
 const getUserByUsername = `-- name: GetUserByUsername :one
-SELECT id, username, email, password, created_at, updated_at, deleted_at FROM users WHERE username = $1
+SELECT id, username, email, password, created_at, updated_at, deleted_at, name, bio, image, location, website_url, github_username, twitter_username, title FROM users WHERE username = $1
 `
 
 func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User, error) {
@@ -130,6 +164,69 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 		&i.CreatedAt,
 		&i.UpdatedAt,
 		&i.DeletedAt,
+		&i.Name,
+		&i.Bio,
+		&i.Image,
+		&i.Location,
+		&i.WebsiteUrl,
+		&i.GithubUsername,
+		&i.TwitterUsername,
+		&i.Title,
+	)
+	return i, err
+}
+
+const getUserKPIs = `-- name: GetUserKPIs :one
+SELECT users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at, users.name, users.bio, users.image, users.location, users.website_url, users.github_username, users.twitter_username, users.title, 
+       (
+           SELECT json_agg(posts)
+           FROM (
+               SELECT id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at, image FROM posts
+               WHERE posts.user_id = users.id
+               ORDER BY posts.created_at DESC
+               LIMIT 3
+           ) AS posts
+       ) AS last_three_posts,
+       (
+           SELECT json_agg(comments)
+           FROM (
+               SELECT id, body, user_id, post_id, created_at, updated_at, deleted_at, edited_at FROM comments
+               WHERE comments.user_id = users.id
+               ORDER BY comments.created_at DESC
+               LIMIT 3
+           ) AS comments
+       ) AS last_three_comments
+FROM users
+WHERE users.id = $1
+`
+
+type GetUserKPIsRow struct {
+	User              User            `json:"user"`
+	LastThreePosts    json.RawMessage `json:"last_three_posts"`
+	LastThreeComments json.RawMessage `json:"last_three_comments"`
+}
+
+func (q *Queries) GetUserKPIs(ctx context.Context, id uuid.UUID) (GetUserKPIsRow, error) {
+	row := q.db.QueryRowContext(ctx, getUserKPIs, id)
+	var i GetUserKPIsRow
+	err := row.Scan(
+		&i.User.ID,
+		&i.User.Username,
+		&i.User.Email,
+		&i.User.Password,
+		&i.User.CreatedAt,
+		&i.User.UpdatedAt,
+		&i.User.DeletedAt,
+		&i.User.Name,
+		&i.User.Bio,
+		&i.User.Image,
+		&i.User.Location,
+		&i.User.WebsiteUrl,
+		&i.User.GithubUsername,
+		&i.User.TwitterUsername,
+		&i.User.Title,
+		&i.LastThreePosts,
+		&i.LastThreeComments,
 	)
 	return i, err
 }
