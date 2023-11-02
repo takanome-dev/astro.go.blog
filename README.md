@@ -21,7 +21,7 @@ If you like this project, please leave a star ⭐ It's free and helps a lot!
 <details>
   <summary>Screenshots</summary>
   <div>
-    <img src="https://user-images.githubusercontent.com/79809121/221435329-6dbea7cf-ead0-4f1f-a637-80498660d6f1.png" alt="" />
+    <img src="https://user-images.githubusercontent.com/79809121/280137565-aa37ea58-97a4-4814-95c8-914fb8575ada.png" alt="" />
     <img src="./client/public/new-post.png" alt="" />
     <img src="./client/public/posts.png" alt="" />
   </div>
