@@ -106,12 +106,14 @@
     }
   }
 
-  dropdownButton.addEventListener("click", toggleDropdown);
-  dropdownButton.addEventListener("keydown", (event: any) => {
-    if (event.key === "Enter") {
-      toggleDropdown();
-    }
-  });
+  if (dropdownButton) {
+    dropdownButton.addEventListener("click", toggleDropdown);
+    dropdownButton.addEventListener("keydown", (event: any) => {
+      if (event.key === "Enter") {
+        toggleDropdown();
+      }
+    });
+  }
 
   window.addEventListener("click", (event: any) => {
     if (
