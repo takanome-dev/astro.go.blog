@@ -38,7 +38,7 @@ const posts: Post[] = await fetch(`${BASE_URL}/posts/current-user/drafts`, {
 
   <div>
     {
-      posts.length < 0 ? (
+      !posts || posts?.length < 0 ? (
         <EmptyPlaceholder>
           <PlaceholderIcon name="tabler:file-search" class="text-slate-600" />
           <PlaceholderTitle>
@@ -50,7 +50,7 @@ const posts: Post[] = await fetch(`${BASE_URL}/posts/current-user/drafts`, {
         </EmptyPlaceholder>
       ) : (
         <div class="my-8 grid grid-cols-3 gap-8">
-          {posts.map((p) => (
+          {posts?.map((p) => (
             <Card data={p} />
           ))}
         </div>

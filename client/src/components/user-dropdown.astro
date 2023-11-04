@@ -1,35 +1,73 @@
 ---
+
 ---
 
 <div class="flex items-center justify-center">
   <div class="relative inline-block text-left">
     <div
       id="dropdown-button"
-      class="w-10 h-10 cursor-pointer rounded-full overflow-hidden  focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1" tabindex="0"
+      class="w-10 h-10 cursor-pointer rounded-full overflow-hidden focus:outline-none focus:ring-2 focus:ring-slate-400 focus:ring-offset-1"
+      tabindex="0"
       role="button"
       aria-haspopup="true"
       aria-expanded="false"
       aria-label="User menu"
       aria-controls="dropdown-menu"
     >
-      <img src="https://res.cloudinary.com/dafwzsod0/image/upload/v1687431921/user-avatar-4_zdqcbw.svg" alt="User avatar" class="w-full h-full">
+      <img
+        src="https://res.cloudinary.com/dafwzsod0/image/upload/v1687431921/user-avatar-4_zdqcbw.svg"
+        alt="User avatar"
+        class="w-full h-full"
+      />
     </div>
-    <div id="dropdown-menu" class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5">
-      <div class="py-2 p-2  divide-y divide-gray-100" role="menu" aria-orientation="vertical" aria-labelledby="dropdown-button">
+    <div
+      id="dropdown-menu"
+      class="hidden origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
+    >
+      <div
+        class="py-2 p-2 divide-y divide-gray-100"
+        role="menu"
+        aria-orientation="vertical"
+        aria-labelledby="dropdown-button"
+      >
         <div class="flex items-center justify-start gap-2 p-2">
-          <img src="https://res.cloudinary.com/dafwzsod0/image/upload/v1687431921/user-avatar-4_zdqcbw.svg" alt="User avatar" class="w-10 h-10">
-          <div class="flex flex-col space-y-1 leading-none w-44 overflow-hidden">
-            <p class="font-medium text-slate-700 text-sm" id="current-user-name"></p>
-            <p class="truncate text-xs text-slate-500" id="current-user-email"></p>
+          <img
+            src="https://res.cloudinary.com/dafwzsod0/image/upload/v1687431921/user-avatar-4_zdqcbw.svg"
+            alt="User avatar"
+            class="w-10 h-10"
+          />
+          <div
+            class="flex flex-col space-y-1 leading-none w-44 overflow-hidden"
+          >
+            <p
+              class="font-medium text-slate-700 text-sm"
+              id="current-user-name"
+            >
+            </p>
+            <p class="truncate text-xs text-slate-500" id="current-user-email">
+            </p>
           </div>
         </div>
-        <a href="/dashboard" class="flex rounded-md px-4 py-2 text-sm text-slate-700 hover:bg-gray-100 active:bg-blue-100 cursor-pointer" role="menuitem">
+        <a
+          href="/dashboard"
+          class="flex rounded-md px-4 py-2 text-sm text-slate-700 hover:bg-gray-100 active:bg-blue-100 cursor-pointer"
+          role="menuitem"
+        >
           Dashboard
         </a>
-        <a href="" id="user-profile-link" class="flex rounded-md px-4 py-2 text-sm text-slate-700 hover:bg-gray-100 active:bg-blue-100 cursor-pointer" role="menuitem">
+        <a
+          href=""
+          id="user-profile-link"
+          class="flex rounded-md px-4 py-2 text-sm text-slate-700 hover:bg-gray-100 active:bg-blue-100 cursor-pointer"
+          role="menuitem"
+        >
           Profile
         </a>
-        <a href="/signout" class="flex rounded-md px-4 py-2 text-sm text-red-700 hover:bg-red-100 active:bg-blue-100 cursor-pointer" role="menuitem">
+        <a
+          href="/signout"
+          class="flex rounded-md px-4 py-2 text-sm text-red-700 hover:bg-red-100 active:bg-blue-100 cursor-pointer"
+          role="menuitem"
+        >
           Sign out
         </a>
       </div>
@@ -37,37 +75,50 @@
   </div>
 </div>
 <script>
-  import { getCurrentUser } from '@/lib/utils/storage';
+  import { getCurrentUser } from "@/lib/utils/storage";
 
   const user = getCurrentUser();
+  const usernameElement = document.getElementById("current-user-name");
 
-  document.getElementById('current-user-name')!.textContent = user?.username ?? "";
-  document.getElementById('current-user-email')!.textContent = user?.email ?? "";
-  (document.getElementById('user-profile-link') as HTMLAnchorElement).href = `/user/${user?.username}`
+  if (usernameElement) {
+    usernameElement.textContent = user?.username ?? "";
+    document.getElementById("current-user-email")!.textContent =
+      user?.email ?? "";
+    (
+      document.getElementById("user-profile-link") as HTMLAnchorElement
+    ).href = `/user/${user?.username}`;
+  }
 
-  const dropdownButton = (document.getElementById('dropdown-button') as HTMLDivElement);
-  const dropdownMenu = (document.getElementById('dropdown-menu') as HTMLDivElement);
+  const dropdownButton = document.getElementById(
+    "dropdown-button"
+  ) as HTMLDivElement;
+  const dropdownMenu = document.getElementById(
+    "dropdown-menu"
+  ) as HTMLDivElement;
   let isDropdownOpen = false;
 
   function toggleDropdown() {
     isDropdownOpen = !isDropdownOpen;
     if (isDropdownOpen) {
-        dropdownMenu.classList.remove('hidden');
+      dropdownMenu.classList.remove("hidden");
     } else {
-        dropdownMenu.classList.add('hidden');
+      dropdownMenu.classList.add("hidden");
     }
   }
 
-  dropdownButton.addEventListener('click', toggleDropdown);
-  dropdownButton.addEventListener('keydown', (event: any) => {
-    if (event.key === 'Enter') {
+  dropdownButton.addEventListener("click", toggleDropdown);
+  dropdownButton.addEventListener("keydown", (event: any) => {
+    if (event.key === "Enter") {
       toggleDropdown();
     }
   });
 
-  window.addEventListener('click', (event: any) => {
-    if (!dropdownButton!.contains(event.target) && !dropdownMenu!.contains(event.target)) {
-      dropdownMenu!.classList.add('hidden');
+  window.addEventListener("click", (event: any) => {
+    if (
+      !dropdownButton!.contains(event.target) &&
+      !dropdownMenu!.contains(event.target)
+    ) {
+      dropdownMenu!.classList.add("hidden");
       isDropdownOpen = false;
     }
   });
