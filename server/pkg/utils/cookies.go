@@ -32,7 +32,7 @@ func EncodeCookie(token string, exp time.Time) (*http.Cookie, error) {
 		Path:  "/",
 		Secure: !(os.Getenv("ENV") == "development"),
 		HttpOnly: true,
-		SameSite: http.SameSite(3),
+		SameSite: http.SameSite(4),
 	}
 
 	return cookie, nil
