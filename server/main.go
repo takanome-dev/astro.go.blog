@@ -34,7 +34,12 @@ func main() {
 	// })
 
 	handler := handlers.CORS(
-		handlers.AllowedOrigins([]string{"*"}),
+		handlers.AllowedOrigins([]string{
+			"http://localhost:4321", 
+	 		"https://blog-with-astro-golang.vercel.app/", 
+		  	"https://blog-with-astro-golang-takanome-dev.vercel.app/",
+	 		"https://blog-with-astro-golang-git-main-takanome-dev.vercel.app/", 
+		}),
 		handlers.AllowedHeaders([]string{"*"}),
 		handlers.AllowedMethods([]string{
 			http.MethodGet, 
