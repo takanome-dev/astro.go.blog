@@ -8,7 +8,6 @@ import ErrorMessage from "@/components/error-message.astro";
 interface Props {
   title: string;
 }
-
 ---
 
 <AuthLayout title="Sign up">
@@ -18,15 +17,32 @@ interface Props {
     <form class="flex flex-col gap-8 mt-8" id="register-form" method="POST">
       <div class="flex flex-col gap-2">
         <Label for="username">Username</Label>
-        <Input type="text" name="username" required minlength={4} placeholder="johndoe" />
+        <Input
+          type="text"
+          name="username"
+          required
+          minlength={4}
+          placeholder="johndoe"
+        />
       </div>
       <div class="flex flex-col gap-2">
         <Label for="email">Email</Label>
-        <Input type="email" name="email" required placeholder="johndoe@gmail.com" />
+        <Input
+          type="email"
+          name="email"
+          required
+          placeholder="johndoe@gmail.com"
+        />
       </div>
       <div class="flex flex-col gap-2">
         <Label for="password">Password</Label>
-        <Input type="password" name="password" required minlength={8} placeholder="supersecret" />
+        <Input
+          type="password"
+          name="password"
+          required
+          minlength={8}
+          placeholder="supersecret"
+        />
       </div>
       <Button type="submit">Sign up</Button>
       <div class="flex items-center justify-between">
@@ -37,10 +53,12 @@ interface Props {
   </div>
 </AuthLayout>
 <script>
-  const BASE_URL = import.meta.env.PUBLIC_API
+  const BASE_URL = import.meta.env.PUBLIC_API;
 
   const form = document.getElementById("register-form") as HTMLFormElement;
-  const errorMsg = document.getElementById("register-error-msg") as HTMLDivElement;
+  const errorMsg = document.getElementById(
+    "register-error-msg"
+  ) as HTMLDivElement;
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
@@ -49,8 +67,11 @@ interface Props {
     fetch(`${BASE_URL}/auth/register`, {
       method: "POST",
       body: JSON.stringify(data),
-      mode: "cors",
       credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "*/*",
+      },
     })
       .then(async (res) => {
         if (!res.ok) {
@@ -63,7 +84,8 @@ interface Props {
       .then((res) => {
         localStorage.setItem("user", JSON.stringify(res.data));
         location.href = "/dashboard";
-      }).catch(err => {
+      })
+      .catch((err) => {
         errorMsg.classList.remove("hidden");
         errorMsg.classList.add("flex");
         errorMsg.querySelector("span")!.textContent = err.message;

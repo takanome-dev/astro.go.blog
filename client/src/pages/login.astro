@@ -54,8 +54,11 @@ interface Props {
     fetch(`${BASE_URL}/auth/login`, {
       method: "POST",
       body: JSON.stringify(data),
-      mode: "cors",
       credentials: "include",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "*/*",
+      },
     })
       .then(async (res) => {
         if (!res.ok) {
