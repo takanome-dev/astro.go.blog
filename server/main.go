@@ -32,23 +32,6 @@ func main() {
 	// 	MaxAge: 86400,
   //   Debug: false,
 	// })
-
-	handler := handlers.CORS(
-		handlers.AllowedOrigins([]string{
-			"http://localhost:4321", 
-	 		"https://blog-with-astro-golang.vercel.app/", 
-		  	"https://blog-with-astro-golang-takanome-dev.vercel.app/",
-	 		"https://blog-with-astro-golang-git-main-takanome-dev.vercel.app/", 
-		}),
-		handlers.AllowedHeaders([]string{"*"}),
-		handlers.AllowedMethods([]string{
-			http.MethodGet, 
-			http.MethodPost, 
-			http.MethodPut, 
-			http.MethodDelete, 
-			http.MethodOptions,
-		}),
-	)(r)
 	
 	r.Use(auth.LoggingMiddleware)
 	r.HandleFunc("/health", func(w http.ResponseWriter, r *http.Request) {
@@ -68,6 +51,25 @@ func main() {
 	port := os.Getenv("PORT")
 	log.Printf("🚀 server listening at localhost:%s", port)
 
+	handler := handlers.CORS(
+		handlers.AllowedOrigins([]string{
+			"http://localhost:4321", 
+	 		"https://blog-with-astro-golang.vercel.app/", 
+		  "https://blog-with-astro-golang-takanome-dev.vercel.app/",
+	 		"https://blog-with-astro-golang-git-main-takanome-dev.vercel.app/", 
+		}),
+		handlers.AllowedHeaders([]string{"*"}),
+		handlers.AllowedMethods([]string{
+			http.MethodGet, 
+			http.MethodPost, 
+			http.MethodPut, 
+			http.MethodDelete, 
+			http.MethodOptions,
+		}),
+		handlers.AllowCredentials(),
+		handlers.MaxAge(86400),
+	)(r)
+	
 	err = http.ListenAndServe("0.0.0.0:" + port, handler)
 	if err != nil {
 		log.Fatal(err)
