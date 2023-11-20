@@ -50,6 +50,8 @@ jobs:
 
       - name: "🔧 Setup pnpm"
         uses: pnpm/action-setup@v2.2.4
+        with:
+          package_json_file: client/package.json
 
       - name: "🔧 setup node"
         uses: actions/setup-node@v4
@@ -96,6 +98,8 @@ jobs:
 
       - name: "🔧 Setup pnpm"
         uses: pnpm/action-setup@v2.2.4
+        with:
+          package_json_file: client/package.json
 
       - name: "🔧 setup node"
         uses: actions/setup-node@v4
