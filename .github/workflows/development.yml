@@ -23,21 +23,32 @@ jobs:
       - name: "☁️ checkout repository"
         uses: actions/checkout@v3
 
+      - name: "🔧 Setup pnpm"
+        uses: pnpm/action-setup@v2.2.4
+
       - name: "🔧 setup node"
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: "🔧 install npm@latest"
-        run: npm i -g npm@latest
+      - name: "🔧 Get pnpm store directory"
+        id: pnpm-cache
+        run: |
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
 
-      - name: "📦 install dependencies"
-        uses: bahmutov/npm-install@v1
+      - name: "🔧 Setup pnpm cache"
+        uses: actions/cache@v3
         with:
-          working-directory: client
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: "📦 Install deps (with cache)"
+        run: cd client && pnpm install
 
       - name: "🔍 lint code"
-        run: npm run lint --if-present
+        run: pnpm lint --if-present
         working-directory: client
 
   build:
@@ -48,18 +59,29 @@ jobs:
       - name: "☁️ checkout repository"
         uses: actions/checkout@v3
 
+      - name: "🔧 Setup pnpm"
+        uses: pnpm/action-setup@v2.2.4
+
       - name: "🔧 setup node"
         uses: actions/setup-node@v3
         with:
           node-version: 18
 
-      - name: "🔧 install npm@latest"
-        run: npm i -g npm@latest
+      - name: "🔧 Get pnpm store directory"
+        id: pnpm-cache
+        run: |
+          echo "pnpm_cache_dir=$(pnpm store path)" >> $GITHUB_OUTPUT
 
-      - name: "📦 install dependencies"
-        uses: bahmutov/npm-install@v1
+      - name: "🔧 Setup pnpm cache"
+        uses: actions/cache@v3
         with:
-          working-directory: client
+          path: ${{ steps.pnpm-cache.outputs.pnpm_cache_dir }}
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
+      - name: "📦 Install deps (with cache)"
+        run: cd client && pnpm install
 
       - name: "🔍 build application"
         run: npm run build --if-present
