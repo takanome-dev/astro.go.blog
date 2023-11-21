@@ -72,7 +72,8 @@ jobs:
             ${{ runner.os }}-pnpm-store-
 
       - name: "📦 Install deps (with cache)"
-        run: cd client && pnpm install
+        run: pnpm install
+        working-directory: client
 
       - name: "🚀 release"
         id: semantic-release
