@@ -1,12 +1,15 @@
 ---
+// TODO: cookie is not deleted for some reason
 Astro.cookies.delete("auth_token");
 ---
+
 <div class="flex items-center justify-center min-h-screen">
   <h2 class="text-4xl font-bold">Logging out...</h2>
 </div>
 <script>
-  document.addEventListener("DOMContentLoaded", function() {
+  document.addEventListener("DOMContentLoaded", function () {
     localStorage.removeItem("user");
     location.href = "/";
+    // document.cookie.
   });
 </script>

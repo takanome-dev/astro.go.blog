@@ -3,6 +3,9 @@ import Logo from "./logo.astro";
 
 import Button, { buttonVariants } from "@/components/ui/button.astro";
 import { cn } from "@/lib/utils/merge-classes";
+
+const cookie = Astro.cookies.get("auth_token");
+console.log({ cookie: cookie?.value });
 ---
 
 <header class="w-full bg-white/90 backdrop-blur-sm shadow sticky top-0 z-10">
@@ -16,19 +19,25 @@ import { cn } from "@/lib/utils/merge-classes";
         </ul>
       </nav>
     </div>
-    <div class="flex gap-4">
-      <a href="/login" class={cn(buttonVariants({variant: "link"}))}>
-        Log in
-      </a>
-      <a href="/register">
-        <Button
-          class="font-semibold"
-          variant="primary"
-          size="sm"
-        >
-          Sign up
-        </Button>
-      </a>
-    </div>
+    {
+      cookie?.value ? (
+        <a href="/dashboard">
+          <Button class="font-semibold" variant="primary" size="sm">
+            Dashboard
+          </Button>
+        </a>
+      ) : (
+        <div class="flex gap-4">
+          <a href="/login" class={cn(buttonVariants({ variant: "link" }))}>
+            Log in
+          </a>
+          <a href="/register">
+            <Button class="font-semibold" variant="primary" size="sm">
+              Sign up
+            </Button>
+          </a>
+        </div>
+      )
+    }
   </div>
 </header>
