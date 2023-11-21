@@ -28,3 +28,6 @@ pnpm-debug.log*
 
 # tmp folder
 tmp/
+
+# vercel
+.vercel/
