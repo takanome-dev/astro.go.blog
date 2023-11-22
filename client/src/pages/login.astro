@@ -5,6 +5,12 @@ import Button from "@/components/ui/button.astro";
 import AuthLayout from "@/layouts/auth-layout.astro";
 import ErrorMessage from "@/components/error-message.astro";
 
+// const cookie = Astro.cookies.get("auth_token");
+
+// if (cookie?.value) {
+//   return Astro.redirect("/dashboard");
+// }
+
 interface Props {
   title: string;
 }
@@ -69,8 +75,9 @@ interface Props {
         }
       })
       .then((res) => {
+        console.log({ res });
         localStorage.setItem("user", JSON.stringify(res.data));
-        location.href = "/dashboard";
+        // location.href = "/dashboard";
       })
       .catch((err) => {
         errorMsg.classList.remove("hidden");

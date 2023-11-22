@@ -1,7 +1,6 @@
 ---
 import type { Post } from "@/types/post";
-import Input from "@/components/ui/input.astro";
-import Button, { buttonVariants } from "@/components/ui/button.astro";
+import { buttonVariants } from "@/components/ui/button.astro";
 import Layout from "@/layouts/layout.astro";
 import Card from "@/components/card.astro";
 import { cn } from "@/lib/utils/merge-classes";
@@ -9,8 +8,8 @@ import { cn } from "@/lib/utils/merge-classes";
 const BASE_URL = import.meta.env.PUBLIC_API;
 const cookie = Astro.cookies.get("auth_token");
 
-if (cookie) {
-  Astro.redirect("/dashboard");
+if (cookie?.value) {
+  return Astro.redirect("/dashboard");
 }
 
 const posts: Post[] = await fetch(`${BASE_URL}/posts`)
@@ -31,43 +30,22 @@ const posts: Post[] = await fetch(`${BASE_URL}/posts`)
 // export const prerender = true;
 ---
 
-<Layout title="Welcome to Astro.">
+<Layout title="Untitled UI">
   <div
     class="my-10 py-10 flex justify-center flex-col items-center max-w-2xl mx-auto"
   >
     <span class="text-primary-700 font-semibold">Our blog</span>
     <h1 class="text-4xl mt-4 mb-6 font-bold">Stories and interviews</h1>
-    <p class="text-center text-gray-600">
-      Share your story, success and failures,
+    <p class="text-center text-gray-600 mb-6">
+      Share your story, successes, and challenges with us. We want to hear from
+      you!
     </p>
-    <!-- <Button
-      class="focus:ring-primary-400 dark:focus:ring-ring-400 px-6 font-semibold"
-    >
+    <a href="/login" class={cn(buttonVariants({ variant: "primary" }))}>
       Get started
-    </Button> -->
+    </a>
   </div>
 
   <div class="bg-gray-50 px-28 py-10">
-    <!-- <div class="search flex items-center justify-between">
-      <div class="relative">
-        <Icon
-          name="tabler:search"
-          class="w-6 h-6 absolute left-2 top-1/2 -translate-y-1/2 text-gray-400"
-        />
-        <Input class="pl-10" placeholder="Search" />
-      </div>
-      <Button class="w-48 justify-between" variant="outline">
-        <span class="flex gap-2 items-center">
-          <Icon name="tabler:search" class="w-4 h-4 text-gray-400" /> Newest first
-        </span>
-        <span>
-          <Icon
-            name="tabler:chevron-down"
-            class="w-4 h-4 text-gray-400"
-          /></span
-        >
-      </Button>
-    </div> -->
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-semibold">Latest Writings</h2>
       <a href="/posts" class={cn(buttonVariants({ variant: "primary" }))}
@@ -78,4 +56,10 @@ const posts: Post[] = await fetch(`${BASE_URL}/posts`)
       {posts?.map((p) => <Card data={p} />)}
     </div>
   </div>
+  <div></div>
 </Layout>
+<script>
+  function login() {
+    window.location.href = "/login";
+  }
+</script>
