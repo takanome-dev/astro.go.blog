@@ -2,9 +2,11 @@ package controllers
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 	"time"
 
+	"github.com/takanome-dev/blog-with-astro-golang/internal/database"
 	"github.com/takanome-dev/blog-with-astro-golang/pkg/utils"
 )
 
@@ -22,6 +24,11 @@ type LoginParams struct {
 type UserResponse struct{
 	Email    string `json:"email"`
 	Username string `json:"username"`
+}
+
+type ResetPasswordParams struct {
+  Email string `json:"email"`
+  NewPassword string `json:"new_password"`
 }
 
 func Register(w http.ResponseWriter, r *http.Request) {
@@ -120,4 +127,43 @@ func Login(w http.ResponseWriter, r *http.Request) {
 		utils.WriteError(w, err, http.StatusInternalServerError)
 		return
 	}
+}
+
+func ResetPassword(w http.ResponseWriter, r *http.Request) {
+  body, err := utils.ReadJSON[ResetPasswordParams](r.Body)
+  if err != nil {
+    utils.WriteError(w, err, http.StatusBadRequest)
+    return
+  }
+  
+  fmt.Println(body)
+  user, err := db.GetUserByEmail(r.Context(), body.Email)
+  if err != nil {
+    utils.WriteError(w, errors.New("email invalid"), http.StatusBadRequest)
+    return
+  }
+
+  hashedPassword, err := utils.HashPassword(body.NewPassword)
+  if err != nil {
+    utils.WriteError(w, err, http.StatusBadRequest)
+    return
+  }
+
+  dbUser, err := db.UpdateUserPassword(r.Context(), database.UpdateUserPasswordParams{
+    ID: user.ID,
+    Password: hashedPassword,
+  })
+  if err != nil {
+    utils.WriteError(w, err, http.StatusInternalServerError)
+    return
+  }
+
+  err = utils.WriteJSON(w, UserResponse{
+    Username: dbUser.Username, 
+    Email: dbUser.Email,
+  })
+  if err != nil {
+    utils.WriteError(w, err, http.StatusInternalServerError)
+    return
+  }
 }

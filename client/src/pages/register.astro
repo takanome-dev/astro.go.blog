@@ -5,6 +5,12 @@ import Button from "@/components/ui/button.astro";
 import AuthLayout from "@/layouts/auth-layout.astro";
 import ErrorMessage from "@/components/error-message.astro";
 
+const cookie = Astro.cookies.get("auth_token");
+
+if (cookie?.value) {
+  return Astro.redirect("/dashboard");
+}
+
 interface Props {
   title: string;
 }
@@ -20,6 +26,7 @@ interface Props {
         <Input
           type="text"
           name="username"
+          id="username"
           required
           minlength={4}
           placeholder="johndoe"
@@ -30,6 +37,7 @@ interface Props {
         <Input
           type="email"
           name="email"
+          id="email"
           required
           placeholder="johndoe@gmail.com"
         />
@@ -39,6 +47,7 @@ interface Props {
         <Input
           type="password"
           name="password"
+          id="password"
           required
           minlength={8}
           placeholder="supersecret"

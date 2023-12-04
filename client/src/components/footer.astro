@@ -1,29 +1,47 @@
 ---
-import Logo from "./logo.astro";
 import Icon from "astro-icon";
+
+import Button from "@/components/ui/button.astro";
+import Logo from "./logo.astro";
 ---
 
 <footer class="bg-gray-800">
-  <div class="container mx-auto px-20 py-32">
+  <div class="container mx-auto px-20 py-10">
     <div class="flex justify-between items-center">
-      <div class="self-end">
-        <Logo color="text-white" />
+      <div class="self-end flex items-center gap-4">
+        <!-- <Logo color="text-white" /> -->
+        <Icon name="tabler:box" class="w-8 h-8 mr-1 text-primary-600" />
+        <p class="text-white">&copy; 2023 Untitled UI</p>
       </div>
       <div class="flex items-center gap-4">
-        <Icon name="octicon:mark-github-16" class="text-white w-8 h-8" />
-        <Icon name="logos:discord-icon" class="w-8 h-8" />
-        <Icon name="logos:twitter" class="w-8 h-8" />
-        <Icon name="logos:youtube-icon" class="w-8 h-8" />
-        <Icon name="ri:instagram-line" class="text-white w-8 h-8" />
-      </div>
-    </div>
-    <hr class="bg-slate-50 my-8" />
-    <div class="flex justify-between items-center">
-      <p class="text-white">&copy; 2023 Untitled UI. All rights reserved</p>
-      <div class="flex gap-4">
-        <a href="#" class="text-white/50 hover:underline underline-offset-2">Terms</a>
-        <a href="#" class="text-white/50 hover:underline underline-offset-2">Privacy</a>
-        <a href="#" class="text-white/50 hover:underline underline-offset-2">Cookies</a>
+        <div class="flex gap-4">
+          <a href="#" class="text-white/50 hover:underline underline-offset-2"
+            >Terms</a
+          >
+          <a href="#" class="text-white/50 hover:underline underline-offset-2"
+            >Privacy</a
+          >
+          <a href="#" class="text-white/50 hover:underline underline-offset-2"
+            >Cookies</a
+          >
+        </div>
+        <div class="w-[1px] h-6 bg-white/50"></div>
+        <div class="flex gap-5">
+          <a
+            href="https://github.com/takanome-dev"
+            target="_blank"
+            rel="noopener"
+          >
+            <Icon name="octicon:mark-github-16" class="text-white w-6 h-6" />
+          </a>
+          <a
+            href="https://twitter.com/takanome_dev"
+            target="_blank"
+            rel="noopener"
+          >
+            <Icon name="logos:twitter" class="w-6 h-6" />
+          </a>
+        </div>
       </div>
     </div>
   </div>

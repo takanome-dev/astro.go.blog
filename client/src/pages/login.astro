@@ -5,6 +5,12 @@ import Button from "@/components/ui/button.astro";
 import AuthLayout from "@/layouts/auth-layout.astro";
 import ErrorMessage from "@/components/error-message.astro";
 
+// const cookie = Astro.cookies.get("auth_token");
+
+// if (cookie?.value) {
+//   return Astro.redirect("/dashboard");
+// }
+
 interface Props {
   title: string;
 }
@@ -13,12 +19,13 @@ interface Props {
 <AuthLayout title="Log in">
   <div class="shadow-md rounded-xl w-[400px] px-8 py-16">
     <h1 class="text-center text-xl font-bold">Log in to your account</h1>
-    <form class="flex flex-col gap-8 mt-8" id="login-form" method="POST">
+    <form class="flex flex-col gap-8 mt-6" id="login-form" method="POST">
       <div class="flex flex-col gap-2">
         <Label for="email">Email</Label>
         <Input
           type="email"
           name="email"
+          id="email"
           required
           placeholder="johndoe@gmail.com"
         />
@@ -29,10 +36,16 @@ interface Props {
         <Input
           type="password"
           name="password"
+          id="password"
           required
           minlength={8}
           placeholder="supersecret"
         />
+      </div>
+      <div>
+        <a href="/forgot-password" class="text-primary-600">
+          Forgot password?
+        </a>
       </div>
       <Button type="submit">Login</Button>
     </form>
@@ -69,8 +82,16 @@ interface Props {
         }
       })
       .then((res) => {
+        // get the cookie from the response
+        // const cookie = res.headers.get("set-cookie");
+        // set the cookie in the browser
+        // document.cookie = cookie!;
+
         localStorage.setItem("user", JSON.stringify(res.data));
-        location.href = "/dashboard";
+        const redirect = new URLSearchParams(window.location.search).get(
+          "redirectedFrom"
+        );
+        window.location.href = redirect ? redirect : "/dashboard";      
       })
       .catch((err) => {
         errorMsg.classList.remove("hidden");

@@ -1,5 +1,4 @@
 import type { Comment } from "@/types/comment";
-import type { Post } from "@/types/post";
 
 export interface User {
   id: string;
