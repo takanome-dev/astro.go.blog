@@ -25,6 +25,7 @@ interface Props {
         <Input
           type="email"
           name="email"
+          id="email"
           required
           placeholder="johndoe@gmail.com"
         />
@@ -35,6 +36,7 @@ interface Props {
         <Input
           type="password"
           name="password"
+          id="password"
           required
           minlength={8}
           placeholder="supersecret"
@@ -75,9 +77,16 @@ interface Props {
         }
       })
       .then((res) => {
-        console.log({ res });
+        // get the cookie from the response
+        // const cookie = res.headers.get("set-cookie");
+        // set the cookie in the browser
+        // document.cookie = cookie!;
+
         localStorage.setItem("user", JSON.stringify(res.data));
-        // location.href = "/dashboard";
+        const redirect = new URLSearchParams(window.location.search).get(
+          "redirectedFrom"
+        );
+        window.location.href = redirect ? redirect : "/dashboard";      
       })
       .catch((err) => {
         errorMsg.classList.remove("hidden");
