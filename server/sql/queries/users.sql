@@ -37,3 +37,6 @@ SELECT * FROM users WHERE email = $1;
 
 -- name: GetUserByUsername :one
 SELECT * FROM users WHERE username = $1;
+
+-- name: UpdateUserPassword :one
+UPDATE users SET password = $1 WHERE id = $2 RETURNING *;
