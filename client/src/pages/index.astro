@@ -1,7 +1,6 @@
 ---
 import type { Post } from "@/types/post";
-import Input from "@/components/ui/input.astro";
-import Button, { buttonVariants } from "@/components/ui/button.astro";
+import { buttonVariants } from "@/components/ui/button.astro";
 import Layout from "@/layouts/layout.astro";
 import Card from "@/components/card.astro";
 import { cn } from "@/lib/utils/merge-classes";
@@ -9,8 +8,8 @@ import { cn } from "@/lib/utils/merge-classes";
 const BASE_URL = import.meta.env.PUBLIC_API;
 const cookie = Astro.cookies.get("auth_token");
 
-if (cookie) {
-  Astro.redirect("/dashboard");
+if (cookie?.value) {
+  return Astro.redirect("/dashboard");
 }
 
 const posts: Post[] = await fetch(`${BASE_URL}/posts`)
@@ -21,7 +20,7 @@ const posts: Post[] = await fetch(`${BASE_URL}/posts`)
       return [];
     }
 
-    return posts;
+    return (posts as Post[]).slice(0, 3);
   })
   .catch((error) => {
     console.error(error);
@@ -31,54 +30,22 @@ const posts: Post[] = await fetch(`${BASE_URL}/posts`)
 // export const prerender = true;
 ---
 
-<Layout title="Welcome to Astro.">
+<Layout title="Untitled UI">
   <div
     class="my-10 py-10 flex justify-center flex-col items-center max-w-2xl mx-auto"
   >
     <span class="text-primary-700 font-semibold">Our blog</span>
     <h1 class="text-4xl mt-4 mb-6 font-bold">Stories and interviews</h1>
-    <p class="text-center text-gray-600">
-      Subscribe to learn about new product features, the latest in technologies,
-      solutions, and updates
+    <p class="text-center text-gray-600 mb-6">
+      Share your story, successes, and challenges with us. We want to hear from
+      you!
     </p>
-    <div class="flex flex-col mt-6">
-      <div class="flex gap-4">
-        <Input class="w-80" placeholder="Enter your email" />
-        <Button
-          class="focus:ring-primary-400 dark:focus:ring-ring-400 px-6 font-semibold"
-        >
-          Get started
-        </Button>
-      </div>
-      <small class="text-gray-600 mt-2"
-        >We care about your data in our <span
-          class="underline underline-offset-1">privacy policy</span
-        ></small
-      >
-    </div>
+    <a href="/login" class={cn(buttonVariants({ variant: "primary" }))}>
+      Get started
+    </a>
   </div>
 
   <div class="bg-gray-50 px-28 py-10">
-    <!-- <div class="search flex items-center justify-between">
-      <div class="relative">
-        <Icon
-          name="tabler:search"
-          class="w-6 h-6 absolute left-2 top-1/2 -translate-y-1/2 text-gray-400"
-        />
-        <Input class="pl-10" placeholder="Search" />
-      </div>
-      <Button class="w-48 justify-between" variant="outline">
-        <span class="flex gap-2 items-center">
-          <Icon name="tabler:search" class="w-4 h-4 text-gray-400" /> Newest first
-        </span>
-        <span>
-          <Icon
-            name="tabler:chevron-down"
-            class="w-4 h-4 text-gray-400"
-          /></span
-        >
-      </Button>
-    </div> -->
     <div class="flex items-center justify-between">
       <h2 class="text-xl font-semibold">Latest Writings</h2>
       <a href="/posts" class={cn(buttonVariants({ variant: "primary" }))}
@@ -89,19 +56,5 @@ const posts: Post[] = await fetch(`${BASE_URL}/posts`)
       {posts?.map((p) => <Card data={p} />)}
     </div>
   </div>
-  <div class="mx-28 grid grid-cols-2 gap-16 my-10">
-    <div class="self-center">
-      <h3 class="text-4xl font-bold">Growth performance tracking made easy</h3>
-      <img
-        src="/app-store.png"
-        alt="App Stores Images"
-        class="mt-4 w-80 h-12"
-      />
-    </div>
-    <div
-      class="w-[400px] h-[500px] bg-slate-300 rounded-md flex justify-center items-center"
-    >
-      <p class="tetx-sm">Placeholder for an upcoming image</p>
-    </div>
-  </div>
+  <div></div>
 </Layout>

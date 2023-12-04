@@ -13,26 +13,28 @@ type Cookie struct {
 }
 
 var secure = securecookie.New([]byte(os.Getenv("COOKIE_HASH_KEY")), []byte(os.Getenv("COOKIE_BLOCK_KEY")))
+
 const CookieName = string("auth_token")
 
 func EncodeCookie(token string, exp time.Time) (*http.Cookie, error) {
 	value := map[string]string{
 		CookieName: token,
 	}
-	
-	encoded, err := secure.Encode(CookieName, value); 
-	if err != nil { 
+
+	encoded, err := secure.Encode(CookieName, value)
+	if err != nil {
 		return nil, err
 	}
 
 	cookie := &http.Cookie{
-		Name:  CookieName,
-		Value: encoded,
-		Expires: exp,
-		Path:  "/",
-		Secure: !(os.Getenv("ENV") == "development"),
+		Name:     CookieName,
+		Value:    encoded,
+		Expires:  exp,
+		Path:     "/",
+		Secure:   !(os.Getenv("ENV") == "development"),
 		HttpOnly: true,
-		SameSite: http.SameSite(4),
+		// SameSite: http.SameSite(4),
+		SameSite: http.SameSiteStrictMode,
 	}
 
 	return cookie, nil
@@ -40,7 +42,7 @@ func EncodeCookie(token string, exp time.Time) (*http.Cookie, error) {
 
 func DecodeCookie(cookie *http.Cookie) (Cookie, error) {
 	value := make(map[string]string)
-	
+
 	err := secure.Decode(CookieName, cookie.Value, &value)
 	if err != nil {
 		return Cookie{}, err
@@ -52,3 +54,4 @@ func DecodeCookie(cookie *http.Cookie) (Cookie, error) {
 
 	return token, nil
 }
+

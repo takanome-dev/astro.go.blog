@@ -9,22 +9,28 @@ import type { Post } from "@/types/post";
 
 const { id } = Astro.params;
 
-const cookie = Astro.cookies.get("auth_token")
-const BASE_URL = import.meta.env.PUBLIC_API
+const cookie = Astro.cookies.get("auth_token");
+const BASE_URL = import.meta.env.PUBLIC_API;
+
+if (!cookie?.value) {
+  const params = new URLSearchParams({
+    redirectedFrom: `/post/edit/${id}`,
+  });
+  return Astro.redirect(`/login?${params.toString()}`);
+}
 
 const data: Post = await fetch(`${BASE_URL}/posts/${id}`, {
-    method: "GET",
-    headers: {
-      'Cookie': `auth_token=${cookie?.value}`,
-    },
-  })
+  method: "GET",
+  headers: {
+    Cookie: `auth_token=${cookie?.value}`,
+  },
+})
   .then(async (response) => await response.json())
   .then((data) => data.data)
   .catch((error) => {
-    console.error(error)
-    return {}
-  })
- 
+    console.error(error);
+    return {};
+  });
 ---
 
 <NewPostLayout title="Create a Post">
@@ -41,13 +47,17 @@ const data: Post = await fetch(`${BASE_URL}/posts/${id}`, {
       <input type="file" name="image" id="new-post-image" class="hidden" />
     </label>
     <div id="preview-image" class="flex h-auto items-end gap-6 mb-6">
-      <img src={data.post.image} alt={data.post.title} class="w-96 h-56 object-contain">
+      <img
+        src={data.post.image}
+        alt={data.post.title}
+        class="w-96 h-56 object-contain"
+      />
       <div class="flex gap-4">
         <label
-          for="new-post-image" 
+          for="new-post-image"
           class={buttonVariants({
             variant: "outline",
-            size: "sm"
+            size: "sm",
           })}
         >
           Change
@@ -58,9 +68,7 @@ const data: Post = await fetch(`${BASE_URL}/posts/${id}`, {
     </div>
     <ErrorMessage id="post-img-err" />
     <div class="mb-4">
-      <Label for="new-post-title" class="text-gray-400 mb-8">
-        Title
-      </Label>
+      <Label for="new-post-title" class="text-gray-400 mb-8">Title</Label>
       <Input
         type="text"
         name="title"
@@ -81,13 +89,13 @@ const data: Post = await fetch(`${BASE_URL}/posts/${id}`, {
 </NewPostLayout>
 <script>
   // @ts-ignore
-  import Editor from '@toast-ui/editor';
+  import Editor from "@toast-ui/editor";
   const bodyPlaceholder = document.getElementById("body-placeholder")!;
 
   const editor = new Editor({
-    el: document.querySelector('#editor'),
-    height: '600px',
-    initialEditType: 'markdown',
+    el: document.querySelector("#editor"),
+    height: "600px",
+    initialEditType: "markdown",
     initialValue: bodyPlaceholder.getAttribute("data-body")!,
   });
 
@@ -95,98 +103,107 @@ const data: Post = await fetch(`${BASE_URL}/posts/${id}`, {
     bodyPlaceholder.remove();
   }
 
-  const previewImageContainer = (document.getElementById("preview-image") as HTMLDivElement);
-const submitPost = (draft = false) => {
-  let title = (document.getElementById("new-post-title") as HTMLInputElement).value;
-  let url = previewImageContainer.querySelector("img")!.src
+  const previewImageContainer = document.getElementById(
+    "preview-image"
+  ) as HTMLDivElement;
+  const submitPost = (draft = false) => {
+    let title = (document.getElementById("new-post-title") as HTMLInputElement)
+      .value;
+    let url = previewImageContainer.querySelector("img")!.src;
 
-  const file = url ? url : imageInput.files?.[0]
-  const markdown = editor.getMarkdown();
-  let error = document.getElementById("post-title-err")!;
+    const file = url ? url : imageInput.files?.[0];
+    const markdown = editor.getMarkdown();
+    let error = document.getElementById("post-title-err")!;
 
-  if (!title) {
-    error.classList.remove("hidden");
-    error.classList.add("flex");
-    error.querySelector("span")!.textContent = "the post title is required";
-    return;
-  }
+    if (!title) {
+      error.classList.remove("hidden");
+      error.classList.add("flex");
+      error.querySelector("span")!.textContent = "the post title is required";
+      return;
+    }
 
-  if (!markdown) {
-    error = document.getElementById("post-content-err")!;
-    error.classList.remove("hidden");
-    error.classList.add("flex");
-    error.querySelector("span")!.textContent = "the post content is required";
-    return;
-  }
+    if (!markdown) {
+      error = document.getElementById("post-content-err")!;
+      error.classList.remove("hidden");
+      error.classList.add("flex");
+      error.querySelector("span")!.textContent = "the post content is required";
+      return;
+    }
 
-  if (!file) {
-    error = document.getElementById("post-img-err")!;
-    error.classList.remove("hidden");
-    error.classList.add("flex");
-    error.querySelector("span")!.textContent = "the post image is required";
-    return;
-  }
+    if (!file) {
+      error = document.getElementById("post-img-err")!;
+      error.classList.remove("hidden");
+      error.classList.add("flex");
+      error.querySelector("span")!.textContent = "the post image is required";
+      return;
+    }
 
-  const isPublished = !draft;
-  const formData = new FormData();
-  formData.append("title", title);
-  formData.append("body", markdown);
-  formData.append("is_draft", draft.toString());
-  formData.append("is_published", isPublished.toString());
-  formData.append("image", file);
+    const isPublished = !draft;
+    const formData = new FormData();
+    formData.append("title", title);
+    formData.append("body", markdown);
+    formData.append("is_draft", draft.toString());
+    formData.append("is_published", isPublished.toString());
+    formData.append("image", file);
 
-  const postId = window.location.href.split("/").pop();
-  const BASE_URL = import.meta.env.PUBLIC_API
+    const postId = window.location.href.split("/").pop();
+    const BASE_URL = import.meta.env.PUBLIC_API;
 
-  fetch(`${BASE_URL}/posts/${postId}`, {
-    method: "PUT",
-    body: formData,
-    credentials: "include",
-  })
-  .then((response) => response.json())
-  .then((data) => {
-    window.location.href = `/posts/${data.data.id}`
-  })
-  .catch((error) => console.error(error));
-};
-
-const submitButton = (document.getElementById("submit-new-post-btn") as HTMLButtonElement);
-submitButton.addEventListener("click", () => submitPost());
-
-const submitAsDraft = (document.getElementById("submit-as-draft-btn") as HTMLButtonElement);
-submitAsDraft.addEventListener("click", () => submitPost(true));
-
-const imageInput = (document.getElementById("new-post-image") as HTMLInputElement);
-imageInput.addEventListener("change", () => {
-  const file = imageInput.files?.[0]
-  if (!file) return;
-
-  const validTypes = ["image/jpeg", "image/png"];
-  if (!validTypes.includes(file.type)) {
-    alert("Invalid file type. Only JPG and PNG files are allowed.");
-    return;
-  }
-
-  const reader = new FileReader();
-  reader.readAsDataURL(file);
-  reader.onload = () => {
-    document.getElementById("new-post-image-label")?.classList.add("hidden");
-    previewImageContainer.classList.remove("hidden");
-    previewImageContainer.classList.add("flex");
-    previewImageContainer.querySelector("img")!.src = reader.result as string;
+    fetch(`${BASE_URL}/posts/${postId}`, {
+      method: "PUT",
+      body: formData,
+      credentials: "include",
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        window.location.href = `/posts/${data.data.id}`;
+      })
+      .catch((error) => console.error(error));
   };
-  reader.onerror = (error) => {
-    console.log('Error: ', error);
-  };
-})
 
-const removeSelectedImage = previewImageContainer.querySelector("button")!;
-removeSelectedImage.addEventListener("click", (e) => {
-  e.preventDefault()
+  const submitButton = document.getElementById(
+    "submit-new-post-btn"
+  ) as HTMLButtonElement;
+  submitButton.addEventListener("click", () => submitPost());
 
-  previewImageContainer.classList.add("hidden");
-  previewImageContainer.classList.remove("flex");
-  previewImageContainer.querySelector("img")!.src = "";
-  document.getElementById("new-post-image-label")?.classList.remove("hidden");
-})
+  const submitAsDraft = document.getElementById(
+    "submit-as-draft-btn"
+  ) as HTMLButtonElement;
+  submitAsDraft.addEventListener("click", () => submitPost(true));
+
+  const imageInput = document.getElementById(
+    "new-post-image"
+  ) as HTMLInputElement;
+  imageInput.addEventListener("change", () => {
+    const file = imageInput.files?.[0];
+    if (!file) return;
+
+    const validTypes = ["image/jpeg", "image/png"];
+    if (!validTypes.includes(file.type)) {
+      alert("Invalid file type. Only JPG and PNG files are allowed.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      document.getElementById("new-post-image-label")?.classList.add("hidden");
+      previewImageContainer.classList.remove("hidden");
+      previewImageContainer.classList.add("flex");
+      previewImageContainer.querySelector("img")!.src = reader.result as string;
+    };
+    reader.onerror = (error) => {
+      console.log("Error: ", error);
+    };
+  });
+
+  const removeSelectedImage = previewImageContainer.querySelector("button")!;
+  removeSelectedImage.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    previewImageContainer.classList.add("hidden");
+    previewImageContainer.classList.remove("flex");
+    previewImageContainer.querySelector("img")!.src = "";
+    document.getElementById("new-post-image-label")?.classList.remove("hidden");
+  });
 </script>

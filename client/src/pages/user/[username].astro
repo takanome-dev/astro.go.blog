@@ -8,8 +8,11 @@ import { siteConfig } from "@/lib/config/site";
 const cookie = Astro.cookies.get("auth_token");
 const BASE_URL = import.meta.env.PUBLIC_API;
 
-if (!cookie) {
-  Astro.redirect("/login");
+if (!cookie?.value) {
+  const params = new URLSearchParams({
+    redirectedFrom: `/user/${Astro.params.username}`,
+  });
+  return Astro.redirect(`/login?${params.toString()}`);
 }
 
 const currentUser: CurrentUserKPIs = await fetch(
