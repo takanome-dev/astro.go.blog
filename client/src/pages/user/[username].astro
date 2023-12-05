@@ -56,13 +56,13 @@ const currentUser: CurrentUserKPIs = await fetch(
   </div>
   <div class="w-full h-[1px] bg-slate-300 my-10"></div>
   <div class="mx-36 grid grid-cols-[300px,1fr] gap-8">
-    <div class="flex flex-col gap-2">
+    <div class="flex flex-col gap-2 w-[300px] overflow-hidden">
       <h3 class="text-xl font-medium mb-4">About</h3>
       <div class="flex items-center gap-2">
         <Icon name="tabler:map" class="w-6 h-6 text-slate-400" />
         <span>{currentUser.user.location}</span>
       </div>
-      <div class="flex gap-2">
+      <div class="flex gap-2 flex-wrap">
         <Icon name="tabler:world" class="w-6 h-6 text-slate-400" />
         <a href={currentUser.user.website_url} target="_blank" rel="noopener">
           {currentUser.user.website_url}
