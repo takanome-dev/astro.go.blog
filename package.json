@@ -12,6 +12,6 @@
     "type": "git",
     "url": "git+https://github.com/takanome-dev/blog-with-astro-golang.git"
   },
-  "author": "takanome-dev <takanomedev221@gmail.com>",
+  "author": "takanome-dev <takanomedev221@gmail.com> (https://github.com/takanome-dev)",
   "license": "MIT",
 }
