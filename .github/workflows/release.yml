@@ -79,6 +79,8 @@ jobs:
         id: semantic-release
         uses: 0-vortex/release@v11
         env:
+          SKIP_NPM_PUBLISH: true
+          SKIP_DOCKER_PUBLISH: true
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
   deploy-vercel:
