@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
@@ -88,7 +89,31 @@ func GetCurrentUserKPIs(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	err = utils.WriteJSON(w, user)
+	var posts interface{}
+	err = json.Unmarshal(user.LastThreePosts.([]byte), &posts)
+	if err != nil {
+			utils.WriteError(w, err, 500)
+			return
+	}
+
+	var comments interface{}
+	err = json.Unmarshal(user.LastThreeComments.([]byte), &comments)
+	if err != nil {
+			utils.WriteError(w, err, 500)
+			return
+	}
+
+	result := struct {
+		User              database.User        `json:"user"`
+		LastThreePosts    interface{} `json:"last_three_posts"`
+		LastThreeComments interface{} `json:"last_three_comments"`
+	}{
+			User:              user.User,
+			LastThreePosts:    posts,
+			LastThreeComments: comments,
+	}
+
+	err = utils.WriteJSON(w, result)
 	if err != nil {
 		utils.WriteError(w, err, 500)
 		return

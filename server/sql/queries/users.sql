@@ -10,23 +10,26 @@ WHERE id = $1;
 
 -- name: GetUserKPIs :one
 SELECT sqlc.embed(users), 
-       (
-           SELECT json_agg(posts)
+       COALESCE(
+           (SELECT json_agg(posts)
            FROM (
                SELECT * FROM posts
                WHERE posts.user_id = users.id
                ORDER BY posts.created_at DESC
                LIMIT 3
            ) AS posts
+           ), '[]'::json
        ) AS last_three_posts,
-       (
-           SELECT json_agg(comments)
+       COALESCE(
+           (
+            SELECT json_agg(comments)
            FROM (
                SELECT * FROM comments
                WHERE comments.user_id = users.id
                ORDER BY comments.created_at DESC
                LIMIT 3
            ) AS comments
+           ), '[]'::json
        ) AS last_three_comments
 FROM users
 WHERE users.id = $1;

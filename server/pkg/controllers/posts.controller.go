@@ -84,8 +84,8 @@ func GetPostByID(w http.ResponseWriter, r *http.Request) {
 	}
 
 	err = json.Unmarshal([]byte(post.Comments.(string)), &comments)
-	log.Printf("err when unmarshalling comments: %v", err)
 	if err != nil {
+		log.Printf("err when unmarshalling comments: %v", err)
 		utils.WriteError(w, err, 500)
 		return
 	}
