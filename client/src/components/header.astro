@@ -5,7 +5,7 @@ import Button, { buttonVariants } from "@/components/ui/button.astro";
 import { cn } from "@/lib/utils/merge-classes";
 
 const cookie = Astro.cookies.get("auth_token");
-console.log({ cookie: cookie?.value });
+// console.log({ cookie: cookie?.value });
 ---
 
 <header class="w-full bg-white/90 backdrop-blur-sm shadow sticky top-0 z-10">
@@ -14,8 +14,8 @@ console.log({ cookie: cookie?.value });
     <Logo />
     <nav class="">
       <ul class="flex gap-8">
+        <li class="text-base text-gray-600"><a href="/">Home</a></li>
         <li class="text-base text-gray-600"><a href="/posts">Posts</a></li>
-        <!-- <li class="text-base text-gray-600"><a href="/about">About</a></li> -->
       </ul>
     </nav>
     <!-- </div> -->

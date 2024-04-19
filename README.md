@@ -90,9 +90,13 @@ CREATE DATABASE blog;
 # exit the shell
 \q
 
+# --------------------------------- OR ---------------------------------
+# you can also use a GUI tool like pgAdmin to create the database
+# --------------------------------- \ ---------------------------------
+
 # run the migrations
-cd server && make migrate DB_URL=<your_database_url>
-# i.e. make migrate DB_URL=postgres://<user>:<pwd>@localhost:5432/blog
+cd server && make migrate DB_URL="<your_database_url>"
+# i.e. make migrate DB_URL="postgres://<user>:<pwd>@localhost:5432/blog"
 ```
 
 See the next section for how to run the migrations using Docker (easier).

@@ -38,17 +38,17 @@ const posts: Post[] = await fetch(`${BASE_URL}/posts`, {
     </div>
     <div>
       {
-        posts.length < 0 ? (
+        !posts?.length ? (
           <EmptyPlaceholder>
             <PlaceholderIcon name="tabler:file-search" class="text-slate-600" />
-            <PlaceholderTitle>You don't have any posts yet.</PlaceholderTitle>
+            <PlaceholderTitle>We don't have any posts yet.</PlaceholderTitle>
             <PlaceholderDescription>
-              You can create a new post by clicking the button below.
+              Be the first one to create a post by connecting to your account if you have one, visiting your dashboard and clicking the `create post` button 😁
             </PlaceholderDescription>
           </EmptyPlaceholder>
         ) : (
           <div class="my-8 grid grid-cols-3 gap-8" id="posts">
-            {posts.map((p) => (
+            {posts?.map((p) => (
               <Card data={p} />
             ))}
           </div>

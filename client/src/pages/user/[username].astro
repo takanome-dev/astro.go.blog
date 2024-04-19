@@ -4,6 +4,10 @@ import Icon from "astro-icon";
 import ProfileLayout from "@/layouts/profile-layout.astro";
 import { formatDate } from "@/lib/utils/format";
 import { siteConfig } from "@/lib/config/site";
+import EmptyPlaceholder from "@/components/placeholder/empty-placeholder.astro";
+import PlaceholderTitle from "@/components/placeholder/placeholder-title.astro";
+import PlaceholderDescription from "@/components/placeholder/placeholder-description.astro";
+import PlaceholderIcon from "@/components/placeholder/placeholder-icon.astro";
 
 const cookie = Astro.cookies.get("auth_token");
 const BASE_URL = import.meta.env.PUBLIC_API;
@@ -30,6 +34,8 @@ const currentUser: CurrentUserKPIs = await fetch(
     console.error(error);
     return {};
   });
+
+  console.log({ currentUser})
 ---
 
 <ProfileLayout title="User Profile">
@@ -39,17 +45,17 @@ const currentUser: CurrentUserKPIs = await fetch(
   <div class="flex flex-col items-center">
     <div class="w-36 h-36 rounded-full overflow-hidden -mt-20">
       <img
-        src={currentUser.user?.image ?? siteConfig.avatarUrl}
+        src={currentUser?.user?.image ?? siteConfig.avatarUrl}
         alt="User avatar"
         class="w-full h-full object-cover"
       />
     </div>
     <div class="flex flex-col items-center gap-2 mt-4">
-      <h1 class="text-2xl font-bold">{currentUser.user?.name}</h1>
-      <p class="text-slate-700 max-w-xl text-center">{currentUser.user?.bio}</p>
+      <h1 class="text-2xl font-bold">{currentUser?.user?.name}</h1>
+      <p class="text-slate-700 max-w-xl text-center">{currentUser?.user?.bio}</p>
       <span class="text-slate-500"
-        >@{currentUser.user.username} &bull; Joined {
-          formatDate(currentUser.user.created_at)
+        >@{currentUser?.user?.username} &bull; Joined {
+          formatDate(currentUser?.user?.created_at)
         }</span
       >
     </div>
@@ -60,32 +66,32 @@ const currentUser: CurrentUserKPIs = await fetch(
       <h3 class="text-xl font-medium mb-4">About</h3>
       <div class="flex items-center gap-2">
         <Icon name="tabler:map" class="w-6 h-6 text-slate-400" />
-        <span>{currentUser.user.location}</span>
+        <span>{currentUser?.user?.location}</span>
       </div>
       <div class="flex gap-2 flex-wrap">
         <Icon name="tabler:world" class="w-6 h-6 text-slate-400" />
-        <a href={currentUser.user.website_url} target="_blank" rel="noopener">
-          {currentUser.user.website_url}
+        <a href={currentUser?.user?.website_url} target="_blank" rel="noopener">
+          {currentUser?.user?.website_url}
         </a>
       </div>
       <div class="flex items-center gap-2">
         <Icon name="tabler:brand-github" class="w-6 h-6 text-slate-400" />
         <a
-          href={`https://github.com/${currentUser.user.github_username}`}
+          href={`https://github.com/${currentUser?.user?.github_username}`}
           target="_blank"
           rel="noopener noreferrer"
         >
-          @{currentUser.user.github_username}
+          @{currentUser?.user?.github_username}
         </a>
       </div>
       <div class="flex items-center gap-2">
         <Icon name="tabler:brand-twitter" class="w-6 h-6 text-slate-400" />
         <a
-          href={`https://twitter.com/${currentUser.user.twitter_username}`}
+          href={`https://twitter.com/${currentUser?.user?.twitter_username}`}
           target="_blank"
           rel="noopener noreferrer"
         >
-          @{currentUser.user.twitter_username}
+          @{currentUser?.user?.twitter_username}
         </a>
       </div>
     </div>
@@ -93,18 +99,24 @@ const currentUser: CurrentUserKPIs = await fetch(
       <h3 class="text-xl font-medium mb-4">Latest Posts</h3>
       <div class="flex flex-col gap-2">
         {
-          currentUser.last_three_posts.map((p) => (
+          !currentUser?.last_three_posts?.length ? (
+          <EmptyPlaceholder class="min-h-[200px]">
+            <PlaceholderIcon name="tabler:file-search" class="text-slate-600" />
+            <PlaceholderTitle>You don't have any posts yet</PlaceholderTitle>
+          </EmptyPlaceholder>
+          ) : (
+          currentUser?.last_three_posts?.map((p) => (
             <div class="border rounded-md p-4 flex gap-2">
               <div class="w-8 h-8 rounded-full overflow-hidden">
                 <img
-                  src={currentUser.user?.image ?? siteConfig.avatarUrl}
+                  src={currentUser?.user?.image ?? siteConfig.avatarUrl}
                   alt="User avatar"
                   class="w-full h-full"
                 />
               </div>
               <div class="flex flex-col gap-2">
                 <div>
-                  <p>{currentUser.user.name}</p>
+                  <p>{currentUser?.user?.name}</p>
                   <small class="text-sm text-slate-400">
                     {formatDate(p.created_at)}
                   </small>
@@ -122,13 +134,20 @@ const currentUser: CurrentUserKPIs = await fetch(
               </div>
             </div>
           ))
+          )
         }
       </div>
       <div class="mt-10">
         <h3 class="text-xl font-medium mb-4">Latest Comments</h3>
         <div class="flex flex-col gap-2">
           {
-            currentUser.last_three_comments.map((c) => (
+          !currentUser?.last_three_comments?.length ? (
+          <EmptyPlaceholder class="min-h-[200px]">
+            <PlaceholderIcon name="tabler:file-search" class="text-slate-600" />
+            <PlaceholderTitle>You don't have any comments yet</PlaceholderTitle>
+          </EmptyPlaceholder>
+          ) : (
+            currentUser?.last_three_comments?.map((c) => (
               <div class="border p-4 flex flex-col gap-2 rounded-md">
                 <p>{c.body}</p>
                 <small>{formatDate(c.created_at)}</small>
@@ -146,6 +165,7 @@ const currentUser: CurrentUserKPIs = await fetch(
                 </div>
               </div>
             ))
+          )
           }
         </div>
       </div>
