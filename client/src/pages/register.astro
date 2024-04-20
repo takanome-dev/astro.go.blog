@@ -4,6 +4,7 @@ import Input from "@/components/ui/input.astro";
 import Button from "@/components/ui/button.astro";
 import AuthLayout from "@/layouts/auth-layout.astro";
 import ErrorMessage from "@/components/error-message.astro";
+import Icon from 'astro-icon';
 
 const cookie = Astro.cookies.get("auth_token");
 
@@ -53,7 +54,10 @@ interface Props {
           placeholder="supersecret"
         />
       </div>
-      <Button type="submit">Sign up</Button>
+      <Button type="submit">
+        <Icon name="tabler:loader" class="hidden w-5 h-5 mr-2 text-white animate-spin" />
+        Sign up
+      </Button>
       <div class="flex items-center justify-between">
         <p class="">Already have an account?</p>
         <a href="/login" class="text-primary-600">Login</a>
@@ -64,6 +68,7 @@ interface Props {
 <script>
   const BASE_URL = import.meta.env.PUBLIC_API;
 
+  const submitBtn =  document.querySelector('button[type="submit"]');
   const form = document.getElementById("register-form") as HTMLFormElement;
   const errorMsg = document.getElementById(
     "register-error-msg"
@@ -71,6 +76,11 @@ interface Props {
 
   form.addEventListener("submit", (e) => {
     e.preventDefault();
+
+    submitBtn.classList.add("disabled:cursor-not-allowed")
+    submitBtn.disabled = true;
+    submitBtn.querySelector("svg").classList.remove("hidden")
+
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
     fetch(`${BASE_URL}/auth/register`, {
@@ -98,6 +108,10 @@ interface Props {
         errorMsg.classList.remove("hidden");
         errorMsg.classList.add("flex");
         errorMsg.querySelector("span")!.textContent = err.message;
+
+        submitBtn.classList.remove("disabled:cursor-not-allowed")
+        submitBtn.disabled = false;
+        submitBtn.querySelector("svg").classList.add("hidden")
       });
   });
 </script>

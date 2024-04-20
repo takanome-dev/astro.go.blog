@@ -14,9 +14,11 @@ const { title } = Astro.props;
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="generator" content={Astro.generator} />
-    <title>{title}</title>
+    <title>
+      {title} - Untitled UI
+    </title>
   </head>
-  <body class="bg-white text-slate-900">
+  <body class="bg-white text-slate-900 flex flex-col min-h-screen">
     <slot />
   </body>
 </html>

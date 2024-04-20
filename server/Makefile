@@ -2,10 +2,10 @@ BINARY_NAME=blog-api
 .DEFAULT_GOAL := run
 
 migrate:
-	cd sql/schema && ~/go/bin/goose postgres $(DB_URL) up
+	cd sql/schema && goose postgres $(DB_URL) up
 
 install:
-	go mod tidy && go mod vendor
+	go mod tidy
 
 generate:
 	sqlc generate
