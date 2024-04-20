@@ -10,6 +10,10 @@ import ErrorMessage from "@/components/error-message.astro";
 import Layout from "@/layouts/layout.astro";
 import type { User } from "@/types/user";
 import Icon from "astro-icon";
+import EmptyPlaceholder from "@/components/placeholder/empty-placeholder.astro";
+import PlaceholderTitle from "@/components/placeholder/placeholder-title.astro";
+import PlaceholderDescription from "@/components/placeholder/placeholder-description.astro";
+import PlaceholderIcon from "@/components/placeholder/placeholder-icon.astro";
 
 const { id } = Astro.params;
 
@@ -23,6 +27,7 @@ const data: Post = await fetch(`${BASE_URL}/posts/${id}`)
     console.error(error);
     return {};
   });
+
 
 const user: User = await fetch(`${BASE_URL}/users/current`, {
   method: "GET",
@@ -80,7 +85,7 @@ const PageLayout = cookie ? DashboardLayout : Layout;
       <div class="w-full h-[2px] bg-slate-300"></div>
       <h2 class="text-3xl font-bold">Comments</h2>
       {
-        cookie && (
+        cookie && data?.post?.is_published && (
           <form class="flex gap-4" id="comment-form" method="POST">
             <img
               src={siteConfig.avatarUrl}
@@ -106,81 +111,88 @@ const PageLayout = cookie ? DashboardLayout : Layout;
       }
       <div class="flex flex-col gap-4">
         {
-          data?.comments?.map((c, idx) => (
-            <div
-              class="flex items-center justify-between"
-              id={`user-comment-${idx}`}
-              data-comment-id={c.comment.id}
-            >
-              <div class="flex gap-4 items-center mb-4">
-                <img
-                  src={siteConfig.avatarUrl}
-                  alt="My GH Avatar"
-                  class="w-12 h-12 rounded-full"
-                />
-                <div class="flex flex-col gap-2">
-                  <div class="flex items-center gap-2">
-                    <p class="text-sm">{c?.user?.username}</p>
+          !data?.comments?.length ? (
+          <EmptyPlaceholder class="min-h-fit">
+            <PlaceholderIcon name="tabler:file-search" class="text-slate-600" />
+            <PlaceholderTitle>No comments yet.</PlaceholderTitle>
+          </EmptyPlaceholder>
+          ) : (
+            data?.comments?.map((c, idx) => (
+              <div
+                class="flex items-center justify-between"
+                id={`user-comment-${idx}`}
+                data-comment-id={c.comment.id}
+              >
+                <div class="flex gap-4 items-center mb-4">
+                  <img
+                    src={siteConfig.avatarUrl}
+                    alt="My GH Avatar"
+                    class="w-12 h-12 rounded-full"
+                  />
+                  <div class="flex flex-col gap-2">
                     <div class="flex items-center gap-2">
-                      <span class="text-slate-500 text-sm">
-                        {timeAgo(new Date(c?.comment.created_at))}
-                      </span>
-                      {c?.comment.edited_at && (
-                        <small class="text-slate-500 text-sm">(edited)</small>
-                      )}
+                      <p class="text-sm">{c?.user?.username}</p>
+                      <div class="flex items-center gap-2">
+                        <span class="text-slate-500 text-sm">
+                          {timeAgo(new Date(c?.comment.created_at))}
+                        </span>
+                        {c?.comment.edited_at && (
+                          <small class="text-slate-500 text-sm">(edited)</small>
+                        )}
+                      </div>
                     </div>
+                    <p id={`comment-${idx}`}>{c?.comment.body}</p>
                   </div>
-                  <p id={`comment-${idx}`}>{c?.comment.body}</p>
                 </div>
-              </div>
-              {cookie && c?.user.id === user.id && (
-                <div class="flex items-center justify-center">
-                  <div class="relative inline-block text-left">
-                    <Button
-                      variant="ghost"
-                      id={`comment-action-btn-${idx}`}
-                      aria-haspopup="true"
-                      aria-expanded="true"
-                      aria-controls={`comment-action-${idx}`}
-                      aria-label="Menu actions dropdown"
-                      size="sm"
-                    >
-                      <Icon
-                        name="tabler:dots-vertical"
-                        class="w-6 h-6 text-slate-500 cursor-pointer"
-                      />
-                    </Button>
-                    <div
-                      id={`comment-action-${idx}`}
-                      class="hidden z-30 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
-                    >
+                {cookie && c?.user.id === user.id && (
+                  <div class="flex items-center justify-center">
+                    <div class="relative inline-block text-left">
+                      <Button
+                        variant="ghost"
+                        id={`comment-action-btn-${idx}`}
+                        aria-haspopup="true"
+                        aria-expanded="true"
+                        aria-controls={`comment-action-${idx}`}
+                        aria-label="Menu actions dropdown"
+                        size="sm"
+                      >
+                        <Icon
+                          name="tabler:dots-vertical"
+                          class="w-6 h-6 text-slate-500 cursor-pointer"
+                        />
+                      </Button>
                       <div
-                        class="py-2 p-2 divide-y divide-gray-100"
-                        role="menu"
-                        aria-orientation="vertical"
-                        aria-labelledby={`comment-action-btn-${idx}`}
+                        id={`comment-action-${idx}`}
+                        class="hidden z-30 origin-top-right absolute right-0 mt-2 w-48 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5"
                       >
                         <div
-                          class="flex rounded-md px-4 py-2 text-sm text-slate-700 hover:bg-gray-100 active:bg-blue-100 cursor-pointer"
-                          role="menuitem"
-                          id="edit-comment"
+                          class="py-2 p-2 divide-y divide-gray-100"
+                          role="menu"
+                          aria-orientation="vertical"
+                          aria-labelledby={`comment-action-btn-${idx}`}
                         >
-                          <span>Edit</span>
-                        </div>
-                        <div
-                          class="flex rounded-md px-4 py-2 text-sm text-red-700 hover:bg-red-100 active:bg-red-100 cursor-pointer"
-                          role="menuitem"
-                          id="delete-comment"
-                        >
-                          <span>Delete</span>
+                          <div
+                            class="flex rounded-md px-4 py-2 text-sm text-slate-700 hover:bg-gray-100 active:bg-blue-100 cursor-pointer"
+                            role="menuitem"
+                            id="edit-comment"
+                          >
+                            <span>Edit</span>
+                          </div>
+                          <div
+                            class="flex rounded-md px-4 py-2 text-sm text-red-700 hover:bg-red-100 active:bg-red-100 cursor-pointer"
+                            role="menuitem"
+                            id="delete-comment"
+                          >
+                            <span>Delete</span>
+                          </div>
                         </div>
                       </div>
                     </div>
                   </div>
-                </div>
-              )}
-            </div>
-          ))
+                )}
+              </div>
+            ))
+          )
         }
       </div>
     </div>
