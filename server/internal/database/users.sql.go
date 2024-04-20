@@ -178,13 +178,16 @@ func (q *Queries) GetUserByUsername(ctx context.Context, username string) (User,
 const getUserKPIs = `-- name: GetUserKPIs :one
 SELECT users.id, users.username, users.email, users.password, users.created_at, users.updated_at, users.deleted_at, users.name, users.bio, users.image, users.location, users.website_url, users.github_username, users.twitter_username, users.title, 
        COALESCE(
-           (SELECT json_agg(posts)
+           (SELECT json_agg(posts_with_comment_count)
            FROM (
-               SELECT id, title, body, user_id, is_published, is_draft, created_at, updated_at, deleted_at, image FROM posts
-               WHERE posts.user_id = users.id
-               ORDER BY posts.created_at DESC
-               LIMIT 3
-           ) AS posts
+                SELECT posts.id, posts.title, posts.body, posts.user_id, posts.is_published, posts.is_draft, posts.created_at, posts.updated_at, posts.deleted_at, posts.image, COUNT(comments.*) AS comments_count
+                FROM posts
+                LEFT JOIN comments ON comments.post_id = posts.id
+                WHERE posts.user_id = users.id
+                GROUP BY posts.id
+                ORDER BY posts.created_at DESC
+                LIMIT 3
+           ) AS posts_with_comment_count
            ), '[]'::json
        ) AS last_three_posts,
        COALESCE(

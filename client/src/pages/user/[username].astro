@@ -34,7 +34,6 @@ const currentUser: CurrentUserKPIs = await fetch(
     return {};
   });
 
-  console.log({ currentUser})
 ---
 
 <ProfileLayout title="User Profile">
@@ -137,13 +136,13 @@ const currentUser: CurrentUserKPIs = await fetch(
                   </small>
                 </div>
                 <div class="flex flex-col gap-2">
-                  <p class="text-lg font-medium text-slate-700">{p.title}</p>
+                  <a href={`/posts/${p.id}`} class="text-lg font-medium text-slate-700 hover:text-primary-700 hover:underline">{p.title}</a>
                   <div class="flex items-center gap-2">
                     <Icon
                       name="tabler:message-circle"
                       class="w-4 h-4 text-slate-400"
                     />
-                    <span class="text-slate-400">0 comments</span>
+                    <span class="text-slate-400">{p.comments_count} comments</span>
                   </div>
                 </div>
               </div>
@@ -169,14 +168,14 @@ const currentUser: CurrentUserKPIs = await fetch(
                 <div class="mt-2 flex items-center gap-2">
                   <a
                     href={`/posts/${c.post_id}`}
-                    class="text-primary-700 underline"
+                    class="flex items-center gap-2 text-primary-700 hover:underline"
                   >
                     see post
+                    <Icon
+                      name="tabler:external-link"
+                      class="w-5 h-5 text-primary-700"
+                    />
                   </a>
-                  <Icon
-                    name="tabler:external-link"
-                    class="w-5 h-5 text-primary-700"
-                  />
                 </div>
               </div>
             ))
