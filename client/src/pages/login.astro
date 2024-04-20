@@ -4,6 +4,7 @@ import Input from "@/components/ui/input.astro";
 import Button from "@/components/ui/button.astro";
 import AuthLayout from "@/layouts/auth-layout.astro";
 import ErrorMessage from "@/components/error-message.astro";
+import Icon from 'astro-icon'
 
 // const cookie = Astro.cookies.get("auth_token");
 
@@ -47,7 +48,10 @@ interface Props {
           Forgot password?
         </a>
       </div>
-      <Button type="submit">Login</Button>
+      <Button type="submit">
+        <Icon name="tabler:loader" class="hidden w-5 h-5 mr-2 text-white animate-spin" />
+        Login
+      </Button>
     </form>
     <div class="flex items-center justify-between mt-8">
       <p class="">Don't have an account?</p>
@@ -60,8 +64,15 @@ interface Props {
   const errorMsg = document.getElementById("error-msg") as HTMLDivElement;
   const BASE_URL = import.meta.env.PUBLIC_API;
 
+  const submitBtn =  document.querySelector('button[type="submit"]');
+
   form.addEventListener("submit", (e) => {
     e.preventDefault();
+
+    submitBtn.classList.add("disabled:cursor-not-allowed")
+    submitBtn.disabled = true;
+    submitBtn.querySelector("svg").classList.remove("hidden")
+
     const formData = new FormData(form);
     const data = Object.fromEntries(formData.entries());
     fetch(`${BASE_URL}/auth/login`, {
@@ -82,11 +93,6 @@ interface Props {
         }
       })
       .then((res) => {
-        // get the cookie from the response
-        // const cookie = res.headers.get("set-cookie");
-        // set the cookie in the browser
-        // document.cookie = cookie!;
-
         localStorage.setItem("user", JSON.stringify(res.data));
         const redirect = new URLSearchParams(window.location.search).get(
           "redirectedFrom"
@@ -97,6 +103,10 @@ interface Props {
         errorMsg.classList.remove("hidden");
         errorMsg.classList.add("flex");
         errorMsg.querySelector("span")!.textContent = err.message;
+
+        submitBtn.classList.remove("disabled:cursor-not-allowed")
+        submitBtn.disabled = false;
+        submitBtn.querySelector("svg").classList.add("hidden")
       });
   });
 </script>

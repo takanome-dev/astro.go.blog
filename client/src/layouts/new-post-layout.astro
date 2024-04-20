@@ -34,12 +34,14 @@ const { title } = Astro.props;
       </div>
       <div class="flex items-center gap-4">
         <Button class="font-normal" variant="outline" id="submit-as-draft-btn">
+          <Icon name="tabler:loader" class="hidden w-5 h-5 mr-2 text-black animate-spin" />
           <Icon name="tabler:device-floppy" class="w-4 h-4 mr-2" /> Save as draft
         </Button>
         <Button
           class="font-semibold shadow-md shadow-primary-500/50 hover:shadow-primary-500/60"
           id="submit-new-post-btn"
         >
+        <Icon name="tabler:loader" class="hidden w-5 h-5 mr-2 text-white animate-spin" />
           Publish <Icon name="tabler:send" class="w-4 h-4 ml-2" />
         </Button>
       </div>
