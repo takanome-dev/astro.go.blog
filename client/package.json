@@ -16,7 +16,6 @@
   },
   "dependencies": {
     "@astrojs/check": "^0.2.1",
-    "@astrojs/node": "^6.1.0",
     "@astrojs/react": "^3.3.0",
     "@astrojs/tailwind": "^5.1.0",
     "@astrojs/vercel": "^5.2.0",
