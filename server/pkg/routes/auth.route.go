@@ -2,7 +2,7 @@ package routes
 
 import (
 	"github.com/gorilla/mux"
-	"github.com/takanome-dev/blog-with-astro-golang/pkg/controllers"
+	"github.com/takanome-dev/astro.go.blog/pkg/controllers"
 )
 
 var AuthRoute = func (router *mux.Router) {

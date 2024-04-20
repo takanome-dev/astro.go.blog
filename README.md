@@ -1,11 +1,11 @@
 <h1 align="center">Astro Blog with Golang</h1>
 
 <p align="center">
- <a href="https://github.com/takanome-dev/blog-with-astro-golang/blob/main/LICENSE">
-    <img alt="GitHub license" src="https://img.shields.io/github/license/takanome-dev/blog-with-astro-golang" />
+ <a href="https://github.com/takanome-dev/astro.go.blog/blob/main/LICENSE">
+    <img alt="GitHub license" src="https://img.shields.io/github/license/takanome-dev/astro.go.blog" />
   </a>
- <a href="https://github.com/takanome-dev/blog-with-astro-golang/actions/workflows/codeql.yml">
-    <img alt="CodeQL Action" src="https://github.com/takanome-dev/blog-with-astro-golang/actions/workflows/codeql.yml/badge.svg" />
+ <a href="https://github.com/takanome-dev/astro.go.blog/actions/workflows/codeql.yml">
+    <img alt="CodeQL Action" src="https://github.com/takanome-dev/astro.go.blog/actions/workflows/codeql.yml/badge.svg" />
   </a>
 
 </p>
@@ -41,22 +41,22 @@ You will need to have installed the following:
 
 Once you have installed the prerequisites, you can follow the steps below to start the app locally.
 
-Step 1: Fork the [repo](https://github.com/takanome-dev/blog-with-astro-golang) on GitHub.
+Step 1: Fork the [repo](https://github.com/takanome-dev/astro.go.blog) on GitHub.
 
 Step 2. Clone your forked repository to your local machine.
 
 ```bash
 # using https
-git clone https://github.com/<your_username>/blog-with-astro-golang.git
+git clone https://github.com/<your_username>/astro.go.blog.git
 
 # using ssh
-git clone git@github.com:<your_username>/blog-with-astro-golang.git
+git clone git@github.com:<your_username>/astro.go.blog.git
 ```
 
 Step 3. Navigate to the cloned directory and install the dependencies.
 
 ```bash
-cd blog-with-astro-golang
+cd astro.go.blog
 
 # install dependencies for the client
 cd client && pnpm install

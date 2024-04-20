@@ -1,4 +1,4 @@
-module github.com/takanome-dev/blog-with-astro-golang
+module github.com/takanome-dev/astro.go.blog
 
 go 1.21
 

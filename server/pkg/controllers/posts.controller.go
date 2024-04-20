@@ -12,8 +12,8 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"github.com/takanome-dev/blog-with-astro-golang/internal/database"
-	"github.com/takanome-dev/blog-with-astro-golang/pkg/utils"
+	"github.com/takanome-dev/astro.go.blog/internal/database"
+	"github.com/takanome-dev/astro.go.blog/pkg/utils"
 )
 
 type CreatePostParams struct {

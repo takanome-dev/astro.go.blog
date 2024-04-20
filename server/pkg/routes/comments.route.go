@@ -4,8 +4,8 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/takanome-dev/blog-with-astro-golang/internal/auth"
-	"github.com/takanome-dev/blog-with-astro-golang/pkg/controllers"
+	"github.com/takanome-dev/astro.go.blog/internal/auth"
+	"github.com/takanome-dev/astro.go.blog/pkg/controllers"
 )
 
 var CommentsRoutes = func (router *mux.Router)  {

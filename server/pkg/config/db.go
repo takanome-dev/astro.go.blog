@@ -9,7 +9,7 @@ import (
 
 	"github.com/joho/godotenv"
 	_ "github.com/lib/pq"
-	"github.com/takanome-dev/blog-with-astro-golang/internal/database"
+	"github.com/takanome-dev/astro.go.blog/internal/database"
 )
 
 var db *database.Queries
