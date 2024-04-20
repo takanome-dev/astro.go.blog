@@ -103,6 +103,7 @@ const PageLayout = cookie ? DashboardLayout : Layout;
                 <ErrorMessage id="error-msg" />
               </div>
               <Button type="submit" class="w-fit">
+                <Icon name="tabler:loader" class="hidden w-5 h-5 mr-2 text-white animate-spin" />
                 Submit
               </Button>
             </div>
@@ -236,7 +237,10 @@ const PageLayout = cookie ? DashboardLayout : Layout;
           class="w-full"
         />
         <ErrorMessage id="edit-comment-error" />
-        <Button type="submit" class="w-fit">Submit</Button>
+        <Button type="submit" class="w-fit">
+          <Icon name="tabler:loader" class="hidden w-5 h-5 mr-2 text-white animate-spin" />
+          Submit
+        </Button>
       </form>
     </div>
   </div>
@@ -260,12 +264,17 @@ const PageLayout = cookie ? DashboardLayout : Layout;
   /* ------------------------ Submit comment form ------------------------ */
 
   const form = document.getElementById("comment-form") as HTMLFormElement;
+  const submitCommentBtn = form.querySelector('button[type="submit"]')
   const errorMsg = document.getElementById("error-msg") as HTMLDivElement;
   const BASE_URL = import.meta.env.PUBLIC_API;
   const postId = window.location.pathname.split("/").pop();
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+
+    submitCommentBtn.classList.add("disabled:cursor-not-allowed")
+    submitCommentBtn.disabled = true;
+    submitCommentBtn.querySelector("svg").classList.remove("hidden")
 
     const formData = new FormData(form);
     const body = formData.get("comment") as string;
@@ -286,6 +295,10 @@ const PageLayout = cookie ? DashboardLayout : Layout;
       errorMsg.classList.remove("hidden");
       errorMsg.classList.add("flex");
       errorMsg.querySelector("span")!.textContent = data.error;
+
+      submitCommentBtn.classList.remove("disabled:cursor-not-allowed")
+      submitCommentBtn.disabled = false;
+      submitCommentBtn.querySelector("svg").classList.add("hidden")
     } else {
       form.reset();
       window.location.reload();
@@ -352,6 +365,10 @@ const PageLayout = cookie ? DashboardLayout : Layout;
       editCommentForm.addEventListener("submit", async (e) => {
         e.preventDefault();
 
+        editCommentForm.querySelector('button[type="submit"]').classList.add("disabled:cursor-not-allowed")
+        editCommentForm.querySelector('button[type="submit"]').disabled = true;
+        editCommentForm.querySelector('button[type="submit"]').querySelector("svg").classList.remove("hidden")
+
         const formData = new FormData(editCommentForm);
         const body = formData.get("comment") as string;
         const response = await fetch(`${BASE_URL}/comments/${commentId}`, {
@@ -369,6 +386,10 @@ const PageLayout = cookie ? DashboardLayout : Layout;
           editErrorMsg.classList.remove("hidden");
           editErrorMsg.classList.add("flex");
           editErrorMsg.querySelector("span")!.textContent = data.error;
+
+          editCommentForm.querySelector('button[type="submit"]').classList.remove("disabled:cursor-not-allowed")
+          editCommentForm.querySelector('button[type="submit"]').disabled = false;
+          editCommentForm.querySelector('button[type="submit"]').querySelector("svg").classList.add("hidden")
         } else {
           editModal.classList.remove("flex");
           editModal.classList.add("hidden");

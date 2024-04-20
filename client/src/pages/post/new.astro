@@ -73,15 +73,24 @@ if (!cookie?.value) {
     initialEditType: "markdown",
   });
 
+  const submitButton = document.getElementById(
+    "submit-new-post-btn"
+  ) as HTMLButtonElement;
+  const submitAsDraft = document.getElementById(
+    "submit-as-draft-btn"
+  ) as HTMLButtonElement;
   const previewImageContainer = document.getElementById(
     "preview-image"
   ) as HTMLDivElement;
+
   const submitPost = (draft = false) => {
     let title = (document.getElementById("new-post-title") as HTMLInputElement)
       .value;
     const file = imageInput.files?.[0];
     const markdown = editor.getMarkdown();
     let error = document.getElementById("post-title-err")!;
+
+    // TODO:
 
     if (!title) {
       error.classList.remove("hidden");
@@ -106,6 +115,14 @@ if (!cookie?.value) {
       return;
     }
 
+    submitButton.classList.add("disabled:cursor-not-allowed")
+    submitButton.disabled = true;
+    submitButton.querySelector("svg").classList.remove("hidden")
+
+    submitAsDraft.classList.add("disabled:cursor-not-allowed")
+    submitAsDraft.disabled = true;
+    submitAsDraft.querySelector("svg").classList.remove("hidden")
+
     const isPublished = !draft;
     const formData = new FormData();
     formData.append("title", title);
@@ -127,17 +144,20 @@ if (!cookie?.value) {
       .then((data) => {
         window.location.href = `/posts/${data.data.id}`;
       })
-      .catch((error) => console.error(error));
+      .catch((error) => {
+        console.error(error)
+        submitButton.classList.remove("disabled:cursor-not-allowed")
+        submitButton.disabled = false;
+        submitButton.querySelector("svg").classList.add("hidden")
+
+        submitAsDraft.classList.remove("disabled:cursor-not-allowed")
+        submitAsDraft.disabled = false;
+        submitAsDraft.querySelector("svg").classList.add("hidden")
+  });
   };
 
-  const submitButton = document.getElementById(
-    "submit-new-post-btn"
-  ) as HTMLButtonElement;
+  
   submitButton.addEventListener("click", () => submitPost());
-
-  const submitAsDraft = document.getElementById(
-    "submit-as-draft-btn"
-  ) as HTMLButtonElement;
   submitAsDraft.addEventListener("click", () => submitPost(true));
 
   const imageInput = document.getElementById(
