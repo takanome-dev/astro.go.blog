@@ -12,7 +12,7 @@ var UsersRoute = func (router *mux.Router) {
 	router.HandleFunc(
 		"/users",
 		auth.Middleware(
-			http.HandlerFunc(controllers.GetAllUsers), 
+			http.HandlerFunc(controllers.GetAllUsers),
 			auth.AuthMiddleware,
 		).ServeHTTP,
 		).Methods("GET")
