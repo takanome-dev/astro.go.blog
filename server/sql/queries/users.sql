@@ -46,3 +46,19 @@ SELECT * FROM users WHERE username = $1;
 
 -- name: UpdateUserPassword :one
 UPDATE users SET password = $1 WHERE id = $2 RETURNING *;
+
+-- name: UpdateUser :one
+UPDATE users 
+SET
+    name = COALESCE(sqlc.narg('name'), name),
+    bio = COALESCE(sqlc.narg('bio'), bio),
+    email = COALESCE(sqlc.narg('email'), email),
+    github_username = COALESCE(sqlc.narg('github_username'), github_username),
+    location = COALESCE(sqlc.narg('location'), location),
+    twitter_username = COALESCE(sqlc.narg('twitter_username'), twitter_username),
+    username = COALESCE(sqlc.narg('username'), username),
+    website_url = COALESCE(sqlc.narg('website_url'), website_url),
+    image = COALESCE(sqlc.narg('image'), image)
+WHERE
+    id = sqlc.narg('id')
+RETURNING *;

@@ -7,6 +7,7 @@ package database
 
 import (
 	"context"
+	"database/sql"
 
 	"github.com/google/uuid"
 )
@@ -232,6 +233,70 @@ func (q *Queries) GetUserKPIs(ctx context.Context, id uuid.UUID) (GetUserKPIsRow
 		&i.User.Title,
 		&i.LastThreePosts,
 		&i.LastThreeComments,
+	)
+	return i, err
+}
+
+const updateUser = `-- name: UpdateUser :one
+UPDATE users 
+SET
+    name = COALESCE($1, name),
+    bio = COALESCE($2, bio),
+    email = COALESCE($3, email),
+    github_username = COALESCE($4, github_username),
+    location = COALESCE($5, location),
+    twitter_username = COALESCE($6, twitter_username),
+    username = COALESCE($7, username),
+    website_url = COALESCE($8, website_url),
+    image = COALESCE($9, image)
+WHERE
+    id = $10
+RETURNING id, username, email, password, created_at, updated_at, deleted_at, name, bio, image, location, website_url, github_username, twitter_username, title
+`
+
+type UpdateUserParams struct {
+	Name            sql.NullString `json:"name"`
+	Bio             sql.NullString `json:"bio"`
+	Email           sql.NullString `json:"email"`
+	GithubUsername  sql.NullString `json:"github_username"`
+	Location        sql.NullString `json:"location"`
+	TwitterUsername sql.NullString `json:"twitter_username"`
+	Username        sql.NullString `json:"username"`
+	WebsiteUrl      sql.NullString `json:"website_url"`
+	Image           sql.NullString `json:"image"`
+	ID              uuid.NullUUID  `json:"id"`
+}
+
+func (q *Queries) UpdateUser(ctx context.Context, arg UpdateUserParams) (User, error) {
+	row := q.db.QueryRowContext(ctx, updateUser,
+		arg.Name,
+		arg.Bio,
+		arg.Email,
+		arg.GithubUsername,
+		arg.Location,
+		arg.TwitterUsername,
+		arg.Username,
+		arg.WebsiteUrl,
+		arg.Image,
+		arg.ID,
+	)
+	var i User
+	err := row.Scan(
+		&i.ID,
+		&i.Username,
+		&i.Email,
+		&i.Password,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+		&i.DeletedAt,
+		&i.Name,
+		&i.Bio,
+		&i.Image,
+		&i.Location,
+		&i.WebsiteUrl,
+		&i.GithubUsername,
+		&i.TwitterUsername,
+		&i.Title,
 	)
 	return i, err
 }

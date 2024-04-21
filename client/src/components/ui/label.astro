@@ -3,15 +3,20 @@ import type { HTMLAttributes } from "astro/types";
 import { cn } from "@/lib/utils/merge-classes";
 
 export interface Props
-  extends HTMLAttributes<"label"> {}
+  extends HTMLAttributes<"label"> {
+    required?: boolean;
+  }
 
 const { ...props } = Astro.props;
 ---
 
 <label
   class={cn(
-    "text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
-    props.class
+    "text-sm text-gray-600 font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70",
+    props.class,
+    {
+      "after:content-['*'] after:ml-0.5 after:text-red-500": props.required
+    }
   )}
   {...props}
 >
