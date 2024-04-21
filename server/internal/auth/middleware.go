@@ -8,7 +8,7 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/takanome-dev/blog-with-astro-golang/pkg/utils"
+	"github.com/takanome-dev/astro.go.blog/pkg/utils"
 )
 
 type MiddlewareFunc func(http.Handler) http.Handler

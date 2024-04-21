@@ -1,0 +1,325 @@
+---
+import { type User } from "@/types/user";
+import Icon from "astro-icon";
+import ProfileLayout from "@/layouts/profile-layout.astro";
+import { formatDate } from "@/lib/utils/format";
+import { cn } from "@/lib/utils/merge-classes";
+
+import Input from "@/components/ui/input.astro";
+import Textarea from "@/components/ui/textarea.astro";
+import Button, { buttonVariants } from "@/components/ui/button.astro";
+import Label from "@/components/ui/label.astro";
+import ErrorMessage from "@/components/error-message.astro";
+
+import EmptyPlaceholder from "@/components/placeholder/empty-placeholder.astro";
+import PlaceholderTitle from "@/components/placeholder/placeholder-title.astro";
+import PlaceholderDescription from "@/components/placeholder/placeholder-description.astro";
+import PlaceholderIcon from "@/components/placeholder/placeholder-icon.astro";
+
+const cookie = Astro.cookies.get("auth_token");
+const BASE_URL = import.meta.env.PUBLIC_API;
+
+if (!cookie?.value) {
+  const params = new URLSearchParams({
+    redirectedFrom: `/user/${Astro.params.username}`,
+  });
+  return Astro.redirect(`/login?${params.toString()}`);
+}
+
+const currentUser: User = await fetch(
+  `${BASE_URL}/users/current`,
+  {
+    method: "GET",
+    headers: {
+      Cookie: `auth_token=${cookie?.value}`,
+    },
+  }
+)
+  .then(async (response) => await response.json())
+  .then((data) => data.data)
+  .catch((error) => {
+    console.error(error);
+    return {};
+  });
+
+---
+
+<ProfileLayout title="User Settings">
+  <div class="mb-10">
+    <h1 class="text-2xl font-bold" data-user-id={currentUser?.id}>Edit Profile</h1>
+  </div>
+  <form id="edit-profile-form" class="w-1/2">
+    <div class="">
+      <label
+        for="image"
+        id="image-label"
+        class={buttonVariants({
+          variant: "outline",
+          class: cn("mb-4", {
+            "hidden": currentUser?.image
+          }),
+        })}
+      >
+        Add profile image
+        <input type="file" name="image" id="image" class="hidden" value={currentUser?.image || ""} />
+      </label>
+      <div id="preview-image" class={cn(
+        "h-auto items-end gap-6 mb-6", 
+        currentUser?.image ? "flex" : "hidden"
+      )}>
+        <img src={currentUser?.image || ""} alt="New user profile image" class="w-96 h-56 object-contain" />
+        <div class="flex gap-4">
+          <label
+            for="image"
+            class={buttonVariants({
+              variant: "outline",
+              size: "sm",
+            })}
+          >
+            Change
+            <input type="file" name="image" id="image" class="hidden" value={currentUser?.image || ""} />
+          </label>
+          <Button variant="destructive" size="sm">Remove</Button>
+        </div>
+      </div>
+      <ErrorMessage id="image-err" />
+    </div>
+    <div class="mb-6 flex flex-col gap-3">
+      <Label for="username" class="" required>Username</Label>
+      <Input
+        name="username"
+        id="username"
+        placeholder=john-doe"
+        value={currentUser?.username || ""}
+      />
+      <ErrorMessage id="username-err" />
+    </div>
+    <div class="mb-6 flex flex-col gap-3">
+      <Label for="email" class="" required>Email</Label>
+      <Input
+        name="email"
+        id="email"
+        placeholder="johndoe@gmail.com"
+        value={currentUser?.email || ""}
+      />
+      <ErrorMessage id="email-err" />
+    </div>
+    <div class="mb-6 flex flex-col gap-3">
+      <Label for="full_name" required>Full Name</Label>
+      <Input
+        name="full_name"
+        id="full_name"
+        placeholder="John Doe"
+        value={currentUser?.name || ""}
+      />
+      <ErrorMessage id="full_name-err" />
+    </div>
+    <div class="mb-6 flex flex-col gap-3">
+      <Label for="bio" class="">Bio</Label>
+      <Textarea
+        name="bio"
+        id="bio"
+        placeholder="Your bio here..."
+        value={currentUser?.bio || ""}
+      />
+      <ErrorMessage id="bio-err" />
+    </div>
+    <div class="mb-6 flex flex-col gap-3">
+      <Label for="location" class="">Location</Label>
+      <Input
+        name="location"
+        id="location"
+        placeholder="New York, US"
+        value={currentUser?.location || ""}
+      />
+      <ErrorMessage id="location-err" />
+    </div>
+    <div class="mb-6 flex flex-col gap-3">
+      <Label for="website_url" class="">Website URL</Label>
+      <Input
+        name="website_url"
+        id="website_url"
+        placeholder="https://example.com"
+        value={currentUser?.website_url || ""}
+      />
+      <ErrorMessage id="website_url-err" />
+    </div>
+    <div class="mb-6 flex flex-col gap-3">
+      <Label for="github_username" class="">Github Username</Label>
+      <Input
+        name="github_username"
+        id="github_username"
+        placeholder="takanome-dev"
+        value={currentUser?.github_username || ""}
+      />
+      <ErrorMessage id="github_username-err" />
+    </div>
+    <div class="mb-6 flex flex-col gap-3">
+      <Label for="twitter_username" class="">Twitter Username</Label>
+      <Input
+        name="twitter_username"
+        id="twitter_username"
+        placeholder="takanome_dev"
+        value={currentUser?.twitter_username || ""}
+      />
+      <ErrorMessage id="twitter_username-err" />
+    </div>
+    <Button type="submit" size="lg">
+      <Icon name="tabler:loader" class="hidden w-5 h-5 mr-2 text-white animate-spin" />
+      Save changes
+    </Button>
+  </form>
+</ProfileLayout>
+<script>
+  import { validateHttpsUrl, validateGithubUsername, validateTwitterUsername } from "@/lib/utils/validate";
+
+  // ------------------------ image handler ----------------------------------------
+
+  const imageInput = document.getElementById("image");
+  const previewImageContainer = document.getElementById("preview-image");
+
+  imageInput.addEventListener("change", () => {
+    const file = imageInput.files?.[0];
+    if (!file) return;
+
+    const validTypes = ["image/jpeg", "image/png"];
+    if (!validTypes.includes(file.type)) {
+      alert("Invalid file type. Only JPG and PNG files are allowed.");
+      return;
+    }
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => {
+      document.getElementById("image-label")?.classList.add("hidden");
+      previewImageContainer.classList.remove("hidden");
+      previewImageContainer.classList.add("flex");
+      previewImageContainer.querySelector("img")!.src = reader.result as string;
+    };
+    reader.onerror = (error) => {
+      console.log("Error: ", error);
+    };
+  });
+
+  const removeSelectedImage = previewImageContainer.querySelector("button")!;
+  removeSelectedImage.addEventListener("click", (e) => {
+    e.preventDefault();
+
+    previewImageContainer.classList.add("hidden");
+    previewImageContainer.classList.remove("flex");
+    previewImageContainer.querySelector("img")!.src = "";
+    document.getElementById("image-label")?.classList.remove("hidden");
+  });
+
+  // ------------------------- form handler -----------------------------------
+
+  const userId = document.querySelector("h1").getAttribute("data-user-id")
+  const form = document.getElementById("edit-profile-form");
+  const saveBtn = form.querySelector('button[type="submit"]');
+  let error = document.getElementById("username-err");
+  const BASE_URL = import.meta.env.PUBLIC_API;
+
+  form.addEventListener("submit", async (e) => {
+    e.preventDefault()
+
+    const formData = new FormData(form);
+    const data = Object.fromEntries(formData);
+
+    if (!data.username) {
+      error.classList.remove("hidden");
+      error.classList.add("flex");
+      error.querySelector("span")!.textContent = "the username is required";
+      return;
+    }
+
+    if (!data.email) {
+      error = document.getElementById("email-err");
+      error.classList.remove("hidden");
+      error.classList.add("flex");
+      error.querySelector("span")!.textContent = "the email is required";
+      return;
+    }
+
+    if (!data.full_name) {
+      error = document.getElementById("full_name-err");
+      error.classList.remove("hidden");
+      error.classList.add("flex");
+      error.querySelector("span")!.textContent = "the fullname is required";
+      return;
+    }
+
+    if (data.bio && data.bio.length < 20) {
+      error = document.getElementById("bio-err");
+      error.classList.remove("hidden");
+      error.classList.add("flex");
+      error.querySelector("span")!.textContent = "the bio should be greater than 20 characters";
+      return;
+    }
+
+    if (data.location && data.location.length < 5) {
+      error = document.getElementById("location-err");
+      error.classList.remove("hidden");
+      error.classList.add("flex");
+      error.querySelector("span")!.textContent = "the location should be greater than 5 characters";
+      return;
+    }
+
+    if (data.website_url) {
+      const validate = validateHttpsUrl(data.website_url);
+      if (!validate.valid) {
+        error = document.getElementById("website_url-err");
+        error.classList.remove("hidden");
+        error.classList.add("flex");
+        error.querySelector("span")!.textContent = validate.message;
+        return;
+      }
+    }
+
+    if (data.twitter_username) {
+      const validate = validateTwitterUsername(data.twitter_username);
+      if (!validate.valid) {
+        error = document.getElementById("twitter_username-err");
+        error.classList.remove("hidden");
+        error.classList.add("flex");
+        error.querySelector("span")!.textContent = validate.message;
+        return;
+      }
+    }
+
+    if (data.github_username) {
+      const validate = validateGithubUsername(data.github_username);
+      if (!validate.valid) {
+        error = document.getElementById("github_username-err");
+        error.classList.remove("hidden");
+        error.classList.add("flex");
+        error.querySelector("span")!.textContent = validate.message;
+        return;
+      }
+    }
+
+    saveBtn.classList.add("disabled:cursor-not-allowed")
+    saveBtn.disabled = true;
+    saveBtn.querySelector("svg").classList.remove("hidden")
+
+    try {
+      const resp = await fetch(`${BASE_URL}/users/${userId}`, {
+        method: "PUT",
+        body: formData,
+        credentials: "include",
+      });
+      
+      const data = await resp.json();
+
+      if (!resp.ok) {
+        throw new Error(data.error);
+      }
+
+      window.location.href = `/user/${data?.username}`;
+    } catch (error) {
+      console.error(error)
+      saveBtn.classList.remove("disabled:cursor-not-allowed");
+      saveBtn.disabled = false;
+      saveBtn.querySelector("svg").classList.add("hidden");
+    }
+  })
+</script>

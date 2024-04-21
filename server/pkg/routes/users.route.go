@@ -4,18 +4,25 @@ import (
 	"net/http"
 
 	"github.com/gorilla/mux"
-	"github.com/takanome-dev/blog-with-astro-golang/internal/auth"
-	"github.com/takanome-dev/blog-with-astro-golang/pkg/controllers"
+	"github.com/takanome-dev/astro.go.blog/internal/auth"
+	"github.com/takanome-dev/astro.go.blog/pkg/controllers"
 )
 
 var UsersRoute = func (router *mux.Router) {
 	router.HandleFunc(
 		"/users",
 		auth.Middleware(
-			http.HandlerFunc(controllers.GetAllUsers), 
+			http.HandlerFunc(controllers.GetAllUsers),
 			auth.AuthMiddleware,
 		).ServeHTTP,
 		).Methods("GET")
+		router.HandleFunc(
+			"/users/{id}", 
+			auth.Middleware(
+				http.HandlerFunc(controllers.UpdateUser), 
+				auth.AuthMiddleware,
+			).ServeHTTP,
+		).Methods("PUT")
 		router.HandleFunc(
 			"/users/current", 
 			auth.Middleware(
@@ -45,13 +52,6 @@ var UsersRoute = func (router *mux.Router) {
 			auth.AuthMiddleware,
 		).ServeHTTP,
 	).Methods("GET")
-	// router.HandleFunc(
-	// 	"/users/{id}", 
-	// 	auth.Middleware(
-	// 		http.HandlerFunc(controllers.UpdateUser), 
-	// 		auth.AuthMiddleware,
-	// 	).ServeHTTP,
-	// ).Methods("PUT")
 	// router.HandleFunc(
 	// 	"/users/{id}", 
 	// 	auth.Middleware(

@@ -2,16 +2,18 @@ package controllers
 
 import (
 	"context"
+	"database/sql"
 	"encoding/json"
 	"errors"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/google/uuid"
 	"github.com/gorilla/mux"
-	"github.com/takanome-dev/blog-with-astro-golang/internal/database"
-	"github.com/takanome-dev/blog-with-astro-golang/pkg/config"
-	"github.com/takanome-dev/blog-with-astro-golang/pkg/utils"
+	"github.com/takanome-dev/astro.go.blog/internal/database"
+	"github.com/takanome-dev/astro.go.blog/pkg/config"
+	"github.com/takanome-dev/astro.go.blog/pkg/utils"
 )
 
 var db *database.Queries
@@ -149,5 +151,129 @@ func CreateUser(ctx context.Context, user *AuthParams) (database.User, error) {
 	})
 }
 
-func UpdateUser(w http.ResponseWriter, r *http.Request) {}
+func UpdateUser(w http.ResponseWriter, r *http.Request) {
+	idStr := mux.Vars(r)["id"]
+	id, err := uuid.Parse(idStr)
+	if err != nil {
+		utils.WriteError(w, err, 400)
+		return
+	}
+
+	var image string
+	var url string
+	image = r.FormValue("image")
+
+	if strings.HasPrefix(image, "data:image") {
+		file, fileHeader, err := r.FormFile("image")
+		if err != nil {
+			utils.WriteError(w, err, http.StatusBadRequest)
+			return
+		}
+
+		url, err = utils.HandleImage(file, fileHeader)
+		if err != nil {
+			utils.WriteError(w, err, http.StatusBadRequest)
+			return
+		}
+	} else {
+		url = image
+	}
+
+	userBio := r.FormValue("bio") 
+	userEmail := r.FormValue("email") 
+  userFullName := r.FormValue("full_name")
+	userGithubUsername := r.FormValue("github_username")
+	userLocation := r.FormValue("location")
+	userTwitterUsername := r.FormValue("twitter_username")
+	userUsername := r.FormValue("username")
+	userWebsiteUrl := r.FormValue("website_url")
+	
+	foundUser, err := db.GetUserByID(r.Context(), id); 
+	if err != nil {
+		utils.WriteError(w, err, 400)
+		return;
+	}
+	
+	var bio sql.NullString
+	if userBio != "" {
+		bio = sql.NullString{String: userBio, Valid: true}
+	} else {
+		bio = sql.NullString{String: foundUser.Bio, Valid: true }
+	}
+
+	var email sql.NullString
+	if userEmail != "" {
+		email = sql.NullString{String: userEmail, Valid: true}
+	} else {
+		email = sql.NullString{String: foundUser.Email, Valid: true}
+	}
+
+	var name sql.NullString
+	if userFullName != "" {
+		name = sql.NullString{String: userFullName, Valid: true}
+	} else {
+		name = sql.NullString{String: foundUser.Name, Valid: true}
+	}
+
+	var github_username sql.NullString
+	if userGithubUsername != "" {
+		github_username = sql.NullString{String: userGithubUsername, Valid: true}
+	} else {
+		github_username = sql.NullString{String: foundUser.GithubUsername, Valid: true}
+	}
+
+	var location sql.NullString
+	if userLocation != "" {
+		location = sql.NullString{String: userLocation, Valid: true}
+	} else {
+		location = sql.NullString{String: foundUser.Location, Valid: true}
+	}
+
+	var twitter_username sql.NullString
+	if userTwitterUsername != "" {
+		twitter_username = sql.NullString{String: userTwitterUsername, Valid: true}
+	} else {
+		twitter_username = sql.NullString{String: foundUser.TwitterUsername, Valid: true}
+	}
+
+	var username sql.NullString
+	if userUsername != "" {
+		username = sql.NullString{String: userUsername, Valid: true}
+	} else {
+		username = sql.NullString{String: foundUser.Username, Valid: true}
+	}
+
+	var website_url sql.NullString
+	if userWebsiteUrl != "" {
+		website_url = sql.NullString{String: userWebsiteUrl, Valid: true}
+	} else {
+		website_url = sql.NullString{String: foundUser.WebsiteUrl, Valid: true}
+	}
+
+	updateUser := database.UpdateUserParams{
+		ID: uuid.NullUUID{UUID: id, Valid: true},
+		Image: sql.NullString{String: url, Valid: true},
+		Bio: bio,
+		Email: email,
+		Name: name,
+		GithubUsername: github_username,
+		Location: location,
+		TwitterUsername: twitter_username,
+		Username: username,
+		WebsiteUrl: website_url,
+	}
+
+	user, err := db.UpdateUser(r.Context(), updateUser)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
+
+	err = utils.WriteJSON(w, user)
+	if err != nil {
+		utils.WriteError(w, err, 500)
+		return
+	}
+}
+
 func DeleteUser(w http.ResponseWriter, r *http.Request) {}

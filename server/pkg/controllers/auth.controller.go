@@ -6,8 +6,8 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/takanome-dev/blog-with-astro-golang/internal/database"
-	"github.com/takanome-dev/blog-with-astro-golang/pkg/utils"
+	"github.com/takanome-dev/astro.go.blog/internal/database"
+	"github.com/takanome-dev/astro.go.blog/pkg/utils"
 )
 
 type AuthParams struct {

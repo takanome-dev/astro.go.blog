@@ -8,8 +8,8 @@ import (
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 	"github.com/rs/cors"
-	"github.com/takanome-dev/blog-with-astro-golang/internal/auth"
-	"github.com/takanome-dev/blog-with-astro-golang/pkg/routes"
+	"github.com/takanome-dev/astro.go.blog/internal/auth"
+	"github.com/takanome-dev/astro.go.blog/pkg/routes"
 )
 
 func main() {
@@ -27,9 +27,9 @@ func main() {
 	c := cors.New(cors.Options{
 		AllowedOrigins: []string{
 			"http://localhost:4321",
-			"https://blog-with-astro-golang.vercel.app",
-			"https://blog-with-astro-golang-takanome-dev.vercel.app",
-			"https://blog-with-astro-golang-git-main-takanome-dev.vercel.app",
+			"https://astro-go-blog.vercel.app",
+			"https://astro-go-blog-takanome-dev.vercel.app",
+			"https://astro-go-blog-git-main-takanome-dev.vercel.app",
 		},
 		AllowedHeaders: []string{
 			"Content-Type",
