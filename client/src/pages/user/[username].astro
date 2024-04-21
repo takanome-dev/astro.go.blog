@@ -1,6 +1,7 @@
 ---
 import { type CurrentUserKPIs } from "@/types/user";
 import Icon from "astro-icon";
+import { buttonVariants } from "@/components/ui/button.astro"
 import ProfileLayout from "@/layouts/profile-layout.astro";
 import { formatDate } from "@/lib/utils/format";
 import EmptyPlaceholder from "@/components/placeholder/empty-placeholder.astro";
@@ -107,6 +108,12 @@ const currentUser: CurrentUserKPIs = await fetch(
         ) : (
           <span class="text-gray-400">not provided yet 😓</span>
         )}
+      </div>
+      <div class="mt-2">
+        <a href="/user/settings" class={buttonVariants({
+          variant: 'subtle',
+          class: "w-full"
+        })}>Edit Profile</a>
       </div>
     </div>
     <div class="flex-1">

@@ -12,4 +12,4 @@ const { ...props } = Astro.props;
     "flex min-h-[80px] w-full rounded-md border border-gray-300 bg-transparent py-2 px-3 text-sm placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
     props.class
   )}
-  {...props}></textarea>
+  {...props}>{props.value}</textarea>
