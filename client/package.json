@@ -23,7 +23,7 @@
     "@toast-ui/editor": "^3.2.2",
     "@types/react": "^18.0.21",
     "@types/react-dom": "^18.0.6",
-    "astro": "^3.6.5",
+    "astro": "^5.15.6",
     "astro-icon": "^0.8.2",
     "class-variance-authority": "^0.4.0",
     "clsx": "^1.2.1",
